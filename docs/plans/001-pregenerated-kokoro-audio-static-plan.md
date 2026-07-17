@@ -184,7 +184,7 @@ word and `accommodate` is present. Re-running produces byte-identical manifests.
 Turn the worklist into the committed `public/audio/` folder of `af_heart` MP3s.
 Decoupled from the app so the generator can change without touching the game.
 
-- [ ] Use the **existing deployed botnet service** — base URL
+- [x] Use the **existing deployed botnet service** — base URL
   `https://web-scraper-api.gist-backend.workers.dev`, caller key already
   provisioned as `WEB_SCRAPER_API_KEY` in `botnet/.env` (same value pair as
   `WEB_SCRAPER_BASE_URL`). No new provisioning. **Preflight before batching:**
@@ -193,7 +193,7 @@ Decoupled from the app so the generator can change without touching the game.
   `pnpm check:tts-worker-health` and a single `pnpm prove-live:tts` round-trip
   against that base URL + key. If nothing is draining, start the local
   kokoro-worker per `botnet/README/docs/kokoro-worker-ops.md` and re-check.
-- [ ] Add `botnet/scripts/wordbreak-tts-batch.ts` (modeled on
+- [x] Add `botnet/scripts/wordbreak-tts-batch.ts` (modeled on
   `tts-prove-live.ts`). Inputs: `--manifest <path-to-audio-manifest.json>`,
   `--base-url`, `--api-key`, `--out <dir>` (point `--out` at the wordbreak
   repo's `public/audio/`). For each clip: synthesize
@@ -202,16 +202,16 @@ Decoupled from the app so the generator can change without touching the game.
   `GET /v1/tts/results/:jobId/audio` to `<out>/${file}`. Bounded concurrency
   (e.g. 4–6). **Idempotent:** skip a `${file}` that already exists and passes
   the MP3-header check, so reruns only fill gaps.
-- [ ] **Idempotency key must not pin a dead job.** Botnet idempotency is scoped
+- [x] **Idempotency key must not pin a dead job.** Botnet idempotency is scoped
   `callerId+operation+key`, and a failed / `resultArtifactUnreadable` job would
   replay forever under a fixed `wordbreak:${key}`, so "re-run until zero
   failures" could never converge. Use a per-run nonce:
   `Idempotency-Key: wordbreak:${runId}:${key}` (or retry with a fresh key on
   failure). Within one run the key still dedupes accidental double-submits.
-- [ ] Validate each downloaded file the way `tts-prove-live.ts` does (ID3 tag
+- [x] Validate each downloaded file the way `tts-prove-live.ts` does (ID3 tag
   or MP3 frame sync; `content-type: audio/mpeg`). Fail the clip, don't write a
   truncated file.
-- [ ] Emit a run report: counts of generated / skipped / failed, and total
+- [x] Emit a run report: counts of generated / skipped / failed, and total
   bytes. Re-run until zero failures.
 
 **Verification:** `public/audio/` contains one MP3 per manifest entry; every
@@ -227,7 +227,7 @@ slower. **QA all four witness words** (`definition`, `grammatical`, `preside`,
 No cloud infra — just prove the committed asset set exactly matches the manifest
 before wiring the client to it.
 
-- [ ] Add `scripts/audio/verify-assets.mjs`: for every clip in
+- [x] Add `scripts/audio/verify-assets.mjs`: for every clip in
   `audio-manifest.json`, assert `public/audio/${file}` exists and is a valid MP3
   (header check). Assert there are **no orphan** `.mp3` files in `public/audio/`
   that the manifest doesn't list (stale clips from an earlier gen → delete or
@@ -235,12 +235,18 @@ before wiring the client to it.
   present `.mp3` set (this is the client's precache list — a mismatch means the
   client tries to `cache.addAll()` a missing file and the precache rejects).
   Non-zero exit on any mismatch.
-- [ ] Commit `public/audio/*.mp3`, `public/audio/manifest.json`, and
+- [x] Commit `public/audio/*.mp3`, `public/audio/manifest.json`, and
   `docs/audio/audio-manifest.json` together.
 
 **Verification:** `node scripts/audio/verify-assets.mjs` exits 0; `git status`
 shows the audio dir and manifest staged; file count matches the manifest clip
 count.
+
+**Execution evidence:** the Botnet preflight reported 3 fresh Kokoro workers
+and a passing canary. The resumable batch produced 388/388 valid `af_heart`
+MP3s (6.4 MiB total; the final repair run was 9 generated, 379 skipped, 0
+failed). `ffprobe` showed every required witness has a slower clip, and all
+eight required witness files completed local `afplay` playback.
 
 ### Phase 4 — Client cutover in `wordbreak_v2.html`
 
