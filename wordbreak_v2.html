@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>wordbreak v0.2 — full build</title>
+<title>Wordbreak v0.2</title>
 <style>
   :root{
     --bg:#0e1116; --panel:#151a21; --panel2:#111620; --line:#242c37;
@@ -71,7 +71,9 @@
   .inputrow{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:12px}
   .bytes{display:flex;flex-wrap:wrap;gap:6px;margin:16px 0 4px}
   .byte{position:relative;display:flex;flex-direction:column;align-items:center;cursor:pointer;border:1px solid var(--line);
-    border-radius:6px;background:#0b0e13;padding:8px 0 4px;width:42px;user-select:none;transition:border-color .1s, transform .06s}
+    border-radius:6px;background:#0b0e13;padding:8px 0 4px;width:42px;user-select:none;transition:border-color .1s, transform .06s;
+    font-family:inherit;color:inherit}
+  button.byte{appearance:none;-webkit-appearance:none}
   .byte .ch{font-size:21px;font-weight:600;line-height:1.1}
   .byte .ix{font-size:10px;color:var(--dim);margin-top:3px}
   .byte:hover{border-color:var(--amber)}
@@ -138,13 +140,24 @@
 const VOWELS="aeiou";
 function say(text,slow){ try{ const u=new SpeechSynthesisUtterance(text);
   u.rate=slow?0.6:0.85; speechSynthesis.cancel(); speechSynthesis.speak(u); }catch(e){} }
-function esc(s){ return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+function esc(s){ return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
 function fmtPrompt(s){ return esc(s).replace(/([+→·?])/g,'<span class="sfx">$1</span>'); }
+function wireSay(){
+  const root=document.getElementById("app"); if(!root) return;
+  root.querySelectorAll("[data-say]").forEach(el=>{
+    el.addEventListener("click",()=>say(el.getAttribute("data-say")||"", el.hasAttribute("data-slow")));
+  });
+}
 /* persistence */
+const LOG_CAP=500;
 let P;
 try{ P=JSON.parse(localStorage.getItem("wb2"))||{}; }catch(e){ P={}; }
 P.docs=P.docs||{}; P.cleared=P.cleared||{}; P.log=P.log||[];
-function saveP(){ try{ localStorage.setItem("wb2",JSON.stringify(P)); }catch(e){} }
+if(P.log.length>LOG_CAP) P.log=P.log.slice(-LOG_CAP);
+function saveP(){
+  try{ localStorage.setItem("wb2",JSON.stringify(P)); }
+  catch(e){ try{ P.log=P.log.slice(-Math.floor(LOG_CAP/2)); localStorage.setItem("wb2",JSON.stringify(P)); }catch(e2){} }
+}
 /* hot test */
 function isHot(w,typed,idx){
   const h=w.hot, ch=(typed[idx]||"").toLowerCase();
@@ -152,7 +165,7 @@ function isHot(w,typed,idx){
   if(h.v){ if(!VOWELS.includes(ch)) return false; if(idx<(h.m||0)) return false;
     if(idx===typed.length-1&&ch==="e") return false; return true; }
   if(idx<(h.m||0)) return false;
-  return h.c.includes(ch);
+  return !!(h.c && h.c.includes(ch));
 }
 const UNITS=[];
 /* ================= STAGE 1 — ANGLO-SAXON FOUNDATION ================= */
@@ -473,10 +486,10 @@ docs:[
 {s:"03 / THE TWIST",t:"memory → arithmetic",b:"<p>so «how many letters??» stops being a memory test. it's <span class='g'>math you can re-run</span>: decompose, match, count. ad + similate → as·similate — <b>the word describes itself</b>.</p>"},
 {s:"04 / YOU RUN IT",t:"ad + prove",b:"",q:{p:"result?",o:["adprove","approve"],c:1,fb:"the d copies the p → approve."},ty:"approve"}],
 words:[
-{a:"attract",p:{k:"build",s:"ad + tract → ?"},hot:{c:"t",m:1},fork:{k:"cond",qs:[{q:"the d…",o:["stays d","copies the t"],c:1,why:""}],vd:"ad→at: <b>at·tract</b>. the tt is arithmetic.",vc:"good"}},
-{a:"approve",p:{k:"build",s:"ad + prove → ?"},hot:{c:"p",m:1},fork:{k:"cond",qs:[],vd:"ad→ap: <b>ap·prove</b>.",vc:"good"}},
-{a:"arrange",p:{k:"build",s:"ad + range → ?"},hot:{c:"r",m:1},fork:{k:"cond",qs:[],vd:"ad→ar: <b>ar·range</b>.",vc:"good"}},
-{a:"assimilate",p:{k:"build",s:"ad + similate → ?"},hot:{c:"s",m:1},fork:{k:"cond",qs:[],vd:"ad→as: <b>as·similate</b> — the word demonstrates itself.",vc:"good"}}]},
+{a:"attract",err:"E5",p:{k:"build",s:"ad + tract → ?"},hot:{c:"t",m:1},fork:{k:"cond",qs:[{q:"the d…",o:["stays d","copies the t"],c:1,why:""}],vd:"ad→at: <b>at·tract</b>. the tt is arithmetic.",vc:"good"}},
+{a:"approve",err:"E5",p:{k:"build",s:"ad + prove → ?"},hot:{c:"p",m:1},fork:{k:"cond",qs:[{q:"the d…",o:["stays d","copies the p"],c:1,why:""}],vd:"ad→ap: <b>ap·prove</b>.",vc:"good"}},
+{a:"arrange",err:"E5",p:{k:"build",s:"ad + range → ?"},hot:{c:"r",m:1},fork:{k:"cond",qs:[{q:"the d…",o:["stays d","copies the r"],c:1,why:""}],vd:"ad→ar: <b>ar·range</b>.",vc:"good"}},
+{a:"assimilate",err:"E5",p:{k:"build",s:"ad + similate → ?"},hot:{c:"s",m:1},fork:{k:"cond",qs:[{q:"the d…",o:["stays d","copies the s"],c:1,why:"ad→as — and the word names the move."}],vd:"ad→as: <b>as·similate</b> — the word demonstrates itself.",vc:"good"}}]},
 
 {id:"5.2",st:5,nm:"assim.ad",ti:"ad- : the workhorse",ds:"aggressive · appear · accelerate · account",
 docs:[
@@ -485,10 +498,10 @@ docs:[
 {s:"03 / THE TWIST",t:"two g's, explained",b:"<p>ad + gress (step) → <span class='g'>ag·gress·ive</span>. two g's, and now you know <i>why</i>. you never memorize this again — you compute it.</p>"},
 {s:"04 / YOU RUN IT",t:"ad + gress + ive",b:"",q:{p:"g's?",o:["one","two"],c:1,fb:"the d copies the g."},ty:"aggressive"}],
 words:[
-{a:"aggressive",p:{k:"build",s:"ad + gress + ive"},hot:{c:"g",m:1},fork:{k:"cond",qs:[{q:"the d…",o:["stays","copies the g"],c:1,why:""}],vd:"ad→ag: <b>ag·gress·ive</b> — stepping toward.",vc:"good"}},
-{a:"appear",p:{k:"build",s:"ad + pear → ?"},hot:{c:"p",m:1},fork:{k:"cond",qs:[],vd:"ad→ap: <b>ap·pear</b> — come into view toward you.",vc:"good"}},
-{a:"accelerate",p:{k:"build",s:"ad + celer + ate → ?"},hot:{c:"c",m:1},fork:{k:"cond",qs:[],vd:"ad→ac: <b>ac·celer·ate</b> (celer = swift).",vc:"good"}},
-{a:"account",p:{k:"build",s:"ad + count → ?"},hot:{c:"c",m:1},fork:{k:"cond",qs:[],vd:"ad→ac: <b>ac·count</b>.",vc:"good"}}]},
+{a:"aggressive",err:"E5",p:{k:"build",s:"ad + gress + ive"},hot:{c:"g",m:1},fork:{k:"cond",qs:[{q:"the d…",o:["stays","copies the g"],c:1,why:""}],vd:"ad→ag: <b>ag·gress·ive</b> — stepping toward.",vc:"good"}},
+{a:"appear",err:"E5",p:{k:"build",s:"ad + pear → ?"},hot:{c:"p",m:1},fork:{k:"cond",qs:[{q:"the d…",o:["stays","copies the p"],c:1,why:""}],vd:"ad→ap: <b>ap·pear</b> — come into view toward you.",vc:"good"}},
+{a:"accelerate",err:"E5",p:{k:"build",s:"ad + celer + ate → ?"},hot:{c:"c",m:1},fork:{k:"cond",qs:[{q:"the d…",o:["stays","copies the c"],c:1,why:"celer = swift."}],vd:"ad→ac: <b>ac·celer·ate</b> (celer = swift).",vc:"good"}},
+{a:"account",err:"E5",p:{k:"build",s:"ad + count → ?"},hot:{c:"c",m:1},fork:{k:"cond",qs:[{q:"the d…",o:["stays","copies the c"],c:1,why:""}],vd:"ad→ac: <b>ac·count</b>.",vc:"good"}}]},
 
 {id:"5.3",st:5,nm:"assim.in",ti:"in- : il, im, ir",ds:"illegal · immature · irregular · impossible",
 docs:[
@@ -497,10 +510,10 @@ docs:[
 {s:"03 / THE TWIST",t:"two-faced, still",b:"<p>in- still means «in» sometimes: im·migrate (move <b>in</b>) vs im·mature (<b>not</b> mature). meaning-check, then arithmetic.</p>"},
 {s:"04 / YOU RUN IT",t:"in + regular",b:"",q:{p:"result?",o:["inregular","irregular"],c:1,fb:"n copies the r."},ty:"irregular"}],
 words:[
-{a:"illegal",p:{k:"build",s:"in + legal → ?"},hot:{c:"l",m:1},fork:{k:"cond",qs:[{q:"the n…",o:["stays","copies the l"],c:1,why:""}],vd:"in→il: <b>il·legal</b> — the ll is the fused «not».",vc:"good"}},
-{a:"immature",p:{k:"build",s:"in + mature → ?"},hot:{c:"m",m:1},fork:{k:"cond",qs:[],vd:"in→im: <b>im·mature</b>.",vc:"good"}},
-{a:"irregular",p:{k:"build",s:"in + regular → ?"},hot:{c:"r",m:1},fork:{k:"cond",qs:[],vd:"in→ir: <b>ir·regular</b>.",vc:"good"}},
-{a:"impossible",p:{k:"build",s:"in + possible → ?"},hot:{c:"mp",m:1},fork:{k:"cond",qs:[{q:"the n before p…",o:["stays n","becomes m"],c:1,why:"lip-letter ahead — the mouth demands m."}],vd:"in→im: <b>im·possible</b>. one m + possible's own p.",vc:"good"}}]},
+{a:"illegal",err:"E5",p:{k:"build",s:"in + legal → ?"},hot:{c:"l",m:1},fork:{k:"cond",qs:[{q:"the n…",o:["stays","copies the l"],c:1,why:""}],vd:"in→il: <b>il·legal</b> — the ll is the fused «not».",vc:"good"}},
+{a:"immature",err:"E5",p:{k:"build",s:"in + mature → ?"},hot:{c:"m",m:1},fork:{k:"cond",qs:[{q:"the n…",o:["stays","copies the m"],c:1,why:""}],vd:"in→im: <b>im·mature</b>.",vc:"good"}},
+{a:"irregular",err:"E5",p:{k:"build",s:"in + regular → ?"},hot:{c:"r",m:1},fork:{k:"cond",qs:[{q:"the n…",o:["stays","copies the r"],c:1,why:""}],vd:"in→ir: <b>ir·regular</b>.",vc:"good"}},
+{a:"impossible",err:"E5",p:{k:"build",s:"in + possible → ?"},hot:{c:"mp",m:1},fork:{k:"cond",qs:[{q:"the n before p…",o:["stays n","becomes m"],c:1,why:"lip-letter ahead — the mouth demands m."}],vd:"in→im: <b>im·possible</b>. one m + possible's own p.",vc:"good"}}]},
 
 {id:"5.4",st:5,nm:"assim.com",ti:"com- / con- : col, cor",ds:"collect · correct · correlate · commit",
 docs:[
@@ -509,10 +522,10 @@ docs:[
 {s:"03 / THE TWIST",t:"commit",b:"<p>com + mit (send) → <span class='g'>com·mit</span> — the mm isn't assimilation, it's the plain seam: com ends m, mit starts m. <b>always name which kind of double you're looking at.</b></p>"},
 {s:"04 / YOU RUN IT",t:"com + lect",b:"",q:{p:"result?",o:["comlect","collect"],c:1,fb:"m copies the l → collect."},ty:"collect"}],
 words:[
-{a:"collect",p:{k:"build",s:"com + lect → ?"},hot:{c:"l",m:2},fork:{k:"cond",qs:[{q:"the m…",o:["stays","copies the l"],c:1,why:""}],vd:"com→col: <b>col·lect</b> — gather together.",vc:"good"}},
-{a:"correct",p:{k:"build",s:"com + rect → ?"},hot:{c:"r",m:2},fork:{k:"cond",qs:[],vd:"com→cor: <b>cor·rect</b> — set straight together.",vc:"good"}},
-{a:"correlate",p:{k:"build",s:"com + relate → ?"},hot:{c:"r",m:2},fork:{k:"cond",qs:[],vd:"com→cor: <b>cor·relate</b>.",vc:"good"}},
-{a:"commit",p:{k:"build",s:"com + mit"},hot:{c:"m",m:2},fork:{k:"cond",qs:[{q:"the mm is…",o:["assimilation","a plain seam: com|mit"],c:1,why:"com ends m, mit starts m."}],vd:"<b>com·mit</b> — send together. seam double, not assimilation. name the kind.",vc:"good"}}]},
+{a:"collect",err:"E5",p:{k:"build",s:"com + lect → ?"},hot:{c:"l",m:2},fork:{k:"cond",qs:[{q:"the m…",o:["stays","copies the l"],c:1,why:""}],vd:"com→col: <b>col·lect</b> — gather together.",vc:"good"}},
+{a:"correct",err:"E5",p:{k:"build",s:"com + rect → ?"},hot:{c:"r",m:2},fork:{k:"cond",qs:[{q:"the m…",o:["stays","copies the r"],c:1,why:""}],vd:"com→cor: <b>cor·rect</b> — set straight together.",vc:"good"}},
+{a:"correlate",err:"E5",p:{k:"build",s:"com + relate → ?"},hot:{c:"r",m:2},fork:{k:"cond",qs:[{q:"the m…",o:["stays","copies the r"],c:1,why:""}],vd:"com→cor: <b>cor·relate</b>.",vc:"good"}},
+{a:"commit",err:"E7",p:{k:"build",s:"com + mit"},hot:{c:"m",m:2},fork:{k:"cond",qs:[{q:"the mm is…",o:["assimilation","a plain seam: com|mit"],c:1,why:"com ends m, mit starts m."}],vd:"<b>com·mit</b> — send together. seam double, not assimilation. name the kind.",vc:"good"}}]},
 
 {id:"5.5",st:5,nm:"assim.sub",ti:"sub- / ex- / ob- in disguise",ds:"support · suffer · oppose · success",
 docs:[
@@ -521,10 +534,10 @@ docs:[
 {s:"03 / THE TWIST",t:"success",b:"<p>sub + cess (go) → <span class='g'>suc·cess</span> — going up well. the cc: arithmetic. the ss: the root's own. <b>two doubles, two different sources, both explained.</b></p>"},
 {s:"04 / YOU RUN IT",t:"sub + fer",b:"",q:{p:"result?",o:["subfer","suffer"],c:1,fb:"b copies the f → suffer."},ty:"suffer"}],
 words:[
-{a:"support",p:{k:"build",s:"sub + port → ?"},hot:{c:"p",m:2},fork:{k:"cond",qs:[{q:"the b…",o:["stays","copies the p"],c:1,why:""}],vd:"sub→sup: <b>sup·port</b>.",vc:"good"}},
-{a:"suffer",p:{k:"build",s:"sub + fer → ?"},hot:{c:"f",m:2},fork:{k:"cond",qs:[],vd:"sub→suf: <b>suf·fer</b> — carry from under (fer = bear).",vc:"good"}},
-{a:"oppose",p:{k:"build",s:"ob + pose → ?"},hot:{c:"p",m:1},fork:{k:"cond",qs:[],vd:"ob→op: <b>op·pose</b> — place against.",vc:"good"}},
-{a:"success",p:{k:"build",s:"sub + cess → ?"},hot:{c:"cs",m:2},fork:{k:"cond",qs:[{q:"the cc comes from…",o:["memory","sub→suc arithmetic"],c:1,why:""}],vd:"sub→suc: <b>suc·cess</b>. cc = prefix math, ss = the root's own.",vc:"good"}}]},
+{a:"support",err:"E5",p:{k:"build",s:"sub + port → ?"},hot:{c:"p",m:2},fork:{k:"cond",qs:[{q:"the b…",o:["stays","copies the p"],c:1,why:""}],vd:"sub→sup: <b>sup·port</b>.",vc:"good"}},
+{a:"suffer",err:"E5",p:{k:"build",s:"sub + fer → ?"},hot:{c:"f",m:2},fork:{k:"cond",qs:[{q:"the b…",o:["stays","copies the f"],c:1,why:"fer = bear/carry."}],vd:"sub→suf: <b>suf·fer</b> — carry from under (fer = bear).",vc:"good"}},
+{a:"oppose",err:"E5",p:{k:"build",s:"ob + pose → ?"},hot:{c:"p",m:1},fork:{k:"cond",qs:[{q:"the b…",o:["stays","copies the p"],c:1,why:""}],vd:"ob→op: <b>op·pose</b> — place against.",vc:"good"}},
+{a:"success",err:"E5",p:{k:"build",s:"sub + cess → ?"},hot:{c:"cs",m:2},fork:{k:"cond",qs:[{q:"the cc comes from…",o:["memory","sub→suc arithmetic"],c:1,why:""}],vd:"sub→suc: <b>suc·cess</b>. cc = prefix math, ss = the root's own.",vc:"good"}}]},
 
 {id:"5.6",st:5,nm:"boss.words",ti:"Boss words: the payoff",ds:"accommodate · unnecessary · occurrence · embarrass",
 docs:[
@@ -533,10 +546,10 @@ docs:[
 {s:"03 / THE TWIST",t:"not every double is assimilation",b:"<p>un + necessary → <span class='g'>un·necessary</span>: that nn is a plain <b>seam</b> (un | necessary), not a bent prefix. label every double by its source — seam, arithmetic, or legacy.</p>"},
 {s:"04 / YOU RUN IT",t:"ad + com + modate",b:"",q:{p:"doubles?",o:["one","two: cc + mm"],c:1,fb:"ac·com·modate — both computed."},ty:"accommodate"}],
 words:[
-{a:"accommodate",p:{k:"build",s:"ad + com + modate → ?"},hot:{c:"cm",m:1},fork:{k:"cond",qs:[{q:"how many doubles?",o:["one","two: cc + mm"],c:1,why:"ad→ac gives cc; com gives mm."}],vd:"<b>ac·com·modate</b> — two doubles, both arithmetic. the scariest word in English, disassembled.",vc:"good"}},
-{a:"unnecessary",p:{k:"build",s:"un + necessary"},hot:{c:"nc",m:1},fork:{k:"cond",qs:[{q:"the nn is…",o:["assimilation","a seam: un | necessary"],c:1,why:""}],vd:"<b>un·necessary</b> — seam nn, then necessary's own c and ss.",vc:"good"}},
-{a:"occurrence",p:{k:"build",s:"ob + cur + rence → ?"},hot:{c:"cr",m:1},fork:{k:"cond",qs:[{q:"the cc comes from…",o:["ob→oc arithmetic","memory"],c:0,why:""}],vd:"ob→oc (cc) + cur + rence — and the rr doubles at the stressed junction: <b>oc·cur·rence</b>.",vc:"good"}},
-{a:"embarrass",p:{k:"build",s:"em + bar + rass"},hot:{c:"rs",m:3},fork:{k:"cond",qs:[],vd:"<b>em·bar·rass</b> — rr + ss. honest answer: part seam-math, part legacy (it came through French). study the seams AND book it.",vc:"warn"}}]}
+{a:"accommodate",err:"E5",p:{k:"build",s:"ad + com + modate → ?"},hot:{c:"cm",m:1},fork:{k:"cond",qs:[{q:"how many doubles?",o:["one","two: cc + mm"],c:1,why:"ad→ac gives cc; com gives mm."}],vd:"<b>ac·com·modate</b> — two doubles, both arithmetic. the scariest word in English, disassembled.",vc:"good"}},
+{a:"unnecessary",err:"E7",p:{k:"build",s:"un + necessary"},hot:{c:"nc",m:1},fork:{k:"cond",qs:[{q:"the nn is…",o:["assimilation","a seam: un | necessary"],c:1,why:""}],vd:"<b>un·necessary</b> — seam nn, then necessary's own c and ss.",vc:"good"}},
+{a:"occurrence",err:"E5",p:{k:"build",s:"ob + cur + rence → ?"},hot:{c:"cr",m:1},fork:{k:"cond",qs:[{q:"the cc comes from…",o:["ob→oc arithmetic","memory"],c:0,why:""}],vd:"ob→oc (cc) + cur + rence — and the rr doubles at the stressed junction: <b>oc·cur·rence</b>.",vc:"good"}},
+{a:"embarrass",err:"E5",p:{k:"build",s:"em + bar + rass"},hot:{c:"rs",m:3},fork:{k:"cond",qs:[{q:"the doubles here are…",o:["pure arithmetic you can fully re-derive","part seam-math, part French legacy — book the residue"],c:1,why:"honesty: not every boss word is fully computable."}],vd:"<b>em·bar·rass</b> — rr + ss. honest answer: part seam-math, part legacy (it came through French). study the seams AND book it.",vc:"warn"}}]}
 );
 /* ================= STAGE 6 — THE SCHWA FRONTIER ================= */
 UNITS.push(
@@ -547,10 +560,10 @@ docs:[
 {s:"03 / THE TWIST",t:"two diseases, one symptom",b:"<p>(1) wrong <span class='r'>LETTER</span> — «definate». (2) missing <span class='r'>SYLLABLE</span> — «famly». <b>different diseases, different cures</b> — the next two units are the cure kit. classify first, always.</p>"},
 {s:"04 / YOU RUN IT",t:"diagnosis",b:"",q:{p:"the schwa problem is…",o:["you need to listen harder","the sound carries no letter info"],c:1,fb:"no amount of listening recovers what isn't there. meaning and memory take over."},ty:"about"}],
 words:[
-{a:"about",p:{k:"say",cl:"roughly; concerning."},hot:{v:1,m:0},fork:{k:"cond",qs:[{q:"can your ear tell you that first vowel?",o:["yes","no"],c:1,why:"a·bout — pure ‹uh›."}],vd:"the a of <b>a·bout</b> is a schwa. sound is done helping.",vc:"good"}},
-{a:"lemon",p:{k:"say",cl:"the sour yellow fruit."},hot:{v:1,m:3},fork:{k:"cond",qs:[],vd:"lem·<b>o</b>n — dead o, and no common relative wakes it. book this one.",vc:"warn"}},
-{a:"pencil",p:{k:"say",cl:"you write with it."},hot:{v:1,m:3},fork:{k:"cond",qs:[],vd:"pen·c<b>i</b>l — dead i. memory word, honestly labeled.",vc:"warn"}},
-{a:"sofa",p:{k:"say",cl:"the couch."},hot:{v:1,m:3},fork:{k:"cond",qs:[],vd:"so·f<b>a</b> — dead a. book it.",vc:"warn"}}]},
+{a:"about",err:"E1",p:{k:"say",cl:"roughly; concerning."},hot:{v:1,m:0},fork:{k:"cond",qs:[{q:"can your ear tell you that first vowel?",o:["yes","no"],c:1,why:"a·bout — pure ‹uh›."}],vd:"the a of <b>a·bout</b> is a schwa. sound is done helping.",vc:"good"}},
+{a:"lemon",err:"E1",p:{k:"say",cl:"the sour yellow fruit."},hot:{v:1,m:3},fork:{k:"cond",qs:[{q:"can your ear tell you the second vowel?",o:["yes","no"],c:1,why:"lem·uh·n — dead. no common relative wakes the o."}],vd:"lem·<b>o</b>n — dead o, and no common relative wakes it. book this one.",vc:"warn"}},
+{a:"pencil",err:"E1",p:{k:"say",cl:"you write with it."},hot:{v:1,m:3},fork:{k:"cond",qs:[{q:"can your ear tell you the vowel in -cil?",o:["yes","no"],c:1,why:"pen·suhl — dead i. memory, honestly."}],vd:"pen·c<b>i</b>l — dead i. memory word, honestly labeled.",vc:"warn"}},
+{a:"sofa",err:"E1",p:{k:"say",cl:"the couch."},hot:{v:1,m:3},fork:{k:"cond",qs:[{q:"can your ear tell you the final vowel?",o:["yes","no"],c:1,why:"so·fuh — dead a."}],vd:"so·f<b>a</b> — dead a. book it.",vc:"warn"}}]},
 
 {id:"6.2",st:6,nm:"anchor.move",ti:"Move ①: THE ANCHOR",ds:"can't hear the vowel → find the relative where it's stressed",
 docs:[
@@ -559,19 +572,19 @@ docs:[
 {s:"03 / THE TWIST",t:"not every cousin talks",b:"<p>«definite» — call <span class='v'>definitely</span>? <span class='r'>def·uh·nit·ly — still asleep.</span> genuinely family, won't testify. you need <span class='v'>defini·tion — def·i·NI·tion</span> → <span class='g'>i</span>.</p><p class='cluetext'>«definately» is what happens when you trust a silent witness.</p>"},
 {s:"04 / YOU RUN IT",t:"human — pick the witness",b:"",q:{p:"which source wakes HYU·mən's dead vowel?",o:["humanly","humanity"],c:1,fb:"hu·MAN·i·ty → a. (humanly leaves it asleep.)"},ty:"human"}],
 words:[
-{a:"definite",p:{k:"say",cl:"not maybe — 100% certain: «the plan is ______»."},hot:{v:1,m:4},fork:{k:"lineup",items:[
+{a:"definite",err:"E1",p:{k:"say",cl:"not maybe — 100% certain: «the plan is ______»."},hot:{v:1,m:4},fork:{k:"lineup",items:[
 {w:"definition",role:"witness",stress:[["def·i·",0],["NI",1],["·tion",0]],sayAs:"deff·ih·NIH·shun",line:"def·i·<b>NI</b>·tion — stress lands on the dead byte. it speaks: ‹i›"},
 {w:"definitely",role:"silent",line:"related — but listen: def·uh·nit·ly. the byte is <b>still dark</b>. this cousin knows the family and won't talk. pull another source."},
 {w:"defend",role:"impostor",line:"wrong family — defend ← <i>defendere</i> (to ward off). shares only the front door ‹def›. no access."}]}},
-{a:"grammar",p:{k:"say",cl:"the rules of a language — its syntax."},hot:{v:1,m:4},fork:{k:"lineup",items:[
+{a:"grammar",err:"E1",p:{k:"say",cl:"the rules of a language — its syntax."},hot:{v:1,m:4},fork:{k:"lineup",items:[
 {w:"grammatical",role:"witness",stress:[["gram·",0],["MAT",1],["·i·cal",0]],sayAs:"gruh·MAT·ih·cull",line:"gram·<b>MAT</b>·i·cal — there it is, stressed and loud: ‹a›"},
 {w:"grammarian",role:"silent",line:"family, but gram·<b>MAIR</b>·ee·an bends the vowel — muddy testimony. pull a cleaner source."},
 {w:"glamour",role:"impostor",line:"a look-alike. (it actually forked from ‹grammar› centuries ago — then rewrote its own bytes. it can't testify about this one.)"}]}},
-{a:"president",p:{k:"say",cl:"the head of the country — or the server admin."},hot:{v:1,m:4},fork:{k:"lineup",items:[
+{a:"president",err:"E1",p:{k:"say",cl:"the head of the country — or the server admin."},hot:{v:1,m:4},fork:{k:"lineup",items:[
 {w:"preside",role:"witness",stress:[["pre·",0],["SIDE",1]],sayAs:"prih·ZYDE",line:"pre·<b>SIDE</b> — the middle vowel wakes under stress: ‹i›. a president is one who presides."},
 {w:"presidency",role:"silent",line:"family — but PREZ·ih·dun·see keeps the byte muffled. weak signal. pull a louder source."},
 {w:"pressure",role:"impostor",line:"wrong family — pressure ← <i>premere</i> (to press). shares looks, not source access."}]}},
-{a:"medicine",p:{k:"say",cl:"what the doctor gives you to take."},hot:{v:1,m:3},fork:{k:"lineup",items:[
+{a:"medicine",err:"E1",p:{k:"say",cl:"what the doctor gives you to take."},hot:{v:1,m:3},fork:{k:"lineup",items:[
 {w:"medicinal",role:"witness",stress:[["me·",0],["DI",1],["·ci·nal",0]],sayAs:"muh·DISS·ih·nul",line:"me·<b>DI</b>·ci·nal — stress wakes the middle byte: ‹i›"},
 {w:"medical",role:"silent",line:"family — but MED·ih·cul leaves the target vowel asleep. won't testify about that byte."},
 {w:"meditate",role:"impostor",line:"wrong family — meditate ← <i>meditari</i> (to ponder). shares ‹med›, nothing else."}]}}]},
@@ -583,10 +596,10 @@ docs:[
 {s:"03 / THE TWIST",t:"a different disease",b:"<p>this is NOT the anchor's problem. there the letter is <b>wrong</b>; here a syllable is <b>missing</b>. classify before you cure — wrong move, wasted fix.</p>"},
 {s:"04 / YOU RUN IT",t:"interesting",b:"",q:{p:"said carefully — syllables?",o:["three","four"],c:1,fb:"in·ter·est·ing."},ty:"interesting"}],
 words:[
-{a:"family",p:{k:"say",cl:"your parents, siblings — your ______."},hot:{v:1,m:2},fork:{k:"cond",qs:[{q:"say it CAREFULLY — syllables?",o:["two","three"],c:1,why:"fa·mi·ly."}],vd:"<b>fa·mi·ly</b> — three. speech eats the middle one; the page keeps it.",vc:"good"}},
-{a:"different",p:{k:"say",cl:"not the same."},hot:{v:1,m:3},fork:{k:"cond",qs:[{q:"careful syllables?",o:["two","three"],c:1,why:"dif·fer·ent."}],vd:"<b>dif·fer·ent</b> — the ‹fer› survives on paper.",vc:"good"}},
-{a:"chocolate",p:{k:"say",cl:"the brown candy."},hot:{v:1,m:4},fork:{k:"cond",qs:[{q:"careful syllables?",o:["two","three"],c:1,why:"choc·o·late."}],vd:"<b>choc·o·late</b> — the o is the swallowed one.",vc:"good"}},
-{a:"vegetable",p:{k:"say",cl:"carrots, broccoli, spinach…"},hot:{v:1,m:3},fork:{k:"cond",qs:[{q:"careful syllables?",o:["three","four"],c:1,why:"veg·e·ta·ble."}],vd:"<b>veg·e·ta·ble</b> — spell all four, whatever your mouth skips.",vc:"good"}}]},
+{a:"family",err:"E2",p:{k:"say",cl:"your parents, siblings — your ______."},hot:{v:1,m:0},fork:{k:"cond",qs:[{q:"say it CAREFULLY — syllables?",o:["two","three"],c:1,why:"fa·mi·ly."}],vd:"<b>fa·mi·ly</b> — three. speech eats the middle one; the page keeps it.",vc:"good"}},
+{a:"different",err:"E2",p:{k:"say",cl:"not the same."},hot:{v:1,m:0},fork:{k:"cond",qs:[{q:"careful syllables?",o:["two","three"],c:1,why:"dif·fer·ent."}],vd:"<b>dif·fer·ent</b> — the ‹fer› survives on paper.",vc:"good"}},
+{a:"chocolate",err:"E2",p:{k:"say",cl:"the brown candy."},hot:{v:1,m:0},fork:{k:"cond",qs:[{q:"careful syllables?",o:["two","three"],c:1,why:"choc·o·late."}],vd:"<b>choc·o·late</b> — the o is the swallowed one.",vc:"good"}},
+{a:"vegetable",err:"E2",p:{k:"say",cl:"carrots, broccoli, spinach…"},hot:{v:1,m:0},fork:{k:"cond",qs:[{q:"careful syllables?",o:["three","four"],c:1,why:"veg·e·ta·ble."}],vd:"<b>veg·e·ta·ble</b> — spell all four, whatever your mouth skips.",vc:"good"}}]},
 
 {id:"6.4",st:6,nm:"able.ible",ti:"-able / -ible: the lean",ds:"whole word → -able · bare root → -ible",
 docs:[
@@ -595,10 +608,10 @@ docs:[
 {s:"03 / THE TWIST",t:"a lean, not a law",b:"<p>it covers a lot, not everything. honesty matters: when the lean fails, the word is family knowledge. know which tool you're holding.</p>"},
 {s:"04 / YOU RUN IT",t:"visible",b:"",q:{p:"vis- is a bare root →",o:["visable","visible"],c:1,fb:"bare root → -ible."},ty:"visible"}],
 words:[
-{a:"comfortable",p:{k:"say",cl:"cozy."},hot:{v:1,m:6},fork:{k:"cond",qs:[{q:"complete word before the ending?",o:["yes: comfort","no"],c:0,why:""}],vd:"comfort is a whole word → <b>comfort·able</b>.",vc:"good"}},
-{a:"enjoyable",p:{k:"say",cl:"fun."},hot:{v:1,m:5},fork:{k:"cond",qs:[],vd:"enjoy is a whole word → <b>enjoy·able</b>.",vc:"good"}},
-{a:"audible",p:{k:"say",cl:"loud enough to hear."},hot:{v:1,m:3},fork:{k:"cond",qs:[{q:"complete word before the ending?",o:["yes","no — aud- is a root"],c:1,why:"aud = hear (Latin), not a standalone word."}],vd:"bare root → <b>aud·ible</b>.",vc:"good"}},
-{a:"terrible",p:{k:"say",cl:"really, really bad."},hot:{v:1,m:3},fork:{k:"cond",qs:[],vd:"bare root terr- → <b>terr·ible</b>.",vc:"good"}}]},
+{a:"comfortable",err:"E1",p:{k:"say",cl:"cozy."},hot:{v:1,m:6},fork:{k:"cond",qs:[{q:"complete word before the ending?",o:["yes: comfort","no"],c:0,why:""}],vd:"comfort is a whole word → <b>comfort·able</b>.",vc:"good"}},
+{a:"enjoyable",err:"E1",p:{k:"say",cl:"fun."},hot:{v:1,m:5},fork:{k:"cond",qs:[{q:"complete word before the ending?",o:["yes: enjoy","no"],c:0,why:""}],vd:"enjoy is a whole word → <b>enjoy·able</b>.",vc:"good"}},
+{a:"audible",err:"E1",p:{k:"say",cl:"loud enough to hear."},hot:{v:1,m:3},fork:{k:"cond",qs:[{q:"complete word before the ending?",o:["yes","no — aud- is a root"],c:1,why:"aud = hear (Latin), not a standalone word."}],vd:"bare root → <b>aud·ible</b>.",vc:"good"}},
+{a:"terrible",err:"E1",p:{k:"say",cl:"really, really bad."},hot:{v:1,m:3},fork:{k:"cond",qs:[{q:"complete word before the ending?",o:["yes","no — terr- is a root"],c:1,why:"terr = frighten (Latin)."}],vd:"bare root terr- → <b>terr·ible</b>.",vc:"good"}}]},
 
 {id:"6.5",st:6,nm:"or.er.ar",ti:"-er / -or / -ar: the doer endings",ds:"plain-english -er · latin dress-up -or · rare -ar",
 docs:[
@@ -607,10 +620,10 @@ docs:[
 {s:"03 / THE TWIST",t:"the rare third coat",b:"<p><span class='k'>-ar</span> exists (grammar, dollar, similar) — mostly family knowledge. anchor when you can: grammar → gram·MAT·ical.</p>"},
 {s:"04 / YOU RUN IT",t:"director",b:"",q:{p:"latin root ‹direct› →",o:["directer","director"],c:1,fb:"latin → -or."},ty:"director"}],
 words:[
-{a:"doctor",p:{k:"say",cl:"who you see when you're sick."},hot:{v:1,m:4},fork:{k:"cond",qs:[{q:"latin dress-up or plain-english doer?",o:["latin → -or","english → -er"],c:0,why:"doct- = teach (Latin)."}],vd:"latin root → <b>doct·or</b>.",vc:"good"}},
-{a:"teacher",p:{k:"say",cl:"runs the classroom."},hot:{v:1,m:4},fork:{k:"cond",qs:[{q:"latin or plain english?",o:["latin → -or","english → -er"],c:1,why:"teach is a plain english verb."}],vd:"english verb → <b>teach·er</b>.",vc:"good"}},
-{a:"actor",p:{k:"say",cl:"stars in the movie."},hot:{v:1,m:3},fork:{k:"cond",qs:[],vd:"latin → <b>act·or</b>.",vc:"good"}},
-{a:"editor",p:{k:"say",cl:"cleans up the writing."},hot:{v:1,m:4},fork:{k:"cond",qs:[],vd:"latin → <b>edit·or</b>.",vc:"good"}}]}
+{a:"doctor",err:"E1",p:{k:"say",cl:"who you see when you're sick."},hot:{v:1,m:4},fork:{k:"cond",qs:[{q:"latin dress-up or plain-english doer?",o:["latin → -or","english → -er"],c:0,why:"doct- = teach (Latin)."}],vd:"latin root → <b>doct·or</b>.",vc:"good"}},
+{a:"teacher",err:"E1",p:{k:"say",cl:"runs the classroom."},hot:{v:1,m:4},fork:{k:"cond",qs:[{q:"latin or plain english?",o:["latin → -or","english → -er"],c:1,why:"teach is a plain english verb."}],vd:"english verb → <b>teach·er</b>.",vc:"good"}},
+{a:"actor",err:"E1",p:{k:"say",cl:"stars in the movie."},hot:{v:1,m:3},fork:{k:"cond",qs:[{q:"latin dress-up or plain-english doer?",o:["latin → -or","english → -er"],c:0,why:"act- is Latin."}],vd:"latin → <b>act·or</b>.",vc:"good"}},
+{a:"editor",err:"E1",p:{k:"say",cl:"cleans up the writing."},hot:{v:1,m:4},fork:{k:"cond",qs:[{q:"latin dress-up or plain-english doer?",o:["latin → -or","english → -er"],c:0,why:"edit- from Latin edere."}],vd:"latin → <b>edit·or</b>.",vc:"good"}}]}
 );
 /* ================= STAGE 7 — GREEK COMBINING FORMS ================= */
 UNITS.push(
@@ -725,7 +738,8 @@ const STAGES=[
 let S={screen:"home",openStage:null,unit:null,docsIdx:0,ketsuPick:null,ketsuTyped:false,
   wordIdx:0,phase:"type",typed:"",flagIdx:null,aimGood:false,firstClean:false,
   condQ:0,condPicks:{},lineupSpent:{},witnessFound:false,memPhase:"study",
-  patchTries:0,reveal:false,log:[]};
+  patchTries:0,reveal:false,log:[],runGen:0};
+let condTimer=null;
 const app=document.getElementById("app");
 function html(s){ app.innerHTML=s; }
 function titlebar(path){ return `<div class="titlebar"><div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div><div class="path">~/wordbreak/<b>${path}</b></div></div>`; }
@@ -809,7 +823,9 @@ function ketsuType(){
 /* ---------- RUN ---------- */
 function openRun(id){ const u=UNITS.find(x=>x.id===id); if(!P.docs[id])return;
   S.unit=u; S.screen="run"; S.wordIdx=0; S.log=[]; startWord(); }
-function startWord(){ S.phase="type"; S.typed=""; S.flagIdx=null; S.aimGood=false; S.firstClean=false;
+function startWord(){
+  if(condTimer){ clearTimeout(condTimer); condTimer=null; }
+  S.runGen++; S.phase="type"; S.typed=""; S.flagIdx=null; S.aimGood=false; S.firstClean=false;
   S.condQ=0; S.condPicks={}; S.lineupSpent={}; S.witnessFound=false; S.memPhase="study"; S.patchTries=0; S.reveal=false; render(); }
 function cw(){ return S.unit.words[S.wordIdx]; }
 function promptBlock(w){
@@ -817,8 +833,8 @@ function promptBlock(w){
   if(p.k==="build"||p.k==="tr") return `<div class="wordprompt">${fmtPrompt(p.s)}</div>`;
   return `<div class="cluetext">clue: <b>${esc(p.cl)}</b></div>
   <div class="inputrow" style="margin-top:6px">
-    <button class="small" onclick="say('${esc(w.a)}')">▶ say it</button>
-    <button class="small" onclick="say('${esc(w.a)}',true)">▶ slow</button></div>`;
+    <button type="button" class="small" data-say="${esc(w.a)}">▶ say it</button>
+    <button type="button" class="small" data-say="${esc(w.a)}" data-slow>▶ slow</button></div>`;
 }
 function renderRun(){
   const u=S.unit,w=cw();
@@ -833,16 +849,16 @@ function renderRun(){
     <div class="flaghint">type your build. next you'll flag the byte you don't trust — <b>before</b> the compiler speaks.</div></div>`;
   }
   else if(S.phase==="flag"){
-    const bytes=S.typed.split("").map((ch,j)=>`<div class="byte ${S.flagIdx===j?"flagged":""}" onclick="setFlag(${j})"><span class="ch">${esc(ch)}</span><span class="ix">${j}</span></div>`).join("");
+    const bytes=S.typed.split("").map((ch,j)=>`<button type="button" class="byte ${S.flagIdx===j?"flagged":""}" onclick="setFlag(${j})"><span class="ch">${esc(ch)}</span><span class="ix">${j}</span></button>`).join("");
     body=`<div class="card"><div class="eyebrow"><span class="n">›</span> FLAG THE BYTE YOU DON'T TRUST</div>
-    <div class="cluetext">your build, uncompiled. click the cell you're least sure of. good aim = you earn the interrogation.</div>
+    <div class="cluetext">your build, uncompiled. click (or ← →) the cell you're least sure of, then Enter / execute. good aim = you earn the interrogation.</div>
     <div class="bytes">${bytes}</div>
     <div class="navrow"><div class="spacer"></div><button class="primary" ${S.flagIdx===null?"disabled":""} onclick="execute()">execute ▶</button></div></div>`;
   }
   else if(S.phase==="fork"){ body=renderFork(); }
   else if(S.phase==="patch"){ body=renderPatch(); }
   else if(S.phase==="done"){ body=renderDone(); }
-  html(head+body);
+  html(head+body); wireSay();
   const inp=document.getElementById("wtype"); if(inp){ inp.focus(); inp.addEventListener("keydown",e=>{if(e.key==="Enter")commitTyped();}); }
   const pin=document.getElementById("ptype"); if(pin){ pin.focus(); pin.addEventListener("keydown",e=>{if(e.key==="Enter")commitPatch();}); }
 }
@@ -857,7 +873,9 @@ function execute(){
   const clean=S.typed.toLowerCase()===w.a.toLowerCase();
   S.aimGood=isHot(w,S.typed,S.flagIdx);
   if(clean){ S.firstClean=true;
-    if(w.fork.k==="mem"||!S.aimGood){ S.phase="done"; logWord(true); render(); return; }
+    /* outlaw/legacy words always open the file — honesty mandate (methodology + curriculum E11) */
+    if(w.fork.k==="mem"){ S.phase="fork"; render(); return; }
+    if(!S.aimGood){ S.phase="done"; logWord(true); render(); return; }
     /* clean + good aim on a rule word: still show the verdict as confirmation */
     S.phase="fork"; render(); return;
   }
@@ -913,7 +931,7 @@ function renderFork(){
       if(spent){
         if(it.role==="witness"){
           const stress=(it.stress||[]).map(sg=>`<span class="seg ${sg[1]?"stress":""}">${esc(sg[0])}</span>`).join("");
-          after=`<div class="term"><div class="ln wit">▮ SOURCE FOUND: ${stress} ${it.sayAs?`<button class="small" onclick="say('${esc(it.sayAs)}',true)">▶</button>`:""}</div><div class="ln">${it.line}</div></div>`;
+          after=`<div class="term"><div class="ln wit">▮ SOURCE FOUND: ${stress} ${it.sayAs?`<button type="button" class="small" data-say="${esc(it.sayAs)}" data-slow>▶</button>`:""}</div><div class="ln">${it.line}</div></div>`;
         } else after=`<div class="term"><div class="ln ${it.role==="impostor"?"bad":"dim"}">${it.line}</div></div>`;
       }
       return `<button class="${cls}" ${S.witnessFound||spent?"disabled":""} onclick="pullSource(${j})">${esc(it.w)}<span class="tag">${spent?esc(it.role):"pull source"}</span></button>${after}`;
@@ -921,21 +939,33 @@ function renderFork(){
     if(S.witnessFound) inner+=`<div class="navrow"><div class="spacer"></div>${S.firstClean?`<button class="primary" onclick="S.phase='done';logWord(true);render()">confirmed — next ▶</button>`:`<button class="primary" onclick="toPatch()">patch it →</button>`}</div>`;
     return `<div class="card"><div class="eyebrow"><span class="n">›</span> PULL THE SOURCE</div>${inner}</div>`;
   }
-  /* mem */
+  /* mem — outlaw / legacy file (curriculum E11 · methodology outlaw bucket) */
   const bytes=w.a.split("").map((ch,j)=>`<div class="byte static ${f.dark.includes(j)?"dark":""}"><span class="ch">${esc(ch)}</span><span class="ix">${j}</span></div>`).join("");
   if(S.memPhase==="study"){
+    const next=S.firstClean
+      ?`<button class="primary" onclick="S.phase='done';logWord(true);render()">filed — next ▶</button>`
+      :`<button class="primary" onclick="S.memPhase='cover';S.phase='patch';render()">cover it — I have it ▶</button>`;
     return `<div class="card"><div class="eyebrow"><span class="n">›</span> LEGACY FILE — READ ACCESS</div>
     <div class="term">${compile}${S.aimGood?`<div class="ln ok">✓ flag on a genuinely dead byte — good instinct. and here's the honest truth: no source exists for this one.</div>`:aimLine}
     <div class="ln warn">${esc(f.note)}</div></div>
     <div class="bytes">${bytes}</div>
-    <div class="cluetext">the red cells are the dead bytes. stare at the culprit's face. when you have it — cover and retype.</div>
-    <div class="navrow"><div class="spacer"></div><button class="primary" onclick="S.memPhase='cover';S.phase='patch';render()">cover it — I have it ▶</button></div></div>`;
+    <div class="cluetext">${S.firstClean?"the red cells are the dead bytes — no rule covers them. file the face, then move on.":"the red cells are the dead bytes. stare at the culprit's face. when you have it — cover and retype."}</div>
+    <div class="navrow"><div class="spacer"></div>${next}</div></div>`;
   }
   return "";
 }
 function condPick(j){
-  const q=cw().fork.qs[S.condQ]; S.condPicks[S.condQ]=j;
-  if(j===q.c){ setTimeout(()=>{S.condQ++;render();},450); }
+  const gen=S.runGen, qIdx=S.condQ;
+  const q=cw().fork.qs[qIdx]; S.condPicks[qIdx]=j;
+  if(condTimer){ clearTimeout(condTimer); condTimer=null; }
+  if(j===q.c){
+    condTimer=setTimeout(()=>{
+      condTimer=null;
+      if(S.runGen!==gen||S.screen!=="run"||S.phase!=="fork") return;
+      if(S.condQ!==qIdx||S.condPicks[qIdx]!==q.c) return;
+      S.condQ++; render();
+    },450);
+  }
   render();
 }
 function pullSource(j){
@@ -979,8 +1009,10 @@ function logWord(cleanPath){
   const solve = w.fork.k==="mem" ? (cleanPath?"—":"booked")
     : cleanPath&&!S.aimGood ? "—"
     : (S.aimGood?"earned":"handed");
-  S.log.push({module:S.unit.nm,word:w.a,clean:S.firstClean,aim:S.aimGood,solve:solve});
-  P.log.push({t:Date.now(),unit:S.unit.id,word:w.a,clean:S.firstClean,aim:S.aimGood,solve:solve});
+  const err=w.err||"—";
+  S.log.push({module:S.unit.nm,word:w.a,clean:S.firstClean,aim:S.aimGood,solve:solve,err:err});
+  P.log.push({t:Date.now(),unit:S.unit.id,word:w.a,clean:S.firstClean,aim:S.aimGood,solve:solve,err:err});
+  if(P.log.length>LOG_CAP) P.log=P.log.slice(-LOG_CAP);
   if(S.wordIdx===S.unit.words.length-1){ P.cleared[S.unit.id]=true; }
   saveP();
 }
@@ -1000,9 +1032,10 @@ function closeModule(){ S.screen="debrief"; render(); }
 /* ---------- DEBRIEF ---------- */
 function openDebrief(){ S.screen="debrief"; S.log=[]; render(); }
 function renderDebrief(){
-  const rows=(S.log.length?S.log:P.log.slice(-20).map(e=>({module:e.unit,word:e.word,clean:e.clean,aim:e.aim,solve:e.solve})));
-  const table=rows.length?`<table class="debrief"><tr><th>module</th><th>word</th><th>first build</th><th>aim</th><th>solve</th></tr>`+
+  const rows=(S.log.length?S.log:P.log.slice(-20).map(e=>({module:e.unit,word:e.word,clean:e.clean,aim:e.aim,solve:e.solve,err:e.err})));
+  const table=rows.length?`<table class="debrief"><tr><th>module</th><th>word</th><th>err</th><th>first build</th><th>aim</th><th>solve</th></tr>`+
     rows.map(r=>`<tr><td class="dimc">${esc(r.module)}</td><td><b>${esc(r.word)}</b></td>
+    <td class="dimc">${esc(r.err||"—")}</td>
     <td class="${r.clean?"good":"bad"}">${r.clean?"clean":"faulted"}</td>
     <td class="${r.aim?"good":"dimc"}">${r.aim?"live byte":"cold"}</td>
     <td class="${r.solve==="earned"?"good":r.solve==="handed"?"mid":"dimc"}">${esc(r.solve)}</td></tr>`).join("")+`</table>`
@@ -1020,13 +1053,22 @@ function renderDebrief(){
   <div class="navrow"><button class="ghost" onclick="goHome()">← back to the stage map</button></div>`);
 }
 /* ---------- DISPATCH ---------- */
-function goHome(){ S.screen="home"; render(); }
+function goHome(){ if(condTimer){ clearTimeout(condTimer); condTimer=null; } S.screen="home"; render(); }
 function render(){
   if(S.screen==="home")renderHome();
   else if(S.screen==="docs")renderDocs();
   else if(S.screen==="run")renderRun();
   else if(S.screen==="debrief")renderDebrief();
 }
+document.addEventListener("keydown",e=>{
+  if(S.screen!=="run"||S.phase!=="flag") return;
+  if(e.metaKey||e.ctrlKey||e.altKey) return;
+  const n=S.typed.length; if(!n) return;
+  if(e.key==="ArrowRight"){ e.preventDefault(); setFlag(S.flagIdx===null?0:Math.min(n-1,S.flagIdx+1)); }
+  else if(e.key==="ArrowLeft"){ e.preventDefault(); setFlag(S.flagIdx===null?0:Math.max(0,S.flagIdx-1)); }
+  else if(e.key==="Enter"&&S.flagIdx!==null){ e.preventDefault(); execute(); }
+  else if(e.key>="0"&&e.key<="9"){ const j=+e.key; if(j<n){ e.preventDefault(); setFlag(j); } }
+});
 window.togStage=togStage;window.openDocs=openDocs;window.openRun=openRun;window.ketsuPick=ketsuPick;
 window.ketsuType=ketsuType;window.commitTyped=commitTyped;window.setFlag=setFlag;window.execute=execute;
 window.condPick=condPick;window.pullSource=pullSource;window.toPatch=toPatch;window.commitPatch=commitPatch;
