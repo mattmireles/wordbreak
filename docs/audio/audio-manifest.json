@@ -1,0 +1,2723 @@
+{
+  "gen": "g1",
+  "voice": "af_heart",
+  "generatedFrom": "wordbreak_v2.html",
+  "clips": [
+    {
+      "key": "dbe19a5d",
+      "file": "dbe19a5d.mp3",
+      "text": "sunset",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "ef81c68c",
+      "file": "ef81c68c.mp3",
+      "text": "sunset",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "8e693249",
+      "file": "8e693249.mp3",
+      "text": "backpack",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "87e97c3c",
+      "file": "87e97c3c.mp3",
+      "text": "backpack",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "b146f997",
+      "file": "b146f997.mp3",
+      "text": "catfish",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "c5ec43a0",
+      "file": "c5ec43a0.mp3",
+      "text": "catfish",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "ed74d5eb",
+      "file": "ed74d5eb.mp3",
+      "text": "anthill",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "7ab520b0",
+      "file": "7ab520b0.mp3",
+      "text": "anthill",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "6dccaa6b",
+      "file": "6dccaa6b.mp3",
+      "text": "spell",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "df11ec1c",
+      "file": "df11ec1c.mp3",
+      "text": "spell",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "e1476a5d",
+      "file": "e1476a5d.mp3",
+      "text": "glass",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "ff794a26",
+      "file": "ff794a26.mp3",
+      "text": "glass",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "1a71fbca",
+      "file": "1a71fbca.mp3",
+      "text": "buzz",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "cf32670f",
+      "file": "cf32670f.mp3",
+      "text": "buzz",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "83fd102f",
+      "file": "83fd102f.mp3",
+      "text": "bus",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "c6086d74",
+      "file": "c6086d74.mp3",
+      "text": "bus",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "a53f0f88",
+      "file": "a53f0f88.mp3",
+      "text": "back",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "54174da1",
+      "file": "54174da1.mp3",
+      "text": "back",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "abdf7312",
+      "file": "abdf7312.mp3",
+      "text": "quick",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "dfc43ae5",
+      "file": "dfc43ae5.mp3",
+      "text": "quick",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "345c9d99",
+      "file": "345c9d99.mp3",
+      "text": "picnic",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "f26980d4",
+      "file": "f26980d4.mp3",
+      "text": "picnic",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "5f5a05b2",
+      "file": "5f5a05b2.mp3",
+      "text": "music",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "17041471",
+      "file": "17041471.mp3",
+      "text": "music",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "892ccafd",
+      "file": "892ccafd.mp3",
+      "text": "hope",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "56546224",
+      "file": "56546224.mp3",
+      "text": "hope",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "7a8430c6",
+      "file": "7a8430c6.mp3",
+      "text": "stripe",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "6d5838bb",
+      "file": "6d5838bb.mp3",
+      "text": "stripe",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "dd0f2202",
+      "file": "dd0f2202.mp3",
+      "text": "cube",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "14459b8f",
+      "file": "14459b8f.mp3",
+      "text": "cube",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "07361b4a",
+      "file": "07361b4a.mp3",
+      "text": "hop",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "f118fba9",
+      "file": "f118fba9.mp3",
+      "text": "hop",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "e8a132d7",
+      "file": "e8a132d7.mp3",
+      "text": "display",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "3d2e8048",
+      "file": "3d2e8048.mp3",
+      "text": "display",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "4a67863d",
+      "file": "4a67863d.mp3",
+      "text": "paint",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "3eb8d34e",
+      "file": "3eb8d34e.mp3",
+      "text": "paint",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "10438975",
+      "file": "10438975.mp3",
+      "text": "employ",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "aea8f9b0",
+      "file": "aea8f9b0.mp3",
+      "text": "employ",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "006007f4",
+      "file": "006007f4.mp3",
+      "text": "avoid",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "768a276b",
+      "file": "768a276b.mp3",
+      "text": "avoid",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "154a8754",
+      "file": "154a8754.mp3",
+      "text": "bird",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "c9d79a2d",
+      "file": "c9d79a2d.mp3",
+      "text": "bird",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "fd07feec",
+      "file": "fd07feec.mp3",
+      "text": "turn",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "825f6d91",
+      "file": "825f6d91.mp3",
+      "text": "turn",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "c6097192",
+      "file": "c6097192.mp3",
+      "text": "fern",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "1b9c77af",
+      "file": "1b9c77af.mp3",
+      "text": "fern",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "c637a03d",
+      "file": "c637a03d.mp3",
+      "text": "curl",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "fb1e64c4",
+      "file": "fb1e64c4.mp3",
+      "text": "curl",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "e5a4d313",
+      "file": "e5a4d313.mp3",
+      "text": "friend",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "c2793c6e",
+      "file": "c2793c6e.mp3",
+      "text": "friend",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "e4ac2df0",
+      "file": "e4ac2df0.mp3",
+      "text": "would",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "e8305fe7",
+      "file": "e8305fe7.mp3",
+      "text": "would",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "b48385cf",
+      "file": "b48385cf.mp3",
+      "text": "enough",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "842e30f2",
+      "file": "842e30f2.mp3",
+      "text": "enough",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "07c77c44",
+      "file": "07c77c44.mp3",
+      "text": "through",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "638ce99b",
+      "file": "638ce99b.mp3",
+      "text": "through",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "f9f492cf",
+      "file": "f9f492cf.mp3",
+      "text": "careless",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "651fcfee",
+      "file": "651fcfee.mp3",
+      "text": "careless",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "07410d03",
+      "file": "07410d03.mp3",
+      "text": "playing",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "4b16280c",
+      "file": "4b16280c.mp3",
+      "text": "playing",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "2be3d126",
+      "file": "2be3d126.mp3",
+      "text": "unhelpful",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "b0596419",
+      "file": "b0596419.mp3",
+      "text": "unhelpful",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "d63c9e4a",
+      "file": "d63c9e4a.mp3",
+      "text": "helplessness",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "322e8fe3",
+      "file": "322e8fe3.mp3",
+      "text": "helplessness",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "32d0e334",
+      "file": "32d0e334.mp3",
+      "text": "boxes",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "8967fb67",
+      "file": "8967fb67.mp3",
+      "text": "boxes",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "7904c2dc",
+      "file": "7904c2dc.mp3",
+      "text": "wishes",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "a704202d",
+      "file": "a704202d.mp3",
+      "text": "wishes",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "68224077",
+      "file": "68224077.mp3",
+      "text": "buses",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "8a90b810",
+      "file": "8a90b810.mp3",
+      "text": "buses",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "575bee5b",
+      "file": "575bee5b.mp3",
+      "text": "books",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "013c067c",
+      "file": "013c067c.mp3",
+      "text": "books",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "361981d3",
+      "file": "361981d3.mp3",
+      "text": "grabbing",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "32b97f4a",
+      "file": "32b97f4a.mp3",
+      "text": "grabbing",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "3593d483",
+      "file": "3593d483.mp3",
+      "text": "raining",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "da4452d8",
+      "file": "da4452d8.mp3",
+      "text": "raining",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "8c3e9102",
+      "file": "8c3e9102.mp3",
+      "text": "hopping",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "946cf4fd",
+      "file": "946cf4fd.mp3",
+      "text": "hopping",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "e16b2052",
+      "file": "e16b2052.mp3",
+      "text": "swimming",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "195109af",
+      "file": "195109af.mp3",
+      "text": "swimming",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "9f2e27b6",
+      "file": "9f2e27b6.mp3",
+      "text": "hoping",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "bfabd377",
+      "file": "bfabd377.mp3",
+      "text": "hoping",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "7a293dd0",
+      "file": "7a293dd0.mp3",
+      "text": "hopeful",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "d7eaa1df",
+      "file": "d7eaa1df.mp3",
+      "text": "hopeful",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "12546183",
+      "file": "12546183.mp3",
+      "text": "noticeable",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "b0f61b36",
+      "file": "b0f61b36.mp3",
+      "text": "noticeable",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "68ab2bb6",
+      "file": "68ab2bb6.mp3",
+      "text": "making",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "b4180c73",
+      "file": "b4180c73.mp3",
+      "text": "making",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "95184093",
+      "file": "95184093.mp3",
+      "text": "carried",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "992642c0",
+      "file": "992642c0.mp3",
+      "text": "carried",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "3ec7c1ce",
+      "file": "3ec7c1ce.mp3",
+      "text": "carrying",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "bd791f27",
+      "file": "bd791f27.mp3",
+      "text": "carrying",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "64dc8754",
+      "file": "64dc8754.mp3",
+      "text": "happier",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "89520403",
+      "file": "89520403.mp3",
+      "text": "happier",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "1eb61124",
+      "file": "1eb61124.mp3",
+      "text": "played",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "2667d9dd",
+      "file": "2667d9dd.mp3",
+      "text": "played",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "78c3cf5a",
+      "file": "78c3cf5a.mp3",
+      "text": "jumped",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "72b4240b",
+      "file": "72b4240b.mp3",
+      "text": "jumped",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "860058ba",
+      "file": "860058ba.mp3",
+      "text": "missed",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "0bfccafb",
+      "file": "0bfccafb.mp3",
+      "text": "missed",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "f03c6208",
+      "file": "f03c6208.mp3",
+      "text": "wanted",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "2f3e5889",
+      "file": "2f3e5889.mp3",
+      "text": "wanted",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "4888a877",
+      "file": "4888a877.mp3",
+      "text": "filled",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "ac2007fe",
+      "file": "ac2007fe.mp3",
+      "text": "filled",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "cd8829f4",
+      "file": "cd8829f4.mp3",
+      "text": "misspell",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "2af6dcf1",
+      "file": "2af6dcf1.mp3",
+      "text": "misspell",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "7f2a80f8",
+      "file": "7f2a80f8.mp3",
+      "text": "disappear",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "ca6cbb5b",
+      "file": "ca6cbb5b.mp3",
+      "text": "disappear",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "536f5ce9",
+      "file": "536f5ce9.mp3",
+      "text": "unnatural",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "b50bd17a",
+      "file": "b50bd17a.mp3",
+      "text": "unnatural",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "50791e4f",
+      "file": "50791e4f.mp3",
+      "text": "dissatisfied",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "95becf92",
+      "file": "95becf92.mp3",
+      "text": "dissatisfied",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "ef88fbe5",
+      "file": "ef88fbe5.mp3",
+      "text": "interact",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "c6e6e174",
+      "file": "c6e6e174.mp3",
+      "text": "interact",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "847fd8dc",
+      "file": "847fd8dc.mp3",
+      "text": "transport",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "f25b1f47",
+      "file": "f25b1f47.mp3",
+      "text": "transport",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "b8fd1e43",
+      "file": "b8fd1e43.mp3",
+      "text": "superhuman",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "20fb4b56",
+      "file": "20fb4b56.mp3",
+      "text": "superhuman",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "86632206",
+      "file": "86632206.mp3",
+      "text": "nonstop",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "e66d7bbd",
+      "file": "e66d7bbd.mp3",
+      "text": "nonstop",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "032657f9",
+      "file": "032657f9.mp3",
+      "text": "insane",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "b23fad28",
+      "file": "b23fad28.mp3",
+      "text": "insane",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "4fcc6a94",
+      "file": "4fcc6a94.mp3",
+      "text": "inhale",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "4309efc5",
+      "file": "4309efc5.mp3",
+      "text": "inhale",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "27ecb99d",
+      "file": "27ecb99d.mp3",
+      "text": "export",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "aec65be0",
+      "file": "aec65be0.mp3",
+      "text": "export",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "034aa8d3",
+      "file": "034aa8d3.mp3",
+      "text": "connect",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "50dd1400",
+      "file": "50dd1400.mp3",
+      "text": "connect",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "ebd7309e",
+      "file": "ebd7309e.mp3",
+      "text": "import",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "4d671eff",
+      "file": "4d671eff.mp3",
+      "text": "import",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "b260b451",
+      "file": "b260b451.mp3",
+      "text": "report",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "fe172bb8",
+      "file": "fe172bb8.mp3",
+      "text": "report",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "3df1ad4a",
+      "file": "3df1ad4a.mp3",
+      "text": "support",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "754d5f01",
+      "file": "754d5f01.mp3",
+      "text": "support",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "e1ed11d0",
+      "file": "e1ed11d0.mp3",
+      "text": "portable",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "adb6068d",
+      "file": "adb6068d.mp3",
+      "text": "portable",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "51104d48",
+      "file": "51104d48.mp3",
+      "text": "construct",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "809224fb",
+      "file": "809224fb.mp3",
+      "text": "construct",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "2e4f6fc5",
+      "file": "2e4f6fc5.mp3",
+      "text": "instruct",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "f8e5d488",
+      "file": "f8e5d488.mp3",
+      "text": "instruct",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "2aa169c4",
+      "file": "2aa169c4.mp3",
+      "text": "structure",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "3b523e4b",
+      "file": "3b523e4b.mp3",
+      "text": "structure",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "c6700415",
+      "file": "c6700415.mp3",
+      "text": "destruction",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "12a7f096",
+      "file": "12a7f096.mp3",
+      "text": "destruction",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "65efd8a9",
+      "file": "65efd8a9.mp3",
+      "text": "inspect",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "17bf3496",
+      "file": "17bf3496.mp3",
+      "text": "inspect",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "b230e358",
+      "file": "b230e358.mp3",
+      "text": "spectator",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "ac11a4ab",
+      "file": "ac11a4ab.mp3",
+      "text": "spectator",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "e4d9adaf",
+      "file": "e4d9adaf.mp3",
+      "text": "respect",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "e6f929c4",
+      "file": "e6f929c4.mp3",
+      "text": "respect",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "0869c973",
+      "file": "0869c973.mp3",
+      "text": "perspective",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "22043ec0",
+      "file": "22043ec0.mp3",
+      "text": "perspective",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "4cc80e48",
+      "file": "4cc80e48.mp3",
+      "text": "predict",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "87403f7b",
+      "file": "87403f7b.mp3",
+      "text": "predict",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "3ceec017",
+      "file": "3ceec017.mp3",
+      "text": "dictionary",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "79e79716",
+      "file": "79e79716.mp3",
+      "text": "dictionary",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "3b119492",
+      "file": "3b119492.mp3",
+      "text": "contradict",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "ff325c1f",
+      "file": "ff325c1f.mp3",
+      "text": "contradict",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "38ab0ea8",
+      "file": "38ab0ea8.mp3",
+      "text": "verdict",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "a673c09b",
+      "file": "a673c09b.mp3",
+      "text": "verdict",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "5efa58a7",
+      "file": "5efa58a7.mp3",
+      "text": "erupt",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "af590bac",
+      "file": "af590bac.mp3",
+      "text": "erupt",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "1fd88188",
+      "file": "1fd88188.mp3",
+      "text": "disrupt",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "858cae9f",
+      "file": "858cae9f.mp3",
+      "text": "disrupt",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "a035217a",
+      "file": "a035217a.mp3",
+      "text": "interrupt",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "a663f3e5",
+      "file": "a663f3e5.mp3",
+      "text": "interrupt",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "a81058e0",
+      "file": "a81058e0.mp3",
+      "text": "corrupt",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "6cf22ddb",
+      "file": "6cf22ddb.mp3",
+      "text": "corrupt",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "b848628b",
+      "file": "b848628b.mp3",
+      "text": "subtract",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "9c5120e6",
+      "file": "9c5120e6.mp3",
+      "text": "subtract",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "04918b35",
+      "file": "04918b35.mp3",
+      "text": "distract",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "596aa3c8",
+      "file": "596aa3c8.mp3",
+      "text": "distract",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "53152bec",
+      "file": "53152bec.mp3",
+      "text": "extract",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "6cc46ef7",
+      "file": "6cc46ef7.mp3",
+      "text": "extract",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "07af1284",
+      "file": "07af1284.mp3",
+      "text": "attract",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "6d650467",
+      "file": "6d650467.mp3",
+      "text": "attract",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "5fc26b74",
+      "file": "5fc26b74.mp3",
+      "text": "eject",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "e751127f",
+      "file": "e751127f.mp3",
+      "text": "eject",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "ecf8fd8c",
+      "file": "ecf8fd8c.mp3",
+      "text": "reject",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "979dcd99",
+      "file": "979dcd99.mp3",
+      "text": "reject",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "2d79870c",
+      "file": "2d79870c.mp3",
+      "text": "project",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "aab58a03",
+      "file": "aab58a03.mp3",
+      "text": "project",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "1cbbcc31",
+      "file": "1cbbcc31.mp3",
+      "text": "interject",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "197192fe",
+      "file": "197192fe.mp3",
+      "text": "interject",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "d143a9e2",
+      "file": "d143a9e2.mp3",
+      "text": "describe",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "e0357043",
+      "file": "e0357043.mp3",
+      "text": "describe",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "1092d8d1",
+      "file": "1092d8d1.mp3",
+      "text": "subscribe",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "016f44fe",
+      "file": "016f44fe.mp3",
+      "text": "subscribe",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "ffe8b523",
+      "file": "ffe8b523.mp3",
+      "text": "description",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "16fc1cd4",
+      "file": "16fc1cd4.mp3",
+      "text": "description",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "0bbb6cb7",
+      "file": "0bbb6cb7.mp3",
+      "text": "manuscript",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "758aa64e",
+      "file": "758aa64e.mp3",
+      "text": "manuscript",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "50694c61",
+      "file": "50694c61.mp3",
+      "text": "produce",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "e6a2f21e",
+      "file": "e6a2f21e.mp3",
+      "text": "produce",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "0fe8c2e1",
+      "file": "0fe8c2e1.mp3",
+      "text": "reduce",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "a91a4928",
+      "file": "a91a4928.mp3",
+      "text": "reduce",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "4490801d",
+      "file": "4490801d.mp3",
+      "text": "conduct",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "1168e806",
+      "file": "1168e806.mp3",
+      "text": "conduct",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "58401d7f",
+      "file": "58401d7f.mp3",
+      "text": "aqueduct",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "6a995a6e",
+      "file": "6a995a6e.mp3",
+      "text": "aqueduct",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "324f3d3c",
+      "file": "324f3d3c.mp3",
+      "text": "permit",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "d53014d9",
+      "file": "d53014d9.mp3",
+      "text": "permit",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "d3e92717",
+      "file": "d3e92717.mp3",
+      "text": "transmit",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "4b68aaee",
+      "file": "4b68aaee.mp3",
+      "text": "transmit",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "a3bab9d0",
+      "file": "a3bab9d0.mp3",
+      "text": "permission",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "813cc735",
+      "file": "813cc735.mp3",
+      "text": "permission",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "b45b4493",
+      "file": "b45b4493.mp3",
+      "text": "submission",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "a6bb2fee",
+      "file": "a6bb2fee.mp3",
+      "text": "submission",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "c51e07ea",
+      "file": "c51e07ea.mp3",
+      "text": "convert",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "4ed73f71",
+      "file": "4ed73f71.mp3",
+      "text": "convert",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "59c486bf",
+      "file": "59c486bf.mp3",
+      "text": "invert",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "a2edec2a",
+      "file": "a2edec2a.mp3",
+      "text": "invert",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "7b36f351",
+      "file": "7b36f351.mp3",
+      "text": "version",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "87d60ece",
+      "file": "87d60ece.mp3",
+      "text": "version",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "498d2728",
+      "file": "498d2728.mp3",
+      "text": "universe",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "7a6924bd",
+      "file": "7a6924bd.mp3",
+      "text": "universe",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "1592e087",
+      "file": "1592e087.mp3",
+      "text": "precede",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "725953d4",
+      "file": "725953d4.mp3",
+      "text": "precede",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "8960ec2f",
+      "file": "8960ec2f.mp3",
+      "text": "proceed",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "50a65e48",
+      "file": "50a65e48.mp3",
+      "text": "proceed",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "bbcc3b35",
+      "file": "bbcc3b35.mp3",
+      "text": "succeed",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "e5587dee",
+      "file": "e5587dee.mp3",
+      "text": "succeed",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "e9811d15",
+      "file": "e9811d15.mp3",
+      "text": "supersede",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "4c03d7f6",
+      "file": "4c03d7f6.mp3",
+      "text": "supersede",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "ca7bf244",
+      "file": "ca7bf244.mp3",
+      "text": "receive",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "4f5c9577",
+      "file": "4f5c9577.mp3",
+      "text": "receive",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "8a73747e",
+      "file": "8a73747e.mp3",
+      "text": "deceive",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "ebc2e389",
+      "file": "ebc2e389.mp3",
+      "text": "deceive",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "7a4c9b84",
+      "file": "7a4c9b84.mp3",
+      "text": "reception",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "fa897653",
+      "file": "fa897653.mp3",
+      "text": "reception",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "7dd85cf3",
+      "file": "7dd85cf3.mp3",
+      "text": "accept",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "17baf232",
+      "file": "17baf232.mp3",
+      "text": "accept",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "21c2c3f4",
+      "file": "21c2c3f4.mp3",
+      "text": "approve",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "521199cb",
+      "file": "521199cb.mp3",
+      "text": "approve",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "c3051b3d",
+      "file": "c3051b3d.mp3",
+      "text": "arrange",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "18ad2f3e",
+      "file": "18ad2f3e.mp3",
+      "text": "arrange",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "3a293f8d",
+      "file": "3a293f8d.mp3",
+      "text": "assimilate",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "4bf9e4d8",
+      "file": "4bf9e4d8.mp3",
+      "text": "assimilate",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "ad9cdad3",
+      "file": "ad9cdad3.mp3",
+      "text": "aggressive",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "3d0af2ca",
+      "file": "3d0af2ca.mp3",
+      "text": "aggressive",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "e5a0fdc2",
+      "file": "e5a0fdc2.mp3",
+      "text": "appear",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "c15a6a7f",
+      "file": "c15a6a7f.mp3",
+      "text": "appear",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "938ad2ce",
+      "file": "938ad2ce.mp3",
+      "text": "accelerate",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "302505a3",
+      "file": "302505a3.mp3",
+      "text": "accelerate",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "972bb79a",
+      "file": "972bb79a.mp3",
+      "text": "account",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "cc92780d",
+      "file": "cc92780d.mp3",
+      "text": "account",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "5fa25b8b",
+      "file": "5fa25b8b.mp3",
+      "text": "illegal",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "8c0e25c4",
+      "file": "8c0e25c4.mp3",
+      "text": "illegal",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "4ac036d9",
+      "file": "4ac036d9.mp3",
+      "text": "immature",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "3a51da04",
+      "file": "3a51da04.mp3",
+      "text": "immature",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "e28ad42c",
+      "file": "e28ad42c.mp3",
+      "text": "irregular",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "54061a23",
+      "file": "54061a23.mp3",
+      "text": "irregular",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "60700402",
+      "file": "60700402.mp3",
+      "text": "impossible",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "f2c816ab",
+      "file": "f2c816ab.mp3",
+      "text": "impossible",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "57d70c1b",
+      "file": "57d70c1b.mp3",
+      "text": "collect",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "2e29a9e4",
+      "file": "2e29a9e4.mp3",
+      "text": "collect",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "87bd531b",
+      "file": "87bd531b.mp3",
+      "text": "correct",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "8b1a7c80",
+      "file": "8b1a7c80.mp3",
+      "text": "correct",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "b3e733f0",
+      "file": "b3e733f0.mp3",
+      "text": "correlate",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "cd63ba13",
+      "file": "cd63ba13.mp3",
+      "text": "correlate",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "0fc849c6",
+      "file": "0fc849c6.mp3",
+      "text": "commit",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "0dd1d93f",
+      "file": "0dd1d93f.mp3",
+      "text": "commit",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "267df7e8",
+      "file": "267df7e8.mp3",
+      "text": "suffer",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "6982e069",
+      "file": "6982e069.mp3",
+      "text": "suffer",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "41dcadbd",
+      "file": "41dcadbd.mp3",
+      "text": "oppose",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "3eb488e4",
+      "file": "3eb488e4.mp3",
+      "text": "oppose",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "ad03d092",
+      "file": "ad03d092.mp3",
+      "text": "success",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "c8856fe5",
+      "file": "c8856fe5.mp3",
+      "text": "success",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "de7f5f44",
+      "file": "de7f5f44.mp3",
+      "text": "accommodate",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "e4b68d0f",
+      "file": "e4b68d0f.mp3",
+      "text": "accommodate",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "9c0419c7",
+      "file": "9c0419c7.mp3",
+      "text": "unnecessary",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "6d61f440",
+      "file": "6d61f440.mp3",
+      "text": "unnecessary",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "edc3496e",
+      "file": "edc3496e.mp3",
+      "text": "occurrence",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "f32c72bb",
+      "file": "f32c72bb.mp3",
+      "text": "occurrence",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "90815f5d",
+      "file": "90815f5d.mp3",
+      "text": "embarrass",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "c42d0522",
+      "file": "c42d0522.mp3",
+      "text": "embarrass",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "ecd136fc",
+      "file": "ecd136fc.mp3",
+      "text": "about",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "77982c5b",
+      "file": "77982c5b.mp3",
+      "text": "about",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "0cc9eff6",
+      "file": "0cc9eff6.mp3",
+      "text": "lemon",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "d88c5f39",
+      "file": "d88c5f39.mp3",
+      "text": "lemon",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "28ee0ce6",
+      "file": "28ee0ce6.mp3",
+      "text": "pencil",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "fcb7f437",
+      "file": "fcb7f437.mp3",
+      "text": "pencil",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "9970d88c",
+      "file": "9970d88c.mp3",
+      "text": "sofa",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "8646de45",
+      "file": "8646de45.mp3",
+      "text": "sofa",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "3a67af03",
+      "file": "3a67af03.mp3",
+      "text": "definite",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "b6830cb6",
+      "file": "b6830cb6.mp3",
+      "text": "definite",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "63d9c4c2",
+      "file": "63d9c4c2.mp3",
+      "text": "definition",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "f4ecf9d3",
+      "file": "f4ecf9d3.mp3",
+      "text": "definition",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "1c4907b0",
+      "file": "1c4907b0.mp3",
+      "text": "grammar",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "4a367343",
+      "file": "4a367343.mp3",
+      "text": "grammar",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "897e561b",
+      "file": "897e561b.mp3",
+      "text": "grammatical",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "40f21050",
+      "file": "40f21050.mp3",
+      "text": "grammatical",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "af948149",
+      "file": "af948149.mp3",
+      "text": "president",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "d4e1d6ea",
+      "file": "d4e1d6ea.mp3",
+      "text": "president",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "68998f93",
+      "file": "68998f93.mp3",
+      "text": "preside",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "78e26890",
+      "file": "78e26890.mp3",
+      "text": "preside",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "3c19b987",
+      "file": "3c19b987.mp3",
+      "text": "medicine",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "49820c82",
+      "file": "49820c82.mp3",
+      "text": "medicine",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "a77551f5",
+      "file": "a77551f5.mp3",
+      "text": "medicinal",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "c5afffae",
+      "file": "c5afffae.mp3",
+      "text": "medicinal",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "63aaf627",
+      "file": "63aaf627.mp3",
+      "text": "family",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "b435dbb6",
+      "file": "b435dbb6.mp3",
+      "text": "family",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "0f1c76f0",
+      "file": "0f1c76f0.mp3",
+      "text": "different",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "4eaac62f",
+      "file": "4eaac62f.mp3",
+      "text": "different",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "a84d1487",
+      "file": "a84d1487.mp3",
+      "text": "chocolate",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "713f8000",
+      "file": "713f8000.mp3",
+      "text": "chocolate",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "ec162bfa",
+      "file": "ec162bfa.mp3",
+      "text": "vegetable",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "fc795b45",
+      "file": "fc795b45.mp3",
+      "text": "vegetable",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "a2c75e4d",
+      "file": "a2c75e4d.mp3",
+      "text": "comfortable",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "d363c6f2",
+      "file": "d363c6f2.mp3",
+      "text": "comfortable",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "49009a12",
+      "file": "49009a12.mp3",
+      "text": "enjoyable",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "ece832f9",
+      "file": "ece832f9.mp3",
+      "text": "enjoyable",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "3758813f",
+      "file": "3758813f.mp3",
+      "text": "audible",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "3e7288a0",
+      "file": "3e7288a0.mp3",
+      "text": "audible",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "315969b8",
+      "file": "315969b8.mp3",
+      "text": "terrible",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "028a726d",
+      "file": "028a726d.mp3",
+      "text": "terrible",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "94689c2c",
+      "file": "94689c2c.mp3",
+      "text": "doctor",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "4253bb75",
+      "file": "4253bb75.mp3",
+      "text": "doctor",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "d2e0e36b",
+      "file": "d2e0e36b.mp3",
+      "text": "teacher",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "1514ac44",
+      "file": "1514ac44.mp3",
+      "text": "teacher",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "6393b05c",
+      "file": "6393b05c.mp3",
+      "text": "actor",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "76a06713",
+      "file": "76a06713.mp3",
+      "text": "actor",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "8e4aa642",
+      "file": "8e4aa642.mp3",
+      "text": "editor",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "6bbc3e93",
+      "file": "6bbc3e93.mp3",
+      "text": "editor",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "1b7c2479",
+      "file": "1b7c2479.mp3",
+      "text": "photo",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "222ca08a",
+      "file": "222ca08a.mp3",
+      "text": "photo",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "e6f44635",
+      "file": "e6f44635.mp3",
+      "text": "chorus",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "620f7b1c",
+      "file": "620f7b1c.mp3",
+      "text": "chorus",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "96fe1297",
+      "file": "96fe1297.mp3",
+      "text": "rhythm",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "f9f43ede",
+      "file": "f9f43ede.mp3",
+      "text": "rhythm",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "29642449",
+      "file": "29642449.mp3",
+      "text": "myth",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "0ba1de80",
+      "file": "0ba1de80.mp3",
+      "text": "myth",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "d6fbd0fd",
+      "file": "d6fbd0fd.mp3",
+      "text": "telephone",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "de35426a",
+      "file": "de35426a.mp3",
+      "text": "telephone",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "4082c9aa",
+      "file": "4082c9aa.mp3",
+      "text": "automatic",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "83289965",
+      "file": "83289965.mp3",
+      "text": "automatic",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "a91b6dff",
+      "file": "a91b6dff.mp3",
+      "text": "microchip",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "57f535cc",
+      "file": "57f535cc.mp3",
+      "text": "microchip",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "81f60a7f",
+      "file": "81f60a7f.mp3",
+      "text": "geography",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "7e7e6928",
+      "file": "7e7e6928.mp3",
+      "text": "geography",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "51b02a1a",
+      "file": "51b02a1a.mp3",
+      "text": "psychology",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "b8bedd8b",
+      "file": "b8bedd8b.mp3",
+      "text": "psychology",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "ce8cf9c1",
+      "file": "ce8cf9c1.mp3",
+      "text": "thermometer",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "fb8a512e",
+      "file": "fb8a512e.mp3",
+      "text": "thermometer",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "36fb4b0d",
+      "file": "36fb4b0d.mp3",
+      "text": "claustrophobia",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "f9b914a4",
+      "file": "f9b914a4.mp3",
+      "text": "claustrophobia",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "00c7eb92",
+      "file": "00c7eb92.mp3",
+      "text": "biology",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "cfd130d5",
+      "file": "cfd130d5.mp3",
+      "text": "biology",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "7794c7e5",
+      "file": "7794c7e5.mp3",
+      "text": "chronology",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "e4db41ec",
+      "file": "e4db41ec.mp3",
+      "text": "chronology",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "dac1f9ed",
+      "file": "dac1f9ed.mp3",
+      "text": "technology",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "bf61fb60",
+      "file": "bf61fb60.mp3",
+      "text": "technology",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "16c48da6",
+      "file": "16c48da6.mp3",
+      "text": "photography",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "e3fbfd41",
+      "file": "e3fbfd41.mp3",
+      "text": "photography",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "11ee389c",
+      "file": "11ee389c.mp3",
+      "text": "speedometer",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "d20abc37",
+      "file": "d20abc37.mp3",
+      "text": "speedometer",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "090a88be",
+      "file": "090a88be.mp3",
+      "text": "crises",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "f3983c6f",
+      "file": "f3983c6f.mp3",
+      "text": "crises",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "96c2a9b6",
+      "file": "96c2a9b6.mp3",
+      "text": "phenomena",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "d991b109",
+      "file": "d991b109.mp3",
+      "text": "phenomena",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "367df032",
+      "file": "367df032.mp3",
+      "text": "criteria",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "42e55003",
+      "file": "42e55003.mp3",
+      "text": "criteria",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "c589b8bd",
+      "file": "c589b8bd.mp3",
+      "text": "hypotheses",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "df6f25fc",
+      "file": "df6f25fc.mp3",
+      "text": "hypotheses",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "7ed2b69c",
+      "file": "7ed2b69c.mp3",
+      "text": "misunderstanding",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "92d461b5",
+      "file": "92d461b5.mp3",
+      "text": "misunderstanding",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "53290836",
+      "file": "53290836.mp3",
+      "text": "unconstitutional",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "1c765aff",
+      "file": "1c765aff.mp3",
+      "text": "unconstitutional",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "99c805bb",
+      "file": "99c805bb.mp3",
+      "text": "disrespectfully",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "fcb2e2cc",
+      "file": "fcb2e2cc.mp3",
+      "text": "disrespectfully",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "689914ce",
+      "file": "689914ce.mp3",
+      "text": "incomprehensible",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "f948b4df",
+      "file": "f948b4df.mp3",
+      "text": "incomprehensible",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "29c408e1",
+      "file": "29c408e1.mp3",
+      "text": "Wednesday",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "3538b19e",
+      "file": "3538b19e.mp3",
+      "text": "Wednesday",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "642e92ab",
+      "file": "642e92ab.mp3",
+      "text": "colonel",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "c61f5170",
+      "file": "c61f5170.mp3",
+      "text": "colonel",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "6d50dd40",
+      "file": "6d50dd40.mp3",
+      "text": "restaurant",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "304f7f49",
+      "file": "304f7f49.mp3",
+      "text": "restaurant",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "4c53a9d2",
+      "file": "4c53a9d2.mp3",
+      "text": "yacht",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "3033ee35",
+      "file": "3033ee35.mp3",
+      "text": "yacht",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "991bf771",
+      "file": "991bf771.mp3",
+      "text": "their",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "66e62d9e",
+      "file": "66e62d9e.mp3",
+      "text": "their",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "af553785",
+      "file": "af553785.mp3",
+      "text": "stationery",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "aca34050",
+      "file": "aca34050.mp3",
+      "text": "stationery",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "1e3faadb",
+      "file": "1e3faadb.mp3",
+      "text": "principal",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "7bf8e6a4",
+      "file": "7bf8e6a4.mp3",
+      "text": "principal",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "7250f5ee",
+      "file": "7250f5ee.mp3",
+      "text": "affect",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "893f2a5b",
+      "file": "893f2a5b.mp3",
+      "text": "affect",
+      "speed": 0.7,
+      "speedTag": "s"
+    }
+  ]
+}

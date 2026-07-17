@@ -140,7 +140,7 @@ same clean voice. The corpus is precached for guaranteed offline playback;
 Build the single source of truth for *what* to synthesize, derived from
 `UNITS` so it can never drift from the curriculum.
 
-- [ ] Add `scripts/audio/extract-worklist.mjs` reading `wordbreak_v2.html`.
+- [x] Add `scripts/audio/extract-worklist.mjs` reading `wordbreak_v2.html`.
   **The naive `vm` approach fails** (confirmed empirically): `const UNITS` at
   line 197 is a *lexical* binding, so `context.UNITS` is `undefined` after
   `vm.runInContext`; and `render()` (line ~1103), `document.addEventListener`
@@ -157,28 +157,27 @@ Build the single source of truth for *what* to synthesize, derived from
     literals directly.
   - Either way, **assert expected counts** (units, words, witnesses) so a
     curriculum edit that breaks extraction fails loudly.
-- [ ] Walk `UNITS`: for every `word` collect `word.a`; for every
+- [x] Walk `UNITS`: for every `word` collect `word.a`; for every
   `word.fork.items[]` with `role==="witness"` collect `item.w` (plus its
   `item.sayAs` recorded as fallback text, not synthesized). Normalize per the
   decision-3 `normalize()`. De-dupe by final key.
-- [ ] For each unique text emit **two** entries (normal, slow) with
+- [x] For each unique text emit **two** entries (normal, slow) with
   `key`/`file` from `scripts/audio/key.mjs` (the shared hash, decision 3).
   Assert **no key collisions**; fail loudly if any. Support an optional
   per-entry `textOverride` (escape hatch: if Kokoro mis-stresses a witness, the
   override text is what gets synthesized while the key still derives from the
   displayed word) — empty for now.
-- [ ] Write two files (both committed): the full worklist/debug map
+- [x] Write two files (both committed): the full worklist/debug map
   `docs/audio/audio-manifest.json`
   (`{ gen:"g1", voice:"af_heart", generatedFrom:"wordbreak_v2.html", clips:[{key,text,textOverride?,speed,speedTag,file}] }`),
   and the flat runtime precache list `public/audio/manifest.json`
   (`["<key>.mp3", …]`, one per clip) that the client fetches on load
   (decision 5). Both come from the same walk, so they can't diverge.
 
-**Verification:** run the script; it reports non-zero unit/word/witness counts
-matching a manual grep, and lists ≈ (unique answer words + unique witness
-words) × 2 clips. Spot-check that `definite`'s witness resolves to `definition`
-(not the `sayAs` respelling) and `w.a` values like `accommodate` appear.
-Re-running produces a byte-identical manifest.
+**Verification:** `node scripts/audio/extract-worklist.mjs` reports 48 units,
+192 words, 4 witnesses, and 388 clips from 194 unique texts. The shared key
+test passes in Node and a browser-style VM; `definition` resolves to the real
+word and `accommodate` is present. Re-running produces byte-identical manifests.
 
 ### Phase 2 — Batch-generate MP3s via botnet Kokoro (Botnet repo)
 
