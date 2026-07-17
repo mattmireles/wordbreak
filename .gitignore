@@ -1,0 +1,3 @@
+# Local agent / audit scratch (never commit)
+tmp/
+.DS_Store
