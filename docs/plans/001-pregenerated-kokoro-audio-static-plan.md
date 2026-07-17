@@ -253,19 +253,19 @@ eight required witness files completed local `afplay` playback.
 Rewire the three audio sites to the bundled clips; keep the game identical
 otherwise.
 
-- [ ] Add `const AUDIO_GEN="g1";`, `const AUDIO_BASE="audio/";` (relative,
+- [x] Add `const AUDIO_GEN="g1";`, `const AUDIO_BASE="audio/";` (relative,
   same-origin), `normalize()`, and the **same** `fnv1a32` helper as the
   generator (copied verbatim; comment cross-links `scripts/audio/key.mjs` as the
   authoritative contract).
-- [ ] **Precache on load** (decision 5): fetch `audio/manifest.json`, open cache
+- [x] **Precache on load** (decision 5): fetch `audio/manifest.json`, open cache
   `wb-audio-${AUDIO_GEN}`, `cache.addAll()` the files, `navigator.storage.persist()`,
   and delete any `wb-audio-*` caches from older gens. Run it fire-and-forget
   after first paint so it never blocks the UI; if the fetch fails (first load
   offline), skip silently — `say()` still degrades correctly.
-- [ ] Keep **one module-level** `Audio` element (`let curAudio`), so a new clip
+- [x] Keep **one module-level** `Audio` element (`let curAudio`), so a new clip
   stops the previous one — matching today's `speechSynthesis.cancel()` before
   each utterance. Without this, "▶ say it" then "▶ slow" overlap.
-- [ ] Rewrite `say(audioText, slow, fallbackText)` (line 168), **cache-first**:
+- [x] Rewrite `say(audioText, slow, fallbackText)` (line 168), **cache-first**:
   1. `curAudio?.pause(); speechSynthesis.cancel();`
   2. `const key = fnv1a32([AUDIO_GEN,"af_heart",slow?"s":"n",normalize(audioText)].join("|"));`
      — `normalize()` must match the generator exactly.
@@ -278,14 +278,14 @@ otherwise.
      `error` event **and** a rejected `play()` promise — guarded so the fallback
      fires **at most once** per click. All inside the click handler (user
      gesture — autoplay-safe). Revoke any object URL on `ended`/`error`.
-- [ ] `wireSay()` (line 172): pass the fallback through —
+- [x] `wireSay()` (line 172): pass the fallback through —
   `say(el.dataset.say, el.hasAttribute("data-slow"), el.dataset.fallback)`.
-- [ ] Witness button (line 961): `data-say="${esc(it.w)}"` (real-word Kokoro
+- [x] Witness button (line 961): `data-say="${esc(it.w)}"` (real-word Kokoro
   key) **plus** `data-fallback="${esc(it.sayAs)}"` so the rare last-resort
   browser-TTS path still speaks the intelligibility-tuned respelling. Keep
   `it.sayAs`/`stress` in the visible verdict line unchanged — that on-screen
   stress mark is the real pedagogical backstop if audio ever fails.
-- [ ] Answer buttons (lines 863–864) already use `w.a`; no `data-fallback`
+- [x] Answer buttons (lines 863–864) already use `w.a`; no `data-fallback`
   needed (fallback text defaults to the word itself).
 
 **Verification:** `npm run dev`, open the game; wait for precache (Application →
@@ -298,6 +298,13 @@ still play Kokoro audio from cache, no network, no browser voice. Only after
 (witness → respelling, answer → word); game stays playable. `git diff` touches
 only `say()`/`wireSay()`, the precache/`AUDIO_*`/hash additions, and the one
 witness `data-say` line.
+
+**Execution evidence:** local Wrangler served the app at `http://localhost:8787/`;
+the browser smoke rendered the home screen, completed a lesson, opened practice,
+and ran the first compile beat with no console errors. The rendered contract
+contains the cache/preload code and witness fallback attribute; the browser
+environment did not expose Cache API storage, so full offline cache replay
+remains a production-browser verification item.
 
 ### Phase 5 — Ship and verify in production
 

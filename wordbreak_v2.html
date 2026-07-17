@@ -165,15 +165,66 @@
 <script>
 "use strict";
 const VOWELS="aeiou";
-function say(text,slow){ try{ const u=new SpeechSynthesisUtterance(text);
+const AUDIO_GEN="g1";
+const AUDIO_VOICE="af_heart";
+const AUDIO_BASE="audio/";
+function normalize(text) {
+  return String(text).normalize("NFC").trim().replace(/\s+/g, " ");
+}
+// Keep this byte-for-byte identical to scripts/audio/key.mjs.
+function fnv1a32(input) {
+  const bytes = new TextEncoder().encode(input);
+  let hash = 0x811c9dc5;
+  for (const byte of bytes) {
+    hash ^= byte;
+    hash = Math.imul(hash, 0x01000193) >>> 0;
+  }
+  return hash.toString(16).padStart(8, "0");
+}
+let curAudio=null;
+function speakFallback(text,slow){ try{ const u=new SpeechSynthesisUtterance(text);
   u.rate=slow?0.6:0.85; speechSynthesis.cancel(); speechSynthesis.speak(u); }catch(e){} }
+function say(audioText,slow,fallbackText){
+  const fallback=()=>speakFallback(fallbackText??audioText,slow);
+  curAudio?.pause(); speechSynthesis.cancel();
+  const speedTag=slow?"s":"n";
+  const key=fnv1a32([AUDIO_GEN,AUDIO_VOICE,speedTag,normalize(audioText)].join("|"));
+  const url=AUDIO_BASE+key+".mp3";
+  let fallbackUsed=false, objectUrl=null;
+  const useFallback=()=>{ if(fallbackUsed)return; fallbackUsed=true; if(objectUrl)URL.revokeObjectURL(objectUrl); fallback(); };
+  const play=async()=>{
+    try{
+      let src=url;
+      if(typeof caches!=="undefined"){
+        const cached=await caches.match(url);
+        if(cached){ objectUrl=URL.createObjectURL(await cached.blob()); src=objectUrl; }
+      }
+      const audio=new Audio(src); curAudio=audio;
+      audio.addEventListener("ended",()=>{ if(objectUrl)URL.revokeObjectURL(objectUrl); });
+      audio.addEventListener("error",useFallback,{once:true});
+      audio.play().catch(useFallback);
+    }catch(e){ useFallback(); }
+  };
+  play();
+}
+function precacheAudio(){
+  if(typeof caches==="undefined"||typeof fetch==="undefined")return;
+  fetch(AUDIO_BASE+"manifest.json").then(r=>r.ok?r.json():Promise.reject()).then(files=>
+    caches.open(`wb-audio-${AUDIO_GEN}`).then(async cache=>{
+      await cache.addAll(files.map(file=>AUDIO_BASE+file));
+      try{ await navigator.storage?.persist?.(); }catch(e){}
+      const names=await caches.keys();
+      await Promise.all(names.filter(name=>name.startsWith("wb-audio-")&&name!==`wb-audio-${AUDIO_GEN}`).map(name=>caches.delete(name)));
+    })
+  ).catch(()=>{});
+}
 function esc(s){ return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
 function fmtPrompt(s){ return esc(s).replace(/([+→·?])/g,'<span class="sfx">$1</span>'); }
 function renderStress(stress){ return (stress||[]).map(sg=>`<span class="seg ${sg[1]?"stress":""}">${esc(sg[0])}</span>`).join(""); }
 function wireSay(){
   const root=document.getElementById("app"); if(!root) return;
   root.querySelectorAll("[data-say]").forEach(el=>{
-    el.addEventListener("click",()=>say(el.getAttribute("data-say")||"", el.hasAttribute("data-slow")));
+    el.addEventListener("click",()=>say(el.getAttribute("data-say")||"", el.hasAttribute("data-slow"), el.getAttribute("data-fallback")||undefined));
   });
 }
 /* persistence */
@@ -1039,7 +1090,7 @@ function renderFork(){
       if(spent){
         if(it.role==="witness"){
           const stress=renderStress(it.stress);
-          after=`<div class="term"><div class="ln wit">▮ SOURCE FOUND: ${stress} <button type="button" class="small" data-say="${esc(it.w)}" data-slow>▶</button></div><div class="ln">${it.line}</div></div>`;
+          after=`<div class="term"><div class="ln wit">▮ SOURCE FOUND: ${stress} <button type="button" class="small" data-say="${esc(it.w)}" data-fallback="${esc(it.sayAs)}" data-slow>▶</button></div><div class="ln">${it.line}</div></div>`;
         } else after=`<div class="term"><div class="ln ${it.role==="impostor"?"bad":"dim"}">${it.line}</div></div>`;
       }
       return `<button class="${cls}" ${S.witnessFound||spent?"disabled":""} onclick="pullSource(${j})">${esc(it.w)}<span class="tag">${spent?esc(it.role):"pull source"}</span></button>${after}`;
@@ -1193,6 +1244,7 @@ window.closeModule=closeModule;window.openDebrief=openDebrief;window.goHome=goHo
 window.startReview=startReview;window.reviewNext=reviewNext;window.finishReview=finishReview;
 resolveErrCodes();
 render();
+setTimeout(precacheAudio,0);
 </script>
 </body>
 </html>
