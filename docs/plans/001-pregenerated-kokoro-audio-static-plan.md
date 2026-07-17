@@ -322,7 +322,8 @@ remains a production-browser verification item.
 fallback still works; note is committed.
 
 **Execution evidence:** `npm run deploy` uploaded 400 new/modified assets and
-deployed version `2fb78a6b-ad22-43ca-9cf7-661772f439ab`. Production returned
+deployed version `2fb78a6b-ad22-43ca-9cf7-661772f439ab`; the audited client
+was redeployed as version `d231b342-a968-48b8-aa92-b856fc9d6bf5`. Production returned
 the new client and a 388-entry runtime manifest; a bounded live sweep fetched
 all 388 entries as `audio/mpeg` with valid MP3 headers. The first highly
 concurrent probe produced transient SPA fallbacks at the edge, so the final
