@@ -1,0 +1,16 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "wordbreak",
+  "compatibility_date": "2026-07-16",
+  "workers_dev": true,
+  "preview_urls": true,
+  "assets": {
+    "directory": "./public",
+    "not_found_handling": "single-page-application",
+    "html_handling": "auto-trailing-slash"
+  },
+  "routes": [
+    { "pattern": "wordbreak.fun", "custom_domain": true },
+    { "pattern": "www.wordbreak.fun", "custom_domain": true }
+  ]
+}

@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#161c25"/><stop offset="1" stop-color="#0b0e13"/>
+    </linearGradient>
+    <filter id="lift" x="-45%" y="-45%" width="190%" height="200%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="13"/><feOffset dy="15" result="s"/>
+      <feFlood flood-color="#04060a" flood-opacity="0.8"/><feComposite in2="s" operator="in"/>
+    </filter>
+    <radialGradient id="glow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#e0af68" stop-opacity="0.15"/><stop offset="1" stop-color="#e0af68" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="512" height="512" rx="114" fill="url(#bg)"/>
+  <rect x="6" y="6" width="500" height="500" rx="108" fill="none" stroke="#242c37" stroke-width="2" opacity="0.9"/>
+  <ellipse cx="256" cy="316" rx="165" ry="128" fill="url(#glow)"/>
+  <rect x="167" y="200" width="178" height="200" rx="28" filter="url(#lift)"/>
+  <rect x="167" y="200" width="178" height="200" rx="28" fill="#0b0e13" stroke="#e0af68" stroke-width="10"/>
+  <path d="M192 250 L217 350 L256 289 L295 350 L320 250" fill="none" stroke="#c8d3de"
+        stroke-width="24" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M256 114 L302 184 L210 184 Z" fill="#e0af68"/>
+</svg>

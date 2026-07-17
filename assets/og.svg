@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#11151c"/><stop offset="1" stop-color="#0c0f14"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.67" cy="0.72" r="0.5">
+      <stop offset="0" stop-color="#e0af68" stop-opacity="0.10"/><stop offset="1" stop-color="#e0af68" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="lift" x="-60%" y="-60%" width="220%" height="240%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="9"/><feOffset dy="10" result="s"/>
+      <feFlood flood-color="#04060a" flood-opacity="0.85"/><feComposite in2="s" operator="in"/>
+    </filter>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <ellipse cx="800" cy="450" rx="430" ry="260" fill="url(#glow)"/>
+
+  <!-- titlebar -->
+  <rect x="80" y="66" width="1040" height="48" rx="10" fill="#151a21" stroke="#242c37" stroke-width="1.5"/>
+  <circle cx="108" cy="90" r="5.5" fill="#2c3543"/>
+  <circle cx="128" cy="90" r="5.5" fill="#2c3543"/>
+  <circle cx="148" cy="90" r="5.5" fill="#2c3543"/>
+  <text x="1096" y="97" text-anchor="end" font-family="'SF Mono',ui-monospace,monospace" font-size="19"
+        letter-spacing="1.5" fill="#66738a">~/wordbreak/<tspan fill="#e0af68">main</tspan></text>
+
+  <!-- wordmark -->
+  <text x="80" y="252" font-family="'SF Mono',ui-monospace,monospace" font-size="90" font-weight="700"
+        letter-spacing="8" fill="#c8d3de">WORDBREAK</text>
+  <rect x="722" y="182" width="20" height="74" fill="#e0af68"/>
+
+  <!-- tagline -->
+  <text x="82" y="318" font-family="'SF Mono',ui-monospace,monospace" font-size="27" letter-spacing="0.5" fill="#7d899e">english is <tspan fill="#c8d3de">legacy code</tspan> — read the source.</text>
+
+  <!-- byte row: w o r d b r e a k, the 'e' flagged -->
+  <g font-family="'SF Mono',ui-monospace,monospace">
+    <!-- unflagged cells -->
+    <g>
+      <rect x="138" y="430" width="92" height="104" rx="12" fill="#0b0e13" stroke="#242c37" stroke-width="2"/>
+      <text x="184" y="500" text-anchor="middle" font-size="46" font-weight="600" fill="#c8d3de">w</text>
+      <rect x="242" y="430" width="92" height="104" rx="12" fill="#0b0e13" stroke="#242c37" stroke-width="2"/>
+      <text x="288" y="500" text-anchor="middle" font-size="46" font-weight="600" fill="#c8d3de">o</text>
+      <rect x="346" y="430" width="92" height="104" rx="12" fill="#0b0e13" stroke="#242c37" stroke-width="2"/>
+      <text x="392" y="500" text-anchor="middle" font-size="46" font-weight="600" fill="#c8d3de">r</text>
+      <rect x="450" y="430" width="92" height="104" rx="12" fill="#0b0e13" stroke="#242c37" stroke-width="2"/>
+      <text x="496" y="500" text-anchor="middle" font-size="46" font-weight="600" fill="#c8d3de">d</text>
+      <rect x="554" y="430" width="92" height="104" rx="12" fill="#0b0e13" stroke="#242c37" stroke-width="2"/>
+      <text x="600" y="500" text-anchor="middle" font-size="46" font-weight="600" fill="#c8d3de">b</text>
+      <rect x="658" y="430" width="92" height="104" rx="12" fill="#0b0e13" stroke="#242c37" stroke-width="2"/>
+      <text x="704" y="500" text-anchor="middle" font-size="46" font-weight="600" fill="#c8d3de">r</text>
+      <rect x="866" y="430" width="92" height="104" rx="12" fill="#0b0e13" stroke="#242c37" stroke-width="2"/>
+      <text x="912" y="500" text-anchor="middle" font-size="46" font-weight="600" fill="#c8d3de">a</text>
+      <rect x="970" y="430" width="92" height="104" rx="12" fill="#0b0e13" stroke="#242c37" stroke-width="2"/>
+      <text x="1016" y="500" text-anchor="middle" font-size="46" font-weight="600" fill="#c8d3de">k</text>
+    </g>
+    <!-- flagged 'e' (index 6), lifted -->
+    <g>
+      <rect x="762" y="414" width="92" height="104" rx="12" filter="url(#lift)"/>
+      <rect x="762" y="414" width="92" height="104" rx="12" fill="#241f14" stroke="#e0af68" stroke-width="3"/>
+      <text x="808" y="484" text-anchor="middle" font-size="46" font-weight="600" fill="#c8d3de">e</text>
+      <path d="M808 384 L824 408 L792 408 Z" fill="#e0af68"/>
+      <text x="808" y="374" text-anchor="middle" font-size="15" letter-spacing="2" fill="#e0af68">FLAG</text>
+    </g>
+  </g>
+
+  <!-- footer -->
+  <text x="82" y="586" font-family="'SF Mono',ui-monospace,monospace" font-size="21" letter-spacing="1"
+        fill="#e0af68">wordbreak.fun</text>
+  <text x="1118" y="586" text-anchor="end" font-family="'SF Mono',ui-monospace,monospace" font-size="17"
+        letter-spacing="1.5" fill="#66738a">type · flag · interrogate · patch</text>
+</svg>

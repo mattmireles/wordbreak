@@ -1,0 +1,13 @@
+{
+  "name": "wordbreak",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "sync:public": "mkdir -p public && cp wordbreak_v2.html public/index.html",
+    "deploy": "npm run sync:public && node scripts/deploy.mjs",
+    "dev": "npm run sync:public && wrangler dev"
+  },
+  "devDependencies": {
+    "wrangler": "^4.111.0"
+  }
+}
