@@ -308,18 +308,26 @@ remains a production-browser verification item.
 
 ### Phase 5 — Ship and verify in production
 
-- [ ] `npm run deploy` (syncs HTML → `public/index.html`, `wrangler deploy`
+- [x] `npm run deploy` (syncs HTML → `public/index.html`, `wrangler deploy`
   pushes `public/` including `public/audio/`).
-- [ ] On `https://wordbreak.fun`: play a say-word and a witness; confirm
+- [x] On `https://wordbreak.fun`: play a say-word and a witness; confirm
   `wordbreak.fun/audio/*.mp3` `200`s and correct voice; confirm
   progress/localStorage untouched.
-- [ ] Capture one consolidated note in `docs/notes/` (via **write-notes**):
+- [x] Capture one consolidated note in `docs/notes/` (via **write-notes**):
   the audio architecture, the key/hash contract shared across two repos, the
   relaxed "no network calls" invariant, and how to regenerate after curriculum
   edits (Phase 1 → 2 → 3, then redeploy).
 
 **Verification:** production plays the bundled audio; offline/missing-clip
 fallback still works; note is committed.
+
+**Execution evidence:** `npm run deploy` uploaded 400 new/modified assets and
+deployed version `2fb78a6b-ad22-43ca-9cf7-661772f439ab`. Production returned
+the new client and a 388-entry runtime manifest; a bounded live sweep fetched
+all 388 entries as `audio/mpeg` with valid MP3 headers. The first highly
+concurrent probe produced transient SPA fallbacks at the edge, so the final
+proof intentionally uses concurrency 2 with retries. Offline replay is not
+claimed from the in-app browser because its Cache API was unavailable.
 
 ## Hard requirements
 

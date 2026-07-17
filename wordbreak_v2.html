@@ -181,17 +181,19 @@ function fnv1a32(input) {
   }
   return hash.toString(16).padStart(8, "0");
 }
-let curAudio=null;
+let curAudio=null, curObjectUrl=null, saySeq=0;
 function speakFallback(text,slow){ try{ const u=new SpeechSynthesisUtterance(text);
   u.rate=slow?0.6:0.85; speechSynthesis.cancel(); speechSynthesis.speak(u); }catch(e){} }
 function say(audioText,slow,fallbackText){
+  const clickSeq=++saySeq;
   const fallback=()=>speakFallback(fallbackText??audioText,slow);
   curAudio?.pause(); speechSynthesis.cancel();
+  if(curObjectUrl){ URL.revokeObjectURL(curObjectUrl); curObjectUrl=null; }
   const speedTag=slow?"s":"n";
   const key=fnv1a32([AUDIO_GEN,AUDIO_VOICE,speedTag,normalize(audioText)].join("|"));
   const url=AUDIO_BASE+key+".mp3";
   let fallbackUsed=false, objectUrl=null;
-  const useFallback=()=>{ if(fallbackUsed)return; fallbackUsed=true; if(objectUrl)URL.revokeObjectURL(objectUrl); fallback(); };
+  const useFallback=()=>{ if(fallbackUsed||clickSeq!==saySeq)return; fallbackUsed=true; if(objectUrl){URL.revokeObjectURL(objectUrl); if(curObjectUrl===objectUrl)curObjectUrl=null;} fallback(); };
   const play=async()=>{
     try{
       let src=url;
@@ -199,8 +201,10 @@ function say(audioText,slow,fallbackText){
         const cached=await caches.match(url);
         if(cached){ objectUrl=URL.createObjectURL(await cached.blob()); src=objectUrl; }
       }
+      if(clickSeq!==saySeq){ if(objectUrl)URL.revokeObjectURL(objectUrl); return; }
       const audio=new Audio(src); curAudio=audio;
-      audio.addEventListener("ended",()=>{ if(objectUrl)URL.revokeObjectURL(objectUrl); });
+      if(objectUrl)curObjectUrl=objectUrl;
+      audio.addEventListener("ended",()=>{ if(objectUrl){URL.revokeObjectURL(objectUrl); if(curObjectUrl===objectUrl)curObjectUrl=null;} });
       audio.addEventListener("error",useFallback,{once:true});
       audio.play().catch(useFallback);
     }catch(e){ useFallback(); }
