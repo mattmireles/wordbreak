@@ -1137,7 +1137,7 @@ function pullSource(j){
   render();
 }
 function toPatch(){ S.phase="patch"; S.patchTries=0; render(); }
-function confirmDone(){ S.phase="done"; logWord(true); render(); }
+function confirmDone(){ S.phase="done"; logWord(S.firstClean); render(); }
 /* ---------- PATCH ---------- */
 function renderPatch(){
   const w=cw(),f=w.fork;
