@@ -833,8 +833,14 @@ function scheduleWord(w,firstClean){
      silently overwrite which lesson the review queue resurfaces for the other. */
   const k=S.unit.id+"|"+w.a.toLowerCase();
   const e=P.sched[k]||{box:0,lapses:0,seen:0,unit:S.unit.id,word:w.a.toLowerCase()};
+  const sameDayReplay=e.last===today();
   e.seen++;
-  if(firstClean){ e.box=Math.min(e.box+1,BOX_DAYS.length-1); }
+  if(firstClean){
+    /* a same-day replay (replaying a fresh or just-cleared module) isn't real spacing —
+       advancing the box on it would reward massed repetition with a long interval it
+       never earned. a fault still always resets, regardless of timing. */
+    if(!sameDayReplay) e.box=Math.min(e.box+1,BOX_DAYS.length-1);
+  }
   else { e.lapses++; e.box=0; }                        /* a fault drops it to the front of the queue */
   e.last=today(); e.due=today()+BOX_DAYS[e.box];
   P.sched[k]=e;
@@ -852,6 +858,75 @@ function dueList(){
     || (b.e.lapses-a.e.lapses));
   return out;
 }
+/* ===================== MEASURED ABILITY PROFILE (per error-code, shadow) ===================== */
+/* a decayed-Beta θ per error code, fed by every graded encounter. drives the Continue
+   target, fast-pass, and the observer panel — never the SRS interval (that stays firstClean). */
+P.codes=P.codes||{};                 /* {code:{a,b,seen}} — uniform prior {1,1,0}, lazily created */
+P.codesV=P.codesV||0;                /* one-time backfill version marker */
+const LAMBDA=0.92;                   /* decay → effective memory ~12.5 encounters */
+const THETA_LO=0.40, THETA_HI=0.75;  /* lock-arm / solid boundaries */
+const N_GATE=3, N_SOLID=4;           /* min encounters to arm a lock / to go solid */
+const LAT_W=0;                       /* latency weight — captured (Phase 1) but unused on the general path */
+const clampS=(x)=>Math.max(0,Math.min(1,x));
+function gradeEncounter(e){
+  if(e.clean) return e.aim?0.92:0.80;              /* clean build: no patch occurred, bonuses N/A */
+  let s=e.aim?0.30:0.15;                            /* faulted build */
+  if(e.aim&&(e.tries||0)<=1&&!e.revealed) s+=0.10; /* self-patched in one */
+  if(e.revealed) s-=0.07;                          /* needed the answer shown */
+  return clampS(s);                                /* latency term disabled in v1 (LAT_W=0) */
+}
+function theta(c){ const p=P.codes[c]; return p?p.a/(p.a+p.b):0; }
+function nEff(c){ const p=P.codes[c]; return p?p.a+p.b:0; }
+function codeVariance(c){ const p=P.codes[c]; if(!p)return 0; const a=p.a,b=p.b,n=a+b; return (a*b)/(n*n*(n+1)); }
+function updateCode(code,s){
+  const p=P.codes[code]||{a:1,b:1,seen:0};
+  p.a=p.a*LAMBDA+s; p.b=p.b*LAMBDA+(1-s); p.seen++; /* monotonic seen — never a log scan */
+  P.codes[code]=p;
+}
+function onEncounter(e){ if(!e||!e.err||e.err==="E0")return; updateCode(e.err,gradeEncounter(e)); }
+function codeProfile(){
+  return Object.keys(P.codes).map(c=>{
+    const th=theta(c), seen=P.codes[c].seen;
+    const band=seen<N_GATE?"measuring":th<THETA_LO?"weak":th>=THETA_HI?"solid":"frontier";
+    return {code:c,theta:th,nEff:nEff(c),seen,band};
+  });
+}
+if(P.codesV<1){                      /* backfill: warm the profile from history, updateCode only (never scheduleWord) */
+  for(const ev of P.log) onEncounter(ev);
+  P.codesV=1; saveP();
+}
+/* ===================== PLACEMENT — THE FRONT DOOR ===================== */
+const PLACEMENT_ON=true;             /* kill switch: false → old START-HERE copy + fast-pass off */
+const CODE_PREREQ={E8:["E7"],E5:["E8"],E1:["E8"],E2:["E8"],E9:["E7"]};
+const UNIT_PREREQ={"8.1":["E8","E5","E1","E2"]};   /* monster decomp needs 4+5+6 */
+function codeBroken(c){ const p=P.codes[c]; return !!p&&p.seen>=N_GATE&&theta(c)<THETA_LO; }
+function codeSolid(c){ const p=P.codes[c]; return !!p&&p.seen>=N_SOLID&&theta(c)>=THETA_HI; }
+function unitLocked(u){
+  if(u.err==="E0")return false;
+  return (UNIT_PREREQ[u.id]||CODE_PREREQ[u.err]||[]).some(codeBroken);
+}
+function fastPass(u){ return !P.cleared[u.id]&&!unitLocked(u)&&u.err!=="E0"&&codeSolid(u.err); }
+function idKey(u){ const m=(u.id.split(".")[1]||""); return [u.st,parseInt(m,10)||0,m.replace(/^\d+/,"")]; }
+function cmpUnits(a,b){ const x=idKey(a),y=idKey(b); return (x[0]-y[0])||(x[1]-y[1])||(x[2]<y[2]?-1:x[2]>y[2]?1:0); }
+function placement(){
+  const cand=UNITS.filter(u=>!P.cleared[u.id]&&!unitLocked(u)).sort(cmpUnits);
+  if(cand.length) return {recommend:cand[0],mode:"unit"};
+  return {recommend:null,mode:dueList().length?"review":"allclear"};
+}
+function continueBlock(){
+  if(!PLACEMENT_ON) return `<div class="card quiet"><div class="eyebrow"><span class="n">›</span> START HERE</div><div class="cluetext">begin with stage 1. Learn the move first; then practice it.</div></div>`;
+  const pl=placement();
+  if(pl.mode==="unit"){
+    const u=pl.recommend, learned=!!P.docs[u.id], fp=fastPass(u);
+    return `<div class="card" style="border-color:var(--amber);background:#1a1712">
+      <div class="eyebrow"><span class="n">›</span> CONTINUE</div>
+      <div class="cluetext">pick up at the frontier — the tool tracks where you are, so you don't pick a stage.${fp?` <span style="color:var(--green)">you own this pattern; one clean build clears the module.</span>`:""}</div>
+      <div class="navrow" style="margin-top:8px"><button class="primary" onclick="continueGo()">▶ continue — ${esc(u.id)} · ${esc(u.nm)} · ${learned?"practice":"learn"}</button><div class="spacer"></div></div></div>`;
+  }
+  if(pl.mode==="review") return `<div class="card quiet"><div class="eyebrow"><span class="n">›</span> ALL CAUGHT UP</div><div class="cluetext">every module cleared. the due queue above is the work now — resurface it.</div></div>`;
+  return `<div class="card quiet"><div class="eyebrow"><span class="n">›</span> ALL CLEAR</div><div class="cluetext">every module cleared and nothing due. come back when the queue refills.</div></div>`;
+}
+function continueGo(){ const pl=placement(); if(!pl.recommend){ if(dueList().length)startReview(); return; } const u=pl.recommend; if(!P.docs[u.id])openDocs(u.id); else openRun(u.id); }
 /* ===================== ENGINE ===================== */
 const STAGES=[
 {n:1,t:"anglo-saxon foundation",d:"base layer — for other players (or speed-run it)"},
@@ -862,11 +937,12 @@ const STAGES=[
 {n:6,t:"the schwa frontier",d:"the anchor & the restore — the real work"},
 {n:7,t:"greek combining forms",d:"the origin signals"},
 {n:8,t:"synthesis & hard cases",d:"capstone"}];
-let S={screen:"home",openStage:1,unit:null,docsIdx:0,ketsuPick:null,ketsuTyped:false,
+let S={screen:"home",openStage:null,unit:null,docsIdx:0,ketsuPick:null,ketsuTyped:false,
   mode:"module",queue:[],qIdx:0,
   wordIdx:0,phase:"type",typed:"",flagIdx:null,aimGood:false,firstClean:false,walkAnyway:false,
   condQ:0,condPicks:{},lineupSpent:{},witnessFound:false,memPhase:"study",
-  patchTries:0,reveal:false,log:[],runGen:0};
+  patchTries:0,reveal:false,log:[],runGen:0,
+  tShown:0,latency:null,fastPass:false,fastCleared:false};
 let condTimer=null;
 const app=document.getElementById("app");
 function html(s){ app.innerHTML=s; }
@@ -903,13 +979,14 @@ function renderHome(){
     <div class="eyebrow"><span class="n">›</span> DUE FOR REVIEW</div>
     <div class="cluetext"><b style="color:var(--amber)">${due.length} ${due.length===1?"byte":"bytes"}</b> came back around — words you missed, plus cleared ones on their widening return (${BOX_DAYS.slice(0,-1).join("·")} days out). this is where spelling actually sticks — not the first clear.</div>
     <div class="navrow"><button class="primary" onclick="startReview()">resurface ${Math.min(due.length,REVIEW_CAP)} →</button><div class="spacer"></div>
-      <span class="cluetext" style="font-size:11px">queued heaviest-error-first · a fixed curriculum with a spaced return, not yet a fully adaptive engine</span></div>
+      <span class="cluetext" style="font-size:11px">queued most-overdue-first, ties broken by error weight · a fixed curriculum with a spaced return, not yet a fully adaptive engine</span></div>
   </div>` : "";
   html(`${titlebar("main")}
   <h1 class="big">WORDBREAK<span class="cursor"></span></h1>
   <div class="sub">english is legacy code. learn the move, find the byte you don't trust, pull the source. // v0.2 — full build, 48 modules</div>
   ${dueCard}
-  <div class="card quiet"><div class="eyebrow"><span class="n">›</span> START HERE</div><div class="cluetext">begin with stage 1. Learn the move first; then practice it.</div></div>
+  ${continueBlock()}
+  <div class="eyebrow" style="margin:22px 2px 8px"><span class="n">›</span> BROWSE ALL STAGES</div>
   ${rows}
   <div class="navrow"><button class="ghost" onclick="openDebrief()">session log — for the observer →</button></div>
   <div class="footer">wordbreak v0.2 // teach → flag → interrogate → patch // ${clearedCount()}/48 modules cleared</div>`);
@@ -958,7 +1035,9 @@ function ketsuType(){
 }
 /* ---------- RUN ---------- */
 function openRun(id){ const u=UNITS.find(x=>x.id===id); if(!P.docs[id])return;
-  S.mode="module"; S.unit=u; S.screen="run"; S.wordIdx=0; S.log=[]; startWord(); }
+  S.mode="module"; S.unit=u; S.screen="run"; S.wordIdx=0; S.log=[];
+  S.fastPass=PLACEMENT_ON&&fastPass(u); S.fastCleared=false;   /* snapshot at open — a mid-run θ change can't move the bar */
+  startWord(); }
 function startReview(){
   const q=dueList().slice(0,REVIEW_CAP);
   if(!q.length){ render(); return; }
@@ -969,7 +1048,8 @@ function startWord(){
   if(condTimer){ clearTimeout(condTimer); condTimer=null; }
   if(S.mode==="review"&&S.queue[S.qIdx]) S.unit=S.queue[S.qIdx].u;   /* borrow the owning unit for this due word */
   S.runGen++; S.phase="type"; S.typed=""; S.flagIdx=null; S.aimGood=false; S.firstClean=false; S.walkAnyway=false;
-  S.condQ=0; S.condPicks={}; S.lineupSpent={}; S.witnessFound=false; S.memPhase="study"; S.patchTries=0; S.reveal=false; render(); }
+  S.condQ=0; S.condPicks={}; S.lineupSpent={}; S.witnessFound=false; S.memPhase="study"; S.patchTries=0; S.reveal=false;
+  S.tShown=Date.now(); S.latency=null; render(); }
 function cw(){ return S.mode==="review" ? S.queue[S.qIdx].w : S.unit.words[S.wordIdx]; }
 function promptBlock(w){
   const p=w.p;
@@ -1011,6 +1091,7 @@ function renderRun(){
 function commitTyped(){
   const inp=document.getElementById("wtype"); if(!inp)return;
   const v=inp.value.trim(); if(!v)return;
+  if(S.latency==null) S.latency=Date.now()-S.tShown;   /* TYPE→FLAG submit; there is no re-commit path */
   S.typed=v; S.phase="flag"; S.flagIdx=null; render();
 }
 function setFlag(j){ S.flagIdx=j; render(); }
@@ -1094,7 +1175,7 @@ function renderFork(){
       if(spent){
         if(it.role==="witness"){
           const stress=renderStress(it.stress);
-          after=`<div class="term"><div class="ln wit">▮ SOURCE FOUND: ${stress} <button type="button" class="small" data-say="${esc(it.w)}" data-fallback="${esc(it.sayAs)}" data-slow>▶</button></div><div class="ln">${it.line}</div></div>`;
+          after=`<div class="term"><div class="ln wit">▮ SOURCE FOUND: ${stress} <button type="button" class="small" data-say="${esc(it.w)}" data-slow>▶</button></div><div class="ln">${it.line}</div></div>`;
         } else after=`<div class="term"><div class="ln ${it.role==="impostor"?"bad":"dim"}">${it.line}</div></div>`;
       }
       return `<button class="${cls}" ${S.witnessFound||spent?"disabled":""} onclick="pullSource(${j})">${esc(it.w)}<span class="tag">${spent?esc(it.role):"pull source"}</span></button>${after}`;
@@ -1137,7 +1218,7 @@ function pullSource(j){
   render();
 }
 function toPatch(){ S.phase="patch"; S.patchTries=0; render(); }
-function confirmDone(){ S.phase="done"; logWord(true); render(); }
+function confirmDone(){ S.phase="done"; logWord(S.firstClean); render(); }
 /* ---------- PATCH ---------- */
 function renderPatch(){
   const w=cw(),f=w.fork;
@@ -1149,7 +1230,9 @@ function renderPatch(){
   }
   /* #3: withhold the exact letters — the rule held under questioning, now he applies it
      from memory instead of copying the verdict he just read. the 3-miss reveal is the safety net. */
-  if(f.k==="cond"&&(S.aimGood||S.firstClean)) src=`<div class="verdict flat" style="font-size:13px">the rule checked out under questioning. now build it from memory — the letters stay covered.</div>`;
+  /* patch is only ever reached with S.firstClean===false (every path here gates on a
+     faulted build first) — S.aimGood is the only live condition */
+  if(f.k==="cond"&&S.aimGood) src=`<div class="verdict flat" style="font-size:13px">the rule checked out under questioning. now build it from memory — the letters stay covered.</div>`;
   if(f.k==="mem") src=`<div class="cluetext">file covered. write it from memory — dead bytes and all.</div>`;
   const revealBlock=S.reveal?`<div class="term"><div class="ln warn">answer, one look: <b>${esc(w.a)}</b> — now it goes away. type it.</div></div>`:"";
   return `<div class="card"><div class="eyebrow"><span class="n">›</span> PATCH — WRITE THE FINAL BUILD</div>
@@ -1177,21 +1260,29 @@ function logWord(cleanPath){
     : (S.aimGood?"earned":"handed");
   /* w.err is always set by resolveErrCodes() at boot — no fallback needed */
   S.log.push({module:S.unit.nm,word:w.a,clean:S.firstClean,aim:S.aimGood,solve:solve,err:w.err});
-  P.log.push({t:Date.now(),unit:S.unit.id,word:w.a,clean:S.firstClean,aim:S.aimGood,solve:solve,err:w.err});
+  const ev={t:Date.now(),unit:S.unit.id,word:w.a,clean:S.firstClean,aim:S.aimGood,solve:solve,err:w.err,
+    latency:S.latency,tries:S.patchTries,revealed:S.reveal};
+  P.log.push(ev);
   if(P.log.length>LOG_CAP) P.log=P.log.slice(-LOG_CAP);
   scheduleWord(w,S.firstClean);                         /* set its next return — the widening interval */
-  if(S.mode!=="review"&&S.wordIdx===S.unit.words.length-1){ P.cleared[S.unit.id]=true; }
+  onEncounter(ev);                                      /* feed the measured profile (skips E0 internally) */
+  if(S.mode!=="review"){
+    const lastWord=S.wordIdx===S.unit.words.length-1;
+    const fastClear=S.fastPass&&cleanPath;              /* solid code → one clean build clears the whole unit */
+    if(lastWord||fastClear){ P.cleared[S.unit.id]=true; if(fastClear&&!lastWord) S.fastCleared=true; }
+  }
   saveP();
 }
 function renderDone(){
   const w=cw(),rev=S.mode==="review";
   const last=rev?(S.qIdx===S.queue.length-1):(S.wordIdx===S.unit.words.length-1);
+  const moduleDone=last||S.fastCleared;                 /* fast-pass: one clean build ends the module early */
   const aimNote=S.aimGood?`<div class="ln ok">aim: live byte — you told me the right letter.</div>`
     :`<div class="ln dim">aim: cold cell. next run, ask first: <i>which letter would I tell you is wrong?</i></div>`;
   const nextBtn=rev
     ?(last?`<button class="primary" onclick="finishReview()">review complete — close ▶</button>`
       :`<button class="primary" onclick="reviewNext()">next due byte ▶</button>`)
-    :(last?`<button class="primary" onclick="closeModule()">module cleared — close ▶</button>`
+    :(moduleDone?`<button class="primary" onclick="closeModule()">${S.fastCleared&&!last?"pattern locked in — cleared ▶":"module cleared — close ▶"}</button>`
       :`<button class="primary" onclick="S.wordIdx++;startWord()">next target ▶</button>`);
   return `<div class="card"><div class="eyebrow"><span class="n">›</span> COMPILE: CLEAN</div>
   <div class="term"><div class="ln ok">✓ <b>${esc(w.a)}</b> — committed by your fingers.</div>
@@ -1211,8 +1302,18 @@ function renderDebrief(){
     <td class="${r.aim?"good":"dimc"}">${r.aim?"live byte":"cold"}</td>
     <td class="${r.solve==="earned"?"good":r.solve==="handed"?"mid":"dimc"}">${esc(r.solve)}</td></tr>`).join("")+`</table>`
     :`<div class="cluetext">no runs logged yet.</div>`;
+  const prof=codeProfile().filter(p=>p.seen>0).sort((a,b)=>a.theta-b.theta);
+  const barColor=b=>b==="solid"?"var(--green)":b==="weak"?"var(--red)":b==="frontier"?"var(--amber)":"var(--dim)";
+  const profCard=prof.length?`<div class="card"><div class="eyebrow"><span class="n">›</span> MEASURED PROFILE — PER ERROR-CODE (observer)</div>
+  <table class="debrief"><tr><th>code</th><th>θ estimate</th><th>evidence</th><th>band</th></tr>`+
+  prof.map(p=>{const pct=Math.round(p.theta*100);const bc=p.band==="solid"?"good":p.band==="weak"?"bad":p.band==="frontier"?"mid":"dimc";
+    return `<tr><td class="dimc">${esc(p.code)}</td>
+    <td><span style="display:inline-block;width:88px;height:8px;background:#0b0e13;border:1px solid var(--line);border-radius:4px;vertical-align:middle;margin-right:8px"><span style="display:block;width:${pct}%;height:100%;background:${barColor(p.band)}"></span></span>${pct}%</td>
+    <td class="dimc">${p.seen} seen</td><td class="${bc}">${esc(p.band)}</td></tr>`;}).join("")+`</table>
+  <div class="cluetext" style="margin-top:8px">a decayed estimate per error-type — not a grade, never shown to the kid. thin evidence reads honestly as «measuring». this is what drives Continue and fast-pass.</div></div>`:"";
   html(`${titlebar("debrief")}
   <div class="card"><div class="eyebrow"><span class="n">›</span> SESSION LOG ${S.log.length?"— this module":"— recent"}</div>${table}</div>
+  ${profCard}
   <div class="card quiet obs"><div class="eyebrow"><span class="n">›</span> FOR THE OBSERVER — WATCH FOR THESE, SAY NOTHING</div>
   <ol>
     <li><b>does he pause before flagging, or tap instantly?</b> a pause means the wager is doing its job — real risk assessment. instant tapping means it's decoration; tell me.</li>
@@ -1243,7 +1344,7 @@ document.addEventListener("keydown",e=>{
 window.togStage=togStage;window.openDocs=openDocs;window.openRun=openRun;window.ketsuPick=ketsuPick;
 window.ketsuType=ketsuType;window.commitTyped=commitTyped;window.setFlag=setFlag;window.execute=execute;
 window.condPick=condPick;window.pullSource=pullSource;window.toPatch=toPatch;window.commitPatch=commitPatch;
-window.confirmDone=confirmDone;
+window.confirmDone=confirmDone;window.continueGo=continueGo;
 window.closeModule=closeModule;window.openDebrief=openDebrief;window.goHome=goHome;
 window.startReview=startReview;window.reviewNext=reviewNext;window.finishReview=finishReview;
 resolveErrCodes();
