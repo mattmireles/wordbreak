@@ -948,7 +948,8 @@ function continueGo(){ const pl=placement(); if(!pl.recommend){ if(dueList().len
 /* compileSession() is PURE: it reads P and writes nothing. Only startSession() (Phase 2)
    persists a compiled session. The home TODAY-card preview relies on this purity — it
    dry-runs the compiler at render time and must not mutate anything. */
-function modCells(u){ return (P.docs[u.id]?0:u.docs.length)+(fastPass(u)?1:u.words.length); }
+function modPanelCells(u){ return P.docs[u.id]?0:u.docs.length; }   /* unread lesson panels, snapshotted at compile */
+function modCells(u){ return modPanelCells(u)+(fastPass(u)?1:u.words.length); }
 function estMod(u){ return (P.docs[u.id]?0:u.docs.length*SEC_PANEL)+(fastPass(u)?1:u.words.length)*SEC_WORD; }
 function synthBlocks(){ return []; }   /* tier 3 slot — named but empty in v1 (no filler; a short session is honest) */
 function frontierUnits(session){       /* uncleared, unlocked, not already queued — placement's own order */
@@ -960,7 +961,7 @@ function compileSession(budgetMin,opts){
   const blocks=[]; let est=0;
   if(bonus){                           /* appetite valve: exactly one frontier module, no reviews, budget ignored */
     const cand=frontierUnits({blocks});
-    if(cand.length){ const u=cand[0]; blocks.push({k:"mod",id:u.id,cells:modCells(u)}); }
+    if(cand.length){ const u=cand[0]; blocks.push({k:"mod",id:u.id,cells:modCells(u),pc:modPanelCells(u)}); }
   } else {
     /* tier 1 — due reviews, budget-bounded (no fixed count cap). the crossing item is
        included: fill while est < budget, the item that reaches budget is the last one. */
@@ -974,7 +975,7 @@ function compileSession(budgetMin,opts){
        next check, so ≥1 module always compiles when a frontier exists. */
     for(const u of frontierUnits({blocks})){
       if(est>=budgetSec) break;
-      blocks.push({k:"mod",id:u.id,cells:modCells(u)});
+      blocks.push({k:"mod",id:u.id,cells:modCells(u),pc:modPanelCells(u)});
       est+=estMod(u);
     }
   }
@@ -1011,7 +1012,8 @@ let S={screen:"home",openStage:null,unit:null,docsIdx:0,ketsuPick:null,ketsuType
   wordIdx:0,phase:"type",typed:"",flagIdx:null,aimGood:false,firstClean:false,walkAnyway:false,
   condQ:0,condPicks:{},lineupSpent:{},witnessFound:false,memPhase:"study",
   patchTries:0,reveal:false,log:[],runGen:0,
-  tShown:0,latency:null,fastPass:false,fastCleared:false};
+  tShown:0,latency:null,fastPass:false,fastCleared:false,
+  session:false,docsReadOnly:false};   /* session=inside the compiled session flow; docsReadOnly=map's reference-only lesson (plan 003, decision 12) */
 let condTimer=null;
 const app=document.getElementById("app");
 function html(s){ app.innerHTML=s; }
@@ -1062,7 +1064,12 @@ function renderHome(){
 }
 function togStage(n){ S.openStage=(S.openStage===n)?null:n; render(); }
 /* ---------- DOCS ---------- */
-function openDocs(id){ S.unit=UNITS.find(u=>u.id===id); S.screen="docs"; S.docsIdx=0; S.ketsuPick=null; S.ketsuTyped=false; render(); }
+/* opts.session → this open is a session block (keep S.session true). opts.readOnly → the map's
+   reference-only lesson (no run hand-off). Default (no opts) is the legacy/map entry: both flags
+   off. This is the single owner of the flag lifecycle (plan 003, decision 12) — every entry sets
+   both flags, so a read-only lesson or a session can never leak into the next flow. */
+function openDocs(id,opts){ opts=opts||{}; S.session=!!opts.session; S.docsReadOnly=!!opts.readOnly;
+  S.unit=UNITS.find(u=>u.id===id); S.screen="docs"; S.docsIdx=0; S.ketsuPick=null; S.ketsuTyped=false; render(); }
 function renderDocs(){
   const u=S.unit, i=S.docsIdx, p=u.docs[i], last=i===3;
   let inner=`<div class="panelstep"><b>${esc(p.s)}</b> &nbsp;·&nbsp; ${esc(u.id)} ${esc(u.nm)} — panel ${i+1}/4</div>
@@ -1081,17 +1088,27 @@ function renderDocs(){
         <div class="inputrow"><input type="text" id="ktype" autocomplete="off" autocapitalize="off" spellcheck="false">
         <button class="primary" onclick="ketsuType()">commit</button></div><div id="kmsg"></div>`;
       }
-      if(S.ketsuTyped) inner+=`<div class="verdict good">✓ ${esc(p.ty)} — lesson learned. practice is open.</div>`;
+      /* seam removal (decision 5): in a session the lesson flows straight into the run — no
+         "practice is open" verdict that reads as a finish line. read-only reference reads the same. */
+      if(S.ketsuTyped) inner+=`<div class="verdict good">✓ ${esc(p.ty)} — ${S.session||S.docsReadOnly?"committed.":"lesson learned. practice is open."}</div>`;
     }
   }
-  html(`${titlebar(u.id+"/learn")}
-  <div class="progress">${u.docs.map((d,j)=>`<span class="${j===i?"lit":""}">■</span>`).join(" ")} &nbsp; LEARN // ${esc(u.ti)}</div>
+  const head = S.session
+    ? `${titlebar("session")}\n  ${sessionStrip()}`
+    : `${titlebar(u.id+"/learn")}\n  <div class="progress">${u.docs.map((d,j)=>`<span class="${j===i?"lit":""}">■</span>`).join(" ")} &nbsp; LEARN // ${esc(u.ti)}</div>`;
+  /* final advance: session → next → into the run (same block, cursor unmoved); read-only → close;
+     legacy → start practice. non-final panels just page forward. */
+  const advance = !last ? `<button class="primary" onclick="S.docsIdx++;render()">next →</button>`
+    : !S.ketsuTyped ? ``
+    : S.docsReadOnly ? `<button class="primary" onclick="goHome()">close ▶</button>`
+    : S.session ? `<button class="primary" onclick="openRun('${u.id}',{session:true})">next →</button>`
+    : `<button class="primary" onclick="openRun('${u.id}')">start practice →</button>`;
+  html(`${head}
   <div class="card">${inner}</div>
   <div class="navrow">
-    <button class="ghost" onclick="goHome()">← close lesson</button><div class="spacer"></div>
+    ${S.session?``:`<button class="ghost" onclick="goHome()">← close lesson</button>`}<div class="spacer"></div>
     ${i>0?`<button onclick="S.docsIdx--;render()">← back</button>`:""}
-    ${!last?`<button class="primary" onclick="S.docsIdx++;render()">next →</button>`
-      :S.ketsuTyped?`<button class="primary" onclick="openRun('${u.id}')">start practice →</button>`:""}
+    ${advance}
   </div>`);
   const inp=document.getElementById("ktype"); if(inp){ inp.focus(); inp.addEventListener("keydown",e=>{if(e.key==="Enter")ketsuType();}); }
 }
@@ -1103,16 +1120,101 @@ function ketsuType(){
   else{ document.getElementById("kmsg").innerHTML=`<div class="term"><div class="ln bad">✗ not yet — check the panel above and run it again.</div></div>`; inp.select(); }
 }
 /* ---------- RUN ---------- */
-function openRun(id){ const u=UNITS.find(x=>x.id===id); if(!P.docs[id])return;
+function openRun(id,opts){ opts=opts||{}; const u=UNITS.find(x=>x.id===id); if(!P.docs[id])return;
+  S.session=!!opts.session; S.docsReadOnly=false;             /* flag owner (decision 12); run is never read-only */
   S.mode="module"; S.unit=u; S.screen="run"; S.wordIdx=0; S.log=[];
   S.fastPass=PLACEMENT_ON&&fastPass(u); S.fastCleared=false;   /* snapshot at open — a mid-run θ change can't move the bar */
   startWord(); }
 function startReview(){
   const q=dueList().slice(0,REVIEW_CAP);
   if(!q.length){ render(); return; }
+  S.session=false;                                          /* legacy path — never a session (decision 12) */
   S.mode="review"; S.queue=q; S.qIdx=0; S.screen="run"; S.log=[]; startWord(); }
 function reviewNext(){ S.qIdx++; if(S.qIdx>=S.queue.length){ finishReview(); return; } startWord(); }
 function finishReview(){ S.mode="module"; S.queue=[]; S.qIdx=0; S.screen="debrief"; render(); }
+/* ===================== SESSION RUNNER (plan 003) ===================== */
+/* one continuous flow over the compiled block queue. rev blocks reuse the single-word review
+   machinery; mod blocks reuse docs→run. The cursor (P.session.idx) advances ATOMICALLY inside
+   logWord (decision 11), so a reload from any done screen resumes at the next block, never
+   replaying a completed one. enterBlock is the sole authority on stale-skip + completion. */
+function startSession(bonus){
+  P.session = (!bonus&&sessionValid(P.session)) ? P.session : compileSession(P.cfg.budgetMin,bonus?{bonus:true}:undefined);
+  if(!P.session.blocks.length){ P.session=null; saveP(); goHome(); return; }  /* nothing to do — stay home */
+  recordSessionStart();                                     /* Phase 4 history row; no-op-safe until then */
+  saveP(); enterBlock();
+}
+function enterBlock(){
+  const s=P.session; s.idx=nextLiveIdx(s);                  /* skip stale blocks (resume across a day/other play) */
+  if(s.idx>=s.blocks.length){ s.done=true; recordSessionEnd(); saveP(); S.screen="sessionDone"; render(); return; }
+  saveP();
+  const b=s.blocks[s.idx]; S.log=[];
+  if(b.k==="rev"){
+    const e=P.sched[b.key], u=UNITS.find(x=>x.id===e.unit), w=u.words.find(x=>x.a.toLowerCase()===e.word);
+    S.session=true; S.docsReadOnly=false; S.mode="review"; S.queue=[{u,w,e}]; S.qIdx=0; S.unit=u; S.screen="run"; startWord();
+  } else {
+    if(!P.docs[b.id]) openDocs(b.id,{session:true}); else openRun(b.id,{session:true});
+  }
+}
+function advanceSession(){ if(P.session&&P.session.done){ recordSessionEnd(); saveP(); S.screen="sessionDone"; render(); } else enterBlock(); }
+/* current-block sub-progress in CELL units, for the strip only (display; never moves the cursor) */
+function blockProgress(){
+  const s=P.session, b=s&&s.blocks[s.idx]; if(!b) return 0;
+  if(b.k==="rev") return 0;                                 /* single cell, fills on advance */
+  const pc=b.pc||0;                                         /* panel cells snapshotted at compile — never un-light */
+  const panels = (S.screen==="run") ? pc                    /* in the run → every panel cell is behind us */
+    : Math.min(S.docsIdx,pc);                               /* in the lesson → light panels as they're read */
+  const words = (S.screen==="run"&&S.mode==="module") ? S.wordIdx : 0;
+  return Math.min(panels+words,b.cells);
+}
+/* the strip reflects the block ON SCREEN, which lags the durable cursor by one on a completion
+   done-screen (the cursor already advanced in logWord, decision 11). without this the strip would
+   light the next block's panels before they're read and label the final done screen "N+1/N". */
+function sessionView(){
+  const s=P.session; let bi=s.idx, prog=blockProgress();
+  if(S.screen==="run"&&S.phase==="done"){                    /* run done-screen only — S.phase is stale on a docs screen */
+    const modDone=S.mode==="module"&&(S.wordIdx===S.unit.words.length-1||S.fastCleared);
+    if(S.mode==="review"||modDone){ bi=Math.max(0,s.idx-1); prog=s.blocks[bi]?s.blocks[bi].cells:0; }  /* block just finished → show it full */
+    else { const b=s.blocks[bi]; prog=Math.min(prog+1,b?b.cells:prog); }                                /* mid-module: count the word just done */
+  }
+  return {bi,prog};
+}
+function sessionStrip(){
+  const s=P.session; if(!s) return "";
+  const {bi,prog}=sessionView();
+  let out="";
+  s.blocks.forEach((b,i)=>{
+    const p = i<bi ? b.cells : i>bi ? 0 : prog;
+    for(let c=0;c<b.cells;c++) out+=`<span class="${c<p?"lit":""}">■</span>`;
+    if(i<s.blocks.length-1) out+=`<span style="opacity:.22"> · </span>`;
+  });
+  const shown=Math.min(bi+1,s.blocks.length);
+  return `<div class="progress">${out} &nbsp; SESSION // block ${shown}/${s.blocks.length}</div>
+  <div class="navrow" style="margin:-2px 0 10px"><button class="ghost" onclick="goHome()">⏸ pause — resume later</button><div class="spacer"></div></div>`;
+}
+/* days until the earliest FUTURE return (UTC-day math, expressed as a relative count so no
+   fragile local-weekday conversion). null when nothing is scheduled ahead. */
+function nextDueInDays(){
+  let min=Infinity; for(const k in P.sched){ const d=P.sched[k].due; if(d>today()&&d<min) min=d; }
+  return min===Infinity ? null : min-today();
+}
+function renderSessionDone(){
+  const s=P.session, done=s.blocks.length, rate=s.stats.words?Math.round(100*s.stats.clean/s.stats.words):0;
+  /* honesty about the queue (decision 2): if the budget capped reviews, bytes are still due NOW —
+     say so rather than naming a future return that skips over today's remaining backlog. */
+  const leftNow=dueList().length, nd=nextDueInDays();
+  const ret = leftNow ? `<b style="color:var(--amber)">${leftNow} ${leftNow===1?"byte":"bytes"}</b> still due now — start again to keep clearing them`
+    : nd!==null ? `next bytes return in <b>${nd} ${nd===1?"day":"days"}</b>`
+    : `nothing queued to return — the frontier is the work`;
+  html(`${titlebar("session/done")}
+  <div class="card"><div class="eyebrow"><span class="n">›</span> SESSION COMPLETE</div>
+  <div class="term"><div class="ln ok">✓ session compiled and run — <b>${done} ${done===1?"block":"blocks"}</b> closed by your fingers.</div>
+  <div class="ln ${rate>=50?"ok":"warn"}">first-pass build: <b>${rate}%</b> clean (${s.stats.clean}/${s.stats.words}).</div>
+  <div class="ln dim">${ret}. that return is where spelling sticks — not this first pass.</div></div>
+  <div class="navrow"><div class="spacer"></div><button class="primary" onclick="goHome()">close ▶</button></div></div>`);
+}
+/* Phase 4 stubs — history-row lifecycle lands in Phase 4; safe no-ops until then. */
+function recordSessionStart(){}
+function recordSessionEnd(){}
 function startWord(){
   if(condTimer){ clearTimeout(condTimer); condTimer=null; }
   if(S.mode==="review"&&S.queue[S.qIdx]) S.unit=S.queue[S.qIdx].u;   /* borrow the owning unit for this due word */
@@ -1130,7 +1232,10 @@ function promptBlock(w){
 }
 function renderRun(){
   const u=S.unit,w=cw(),rev=S.mode==="review";
-  const head=rev
+  const head=S.session
+    ?`${titlebar("session")}
+  ${sessionStrip()}`
+    :rev
     ?`${titlebar("review/resurface")}
   <div class="progress">${S.queue.map((x,j)=>`<span class="${j===S.qIdx?"lit":""}">■</span>`).join(" ")} &nbsp; REVIEW // resurfacing due bytes — ${S.qIdx+1}/${S.queue.length} &nbsp;<span style="color:var(--dim)">${esc(u.id)} · ${esc(w.err||"")}</span></div>`
     :`${titlebar(u.id+"/run")}
@@ -1335,20 +1440,42 @@ function logWord(cleanPath){
   if(P.log.length>LOG_CAP) P.log=P.log.slice(-LOG_CAP);
   scheduleWord(w,S.firstClean);                         /* set its next return — the widening interval */
   onEncounter(ev);                                      /* feed the measured profile (skips E0 internally) */
+  let lastWord=false, fastClear=false;
   if(S.mode!=="review"){
-    const lastWord=S.wordIdx===S.unit.words.length-1;
-    const fastClear=S.fastPass&&cleanPath;              /* solid code → one clean build clears the whole unit */
+    lastWord=S.wordIdx===S.unit.words.length-1;
+    fastClear=S.fastPass&&cleanPath&&S.wordIdx===0;     /* one CLEAN FIRST build clears it; a word-0 fault falls
+                                                            back to the full word set (mastery wasn't demonstrated) */
     if(lastWord||fastClear){ P.cleared[S.unit.id]=true; if(fastClear&&!lastWord) S.fastCleared=true; }
+  }
+  /* atomic session advance (decision 11): the cursor moves in the SAME saveP as the ledger
+     writes above, so a reload from the done screen resumes at the next block — never replaying
+     this word. a rev block is one word (always done here); a mod block is done when it clears. */
+  if(S.session&&P.session){
+    P.session.stats.words++; if(S.firstClean) P.session.stats.clean++;
+    const blockDone = S.mode==="review" ? true : (lastWord||fastClear);
+    if(blockDone){
+      P.session.idx++;
+      recordBlockDone();                                /* Phase 4 history row (no-op until then) */
+      if(P.session.idx>=P.session.blocks.length) P.session.done=true;
+    }
   }
   saveP();
 }
+function recordBlockDone(){}                             /* Phase 4 stub */
 function renderDone(){
   const w=cw(),rev=S.mode==="review";
   const last=rev?(S.qIdx===S.queue.length-1):(S.wordIdx===S.unit.words.length-1);
   const moduleDone=last||S.fastCleared;                 /* fast-pass: one clean build ends the module early */
   const aimNote=S.aimGood?`<div class="ln ok">aim: live byte — you told me the right letter.</div>`
     :`<div class="ln dim">aim: cold cell. next run, ask first: <i>which letter would I tell you is wrong?</i></div>`;
-  const nextBtn=rev
+  /* session mode: the cursor already advanced in logWord (decision 11), so the CTA is pure
+     navigation. within a mod block with words left, stay in the module; otherwise advance. */
+  const modMore = S.mode==="module" && !moduleDone;    /* more words remain in this module block */
+  const nextBtn = S.session
+    ?(modMore?`<button class="primary" onclick="S.wordIdx++;startWord()">next byte ▶</button>`
+      :P.session&&P.session.done?`<button class="primary" onclick="advanceSession()">session complete ▶</button>`
+      :`<button class="primary" onclick="advanceSession()">next ▶</button>`)
+    :rev
     ?(last?`<button class="primary" onclick="finishReview()">review complete — close ▶</button>`
       :`<button class="primary" onclick="reviewNext()">next due byte ▶</button>`)
     :(moduleDone?`<button class="primary" onclick="closeModule()">${S.fastCleared&&!last?"pattern locked in — cleared ▶":"module cleared — close ▶"}</button>`
@@ -1361,7 +1488,7 @@ function renderDone(){
 }
 function closeModule(){ S.screen="debrief"; render(); }
 /* ---------- DEBRIEF ---------- */
-function openDebrief(){ S.screen="debrief"; S.log=[]; render(); }
+function openDebrief(){ S.session=false; S.docsReadOnly=false; S.screen="debrief"; S.log=[]; render(); }
 function renderDebrief(){
   const rows=(S.log.length?S.log:P.log.slice(-20).map(e=>({module:e.unit,word:e.word,clean:e.clean,aim:e.aim,solve:e.solve,err:e.err})));
   const table=rows.length?`<table class="debrief"><tr><th>module</th><th>word</th><th>err</th><th>first build</th><th>aim</th><th>solve</th></tr>`+
@@ -1394,11 +1521,14 @@ function renderDebrief(){
   <div class="navrow"><button class="ghost" onclick="goHome()">← back to the stage map</button></div>`);
 }
 /* ---------- DISPATCH ---------- */
-function goHome(){ if(condTimer){ clearTimeout(condTimer); condTimer=null; } S.screen="home"; render(); }
+/* goHome clears the session-flow flags (decision 12) but LEAVES P.session intact — a paused or
+   completed session must still be resumable/showable from home (decisions 4, 7). */
+function goHome(){ if(condTimer){ clearTimeout(condTimer); condTimer=null; } S.session=false; S.docsReadOnly=false; S.screen="home"; render(); }
 function render(){
   if(S.screen==="home")renderHome();
   else if(S.screen==="docs")renderDocs();
   else if(S.screen==="run")renderRun();
+  else if(S.screen==="sessionDone")renderSessionDone();
   else if(S.screen==="debrief")renderDebrief();
 }
 document.addEventListener("keydown",e=>{
@@ -1416,6 +1546,7 @@ window.condPick=condPick;window.pullSource=pullSource;window.toPatch=toPatch;win
 window.confirmDone=confirmDone;window.continueGo=continueGo;
 window.closeModule=closeModule;window.openDebrief=openDebrief;window.goHome=goHome;
 window.startReview=startReview;window.reviewNext=reviewNext;window.finishReview=finishReview;
+window.startSession=startSession;window.advanceSession=advanceSession;
 resolveErrCodes();
 render();
 setTimeout(precacheAudio,0);

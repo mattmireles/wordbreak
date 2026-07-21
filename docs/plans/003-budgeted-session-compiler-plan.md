@@ -353,9 +353,24 @@ non-decreasing under a fixed workload — not universal strict inequality, which
 atomic modules and empty workloads both break). Call `compileSession` twice and
 diff `localStorage` — byte-identical (purity). No UI change anywhere.
 
-### Phase 2 — Session runner
+### Phase 2 — Session runner — ✅ COMPLETE
 
 The one flow. Reuses the existing run/docs screens; changes what wraps them.
+
+*Done: `startSession`/`enterBlock`/`advanceSession` over the compiled queue; atomic
+cursor advance inside `logWord` (decision 11); seam removal in `renderDocs`
+(session `next →` into the run, no "practice is open"); `sessionStrip` +
+`sessionView` (display lags the durable cursor by one on run done-screens) + ghost
+`⏸ pause`; `renderSessionDone` (single completion, backlog-aware return line);
+flag lifecycle owned by `openDocs`/`openRun`/`goHome`/`openDebrief` (decision 12).
+Verified: seam flow, strip monotonicity + block-boundary labels, atomic
+advance/no-replay, quit-resume-at-word-0, local-day rollover discard, both
+completion paths, legacy path intact, zero console errors.
+Cross-agent (Codex) phase review — 1 P0 + 2 P1, all fixed: fast-clear now
+requires a clean **word-0** (a first-word fault falls back to the full set — also
+fixes latent plan-002 behavior); strip no longer lights the next block's panels
+on a done screen; session-done surfaces due-now backlog instead of only a future
+return (weekday dropped for an unambiguous "in N days").*
 
 **Skills:** `jony-ive` — the seam removal, the session strip, and the pause
 control are interaction design (mid-lesson must never read as a finish line;
@@ -365,30 +380,30 @@ constraints the code can't show on its own; `david-ogilvy` — the small set of
 new in-flow strings (`next →`, `session complete ▶`, the session debrief
 lines).
 
-- [ ] `startSession()`: `P.session = sessionValid(P.session) ? P.session :
+- [x] `startSession()`: `P.session = sessionValid(P.session) ? P.session :
   compileSession(P.cfg.budgetMin)`; save; enter the block at `idx`.
-- [ ] `enterBlock()`: apply the decision-4 stale-skip (advancing `idx` past dead
+- [x] `enterBlock()`: apply the decision-4 stale-skip (advancing `idx` past dead
   blocks, save once); `rev` → set up the single-word review the way
   `startReview` does for one item (resolve the block's `key` to `{u,w,e}`;
   borrowed unit via the existing `cw()` machinery); `mod` → `openDocs(id)` if
   unread else `openRun(id)`; set `S.session=true` per decision 12.
-- [ ] **Atomic advance (decision 11):** in `logWord`, when the current session
+- [x] **Atomic advance (decision 11):** in `logWord`, when the current session
   block completes (review word logged; module cleared via last word or
   fast-clear), increment `P.session.idx`, set `done` if past the end, and bump
   `P.session.stats` — all before the existing `saveP()`. `renderDone`'s
   session-mode CTA (`next ▶` / `session complete ▶`) only navigates.
-- [ ] Seam removal in `renderDocs` (session mode): final-panel success advances
+- [x] Seam removal in `renderDocs` (session mode): final-panel success advances
   with `next →` (auto into the run); delete the `start practice →` button and
   the "practice is open" line on the session path.
-- [ ] Session header + strip on run/docs screens: one titlebar path
+- [x] Session header + strip on run/docs screens: one titlebar path
   (`~/wordbreak/session`), the compile-time micro-cell strip (decision 5)
   replacing the separate REVIEW//PRACTICE//LEARN headers in session mode — plus
   a quiet ghost `⏸ pause` control that calls `goHome()` (**new**: `renderRun`
   has no home control today; the quit/resume contract needs one).
-- [ ] `renderSessionDone()`: blocks done, first-pass rate from
+- [x] `renderSessionDone()`: blocks done, first-pass rate from
   `P.session.stats`, next return day from `P.sched`; single `close ▶` to home
   (clears `S.session`).
-- [ ] Flag lifecycle per decision 12 (`S.session`, `S.docsReadOnly` set/cleared
+- [x] Flag lifecycle per decision 12 (`S.session`, `S.docsReadOnly` set/cleared
   only at their named owners).
 
 **Verification (manual):** fresh profile → start → lesson panels flow into the
