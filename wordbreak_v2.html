@@ -236,6 +236,11 @@ const LOG_CAP=500;
 let P;
 try{ P=JSON.parse(localStorage.getItem("wb2"))||{}; }catch(e){ P={}; }
 P.docs=P.docs||{}; P.cleared=P.cleared||{}; P.log=P.log||[];
+/* session compiler state (plan 003) — additive; deleting these three keys resets the
+   session layer only, leaving progress/schedule/profile untouched. cfg is observer-owned
+   (budget in minutes); session is the current frozen queue+cursor or null; sessions is the
+   observer history ring (per-session scalars, never block arrays — keeps each saveP small). */
+P.cfg=P.cfg||{budgetMin:30}; P.session=P.session||null; P.sessions=P.sessions||[];
 if(P.log.length>LOG_CAP) P.log=P.log.slice(-LOG_CAP);
 function saveP(){
   try{ localStorage.setItem("wb2",JSON.stringify(P)); }
@@ -815,8 +820,18 @@ words:[
 P.sched=P.sched||{};                        /* keyed by "unitId|word" — see scheduleWord() */
 const DAY=86400000;
 function today(){ return Math.floor(Date.now()/DAY); }
+/* localDay() scopes the SESSION layer (plan 003) to the local calendar day. today() stays
+   UTC for the SRS (days-coarse intervals don't care), but UTC midnight lands mid-afternoon
+   US time — a session paused/completed then must not discard or re-arm during homework hours.
+   So session/history scoping uses local midnight; scheduleWord/dueList never see this. */
+function localDay(){ return Math.floor((Date.now()-new Date().getTimezoneOffset()*60000)/DAY); }
 const BOX_DAYS=[1,3,9,21,45];                           /* Leitner intervals, anchored on the day-nine beat */
-const REVIEW_CAP=12;
+const REVIEW_CAP=12;                                    /* legacy per-batch cap — retired on the session path (plan 003) */
+/* session compiler tunables (plan 003). the SEC_* estimates only SIZE the compile — they are
+   crude on purpose (calibration targets, not promises), and nothing kid-facing shows a clock.
+   SESSION_ON is the full-path kill switch: false → the entire pre-plan home + flows return. */
+const SEC_REV=60, SEC_PANEL=30, SEC_WORD=90;
+const SESSION_ON=true;
 /* weight = how hard the code is to automate → how eagerly the queue resurfaces it.
    memory (E11) and schwa (E1/E2) sit at the top; foundation (E0/E3) at the bottom. */
 const ERR_WEIGHT={E11:6,E1:5,E2:5,E5:4,E8:4,E7:3,E10:3,E9:3,E6:2,E4:2,E3:1,E0:0};
@@ -826,12 +841,14 @@ const ERR_WEIGHT={E11:6,E1:5,E2:5,E5:4,E8:4,E7:3,E10:3,E9:3,E6:2,E4:2,E3:1,E0:0}
 function resolveErrCodes(){
   UNITS.forEach(u=>{ u.words.forEach(w=>{ w.err=w.err||u.err||"E0"; }); });
 }
+/* the P.sched key: unit+word, not word alone — the same spelling is deliberately reused
+   across stages (e.g. "support" in 4.1's plain seam vs 5.5's assimilation arithmetic) to
+   teach two different lessons. a bare-word key would let clearing the easier one silently
+   overwrite which lesson the review queue resurfaces for the other. extracted (plan 003)
+   so the session compiler reconstructs the exact same key without duplicating the string. */
+function schedKey(u,w){ return u.id+"|"+w.a.toLowerCase(); }
 function scheduleWord(w,firstClean){
-  /* keyed by unit+word, not word alone — the same spelling is deliberately reused
-     across stages (e.g. "support" in 4.1's plain seam vs 5.5's assimilation arithmetic)
-     to teach two different lessons. a bare-word key would let clearing the easier one
-     silently overwrite which lesson the review queue resurfaces for the other. */
-  const k=S.unit.id+"|"+w.a.toLowerCase();
+  const k=schedKey(S.unit,w);
   const e=P.sched[k]||{box:0,lapses:0,seen:0,unit:S.unit.id,word:w.a.toLowerCase()};
   const sameDayReplay=e.last===today();
   e.seen++;
@@ -927,6 +944,58 @@ function continueBlock(){
   return `<div class="card quiet"><div class="eyebrow"><span class="n">›</span> ALL CLEAR</div><div class="cluetext">every module cleared and nothing due. come back when the queue refills.</div></div>`;
 }
 function continueGo(){ const pl=placement(); if(!pl.recommend){ if(dueList().length)startReview(); return; } const u=pl.recommend; if(!P.docs[u.id])openDocs(u.id); else openRun(u.id); }
+/* ===================== SESSION COMPILER — THE ONE DOOR ===================== */
+/* compileSession() is PURE: it reads P and writes nothing. Only startSession() (Phase 2)
+   persists a compiled session. The home TODAY-card preview relies on this purity — it
+   dry-runs the compiler at render time and must not mutate anything. */
+function modCells(u){ return (P.docs[u.id]?0:u.docs.length)+(fastPass(u)?1:u.words.length); }
+function estMod(u){ return (P.docs[u.id]?0:u.docs.length*SEC_PANEL)+(fastPass(u)?1:u.words.length)*SEC_WORD; }
+function synthBlocks(){ return []; }   /* tier 3 slot — named but empty in v1 (no filler; a short session is honest) */
+function frontierUnits(session){       /* uncleared, unlocked, not already queued — placement's own order */
+  const have=new Set((session&&session.blocks||[]).filter(b=>b.k==="mod").map(b=>b.id));
+  return UNITS.filter(u=>!P.cleared[u.id]&&!unitLocked(u)&&!have.has(u.id)).sort(cmpUnits);
+}
+function compileSession(budgetMin,opts){
+  const bonus=!!(opts&&opts.bonus), budgetSec=budgetMin*60;
+  const blocks=[]; let est=0;
+  if(bonus){                           /* appetite valve: exactly one frontier module, no reviews, budget ignored */
+    const cand=frontierUnits({blocks});
+    if(cand.length){ const u=cand[0]; blocks.push({k:"mod",id:u.id,cells:modCells(u)}); }
+  } else {
+    /* tier 1 — due reviews, budget-bounded (no fixed count cap). the crossing item is
+       included: fill while est < budget, the item that reaches budget is the last one. */
+    for(const d of dueList()){
+      if(est>=budgetSec) break;
+      blocks.push({k:"rev",key:schedKey(d.u,d.w),cells:1});
+      est+=SEC_REV;
+    }
+    /* tier 2 — frontier modules (atomic). if tier 1 already met budget (est>=budgetSec),
+       the first iteration breaks → none compile; otherwise the guard passes once before the
+       next check, so ≥1 module always compiles when a frontier exists. */
+    for(const u of frontierUnits({blocks})){
+      if(est>=budgetSec) break;
+      blocks.push({k:"mod",id:u.id,cells:modCells(u)});
+      est+=estMod(u);
+    }
+  }
+  blocks.push(...synthBlocks());       /* tier 3 — empty in v1 */
+  return {day:localDay(),budgetMin,blocks,idx:0,done:false,bonus,baseDone:bonus,stats:{words:0,clean:0}};
+}
+/* staleness (decision 4): a compiled block no longer actionable on resume. entries are
+   UPDATED in place by scheduleWord, never deleted — so a completed review's block is stale
+   because its e.due is now in the future (e.due > today()), not because the key vanished. */
+function blockStale(b){
+  if(b.k==="rev"){
+    const e=P.sched[b.key]; if(!e) return true;
+    const u=UNITS.find(x=>x.id===e.unit); if(!u) return true;
+    const w=u.words.find(x=>x.a.toLowerCase()===e.word); if(!w) return true;
+    return e.due>today();
+  }
+  if(b.k==="mod") return !!P.cleared[b.id];
+  return true;
+}
+function nextLiveIdx(s){ let i=s.idx; while(i<s.blocks.length&&blockStale(s.blocks[i])) i++; return i; }
+function sessionValid(s){ return !!(s&&s.day===localDay()&&!s.done&&nextLiveIdx(s)<s.blocks.length); }
 /* ===================== ENGINE ===================== */
 const STAGES=[
 {n:1,t:"anglo-saxon foundation",d:"base layer — for other players (or speed-run it)"},
