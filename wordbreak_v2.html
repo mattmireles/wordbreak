@@ -1020,7 +1020,84 @@ function html(s){ app.innerHTML=s; }
 function titlebar(path){ return `<div class="titlebar"><div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div><div class="path">~/wordbreak/<b>${path}</b></div></div>`; }
 function clearedCount(){ return Object.keys(P.cleared).length; }
 /* ---------- HOME ---------- */
+/* one-line factual preview of a block list, e.g. "7 bytes due, then 4.2 · duc.family (+2 more)".
+   describes what the compiler assembled — no clock, no promise (README §7). */
+function describeBlocks(blocks){
+  const revs=blocks.filter(b=>b.k==="rev").length;
+  const mods=blocks.filter(b=>b.k==="mod");
+  const parts=[];
+  if(revs) parts.push(`${revs} ${revs===1?"byte":"bytes"} due`);
+  if(mods.length){ const u=UNITS.find(x=>x.id===mods[0].id), extra=mods.length-1;
+    parts.push(`${esc(mods[0].id)}${u?" · "+esc(u.nm):""}${extra>0?` (+${extra} more)`:""}`); }
+  return parts.length?parts.join(", then "):"nothing queued";
+}
+/* the map, read-only: id · name · description, CLEARED status, and a ghost "docs" link that
+   re-opens a learned lesson for reference (decision 9). NO learn/practice buttons — the session
+   is the only way in. */
+function mapRows(){
+  let rows="";
+  for(const st of STAGES){
+    const units=UNITS.filter(u=>u.st===st.n);
+    const done=units.filter(u=>P.cleared[u.id]).length;
+    const open=S.openStage===st.n;
+    let inner="";
+    if(open){
+      inner=units.map(u=>{
+        const cleared=!!P.cleared[u.id], docsRead=!!P.docs[u.id];
+        return `<div class="modrow">
+          <div class="modname"><span class="uid">${u.id}</span>${esc(u.nm)}</div>
+          <div class="moddesc">${esc(u.ds)}</div>
+          ${cleared?`<span class="status done">CLEARED</span>`:``}
+          ${docsRead?`<button class="small" onclick="openDocs('${u.id}',{readOnly:true})">docs</button>`:``}
+        </div>`;}).join("");
+    }
+    rows+=`<div class="card quiet">
+      <div class="stagehead" onclick="togStage(${st.n})">
+        <span class="sn">STAGE ${st.n}</span><span class="st">${esc(st.t)}</span>
+        <span class="sd">${esc(st.d)}</span>
+        <span class="sd">${done}/${units.length}</span><span class="tog">${open?"▾":"▸"}</span>
+      </div>${inner?`<div style="margin-top:10px">${inner}</div>`:""}</div>`;
+  }
+  return rows;
+}
+/* the single TODAY card — the only startable surface (decision 1). four states: resume an
+   in-progress session, a completed day (with the bonus valve), a fresh start, or all-clear. */
+function todayCard(){
+  const s=P.session, completedToday=s&&s.day===localDay()&&(s.done||s.baseDone), resumable=sessionValid(s);
+  const wrap=(eyebrow,body,btn)=>`<div class="card" style="border-color:var(--amber);background:#1a1712">
+    <div class="eyebrow"><span class="n">›</span> ${eyebrow}</div>
+    <div class="cluetext">${body}</div>
+    ${btn?`<div class="navrow" style="margin-top:8px">${btn}<div class="spacer"></div></div>`:""}</div>`;
+  const leftNow=dueList().length, nd=nextDueInDays();
+  const ret = leftNow ? `<b style="color:var(--amber)">${leftNow} ${leftNow===1?"byte":"bytes"}</b> still due`
+    : nd!==null ? `next bytes return in <b>${nd} ${nd===1?"day":"days"}</b>` : `the frontier is the work now`;
+  if(completedToday){
+    const frontierLeft=frontierUnits({blocks:[]}).length;
+    const btn = resumable ? `<button class="primary" onclick="startSession()">▶ resume</button>`
+      : frontierLeft ? `<button class="primary" onclick="startSession(true)">one more module ▶</button>` : ``;
+    return wrap("TODAY — COMPLETE", `today's session is done. ${ret}. that return is where spelling sticks — not the first clear.`, btn);
+  }
+  if(resumable){
+    const remaining=describeBlocks(s.blocks.slice(nextLiveIdx(s)));
+    return wrap("TODAY — IN PROGRESS", `you're partway through: ${remaining}.`, `<button class="primary" onclick="startSession()">▶ resume</button>`);
+  }
+  const pv=compileSession(P.cfg.budgetMin);   /* pure dry-run for the preview (Phase 1 purity) */
+  if(!pv.blocks.length) return wrap("TODAY — ALL CLEAR", `nothing due, every module cleared. ${nd!==null?`next bytes return in <b>${nd} ${nd===1?"day":"days"}</b>`:`come back when the queue refills`}.`, ``);
+  return wrap("TODAY", `${describeBlocks(pv.blocks)}. review first, then the frontier — one press runs the lot.`, `<button class="primary" onclick="startSession()">▶ start</button>`);
+}
 function renderHome(){
+  if(!SESSION_ON) return renderHomeLegacy();
+  html(`${titlebar("main")}
+  <h1 class="big">WORDBREAK<span class="cursor"></span></h1>
+  <div class="sub">english is legacy code. find the byte you don't trust, pull the source. // v0.2 — full build, 48 modules</div>
+  ${todayCard()}
+  <div class="eyebrow" style="margin:22px 2px 8px"><span class="n">›</span> THE MAP // where you are — read only</div>
+  ${mapRows()}
+  <div class="navrow"><button class="ghost" onclick="openDebrief()">session log — for the observer →</button></div>
+  <div class="footer">wordbreak v0.2 // teach → flag → interrogate → patch // ${clearedCount()}/48 modules cleared</div>`);
+}
+/* legacy home — restored verbatim when SESSION_ON=false (kill switch, decision 13) */
+function renderHomeLegacy(){
   let rows="";
   for(const st of STAGES){
     const units=UNITS.filter(u=>u.st===st.n);

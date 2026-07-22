@@ -418,28 +418,39 @@ debrief showing a rate consistent with play; reload after `done` → home shows
 completed state. DevTools: `P.session.idx` and `stats` persist;
 `P.sched`/`P.codes` semantics identical to the legacy paths.
 
-### Phase 3 — The one-door home
+### Phase 3 — The one-door home — ✅ COMPLETE
 
 **Skills:** `jony-ive` — this is the plan's core design statement (one primary
 CTA, map demoted to a read-only map, hierarchy: TODAY → map → observer link);
 `david-ogilvy` — decision 14's copy pass owns every new user-facing string
 (TODAY preview, resume, completed, all-clear) in the legacy-code voice.
 
-- [ ] `renderHome()` session mode: **TODAY card** — content preview from a dry
+*Done: `todayCard` (four states — fresh/resume/completed+bonus/all-clear —
+resolved by `completedToday` taking precedence over `resumable`), `describeBlocks`
+preview from a pure dry compile, read-only `mapRows` (CLEARED status +
+learned-only `docs` link, no learn/practice buttons, no LEARNED chip), DUE +
+Continue cards removed from the session home. `renderHome` branches on
+`SESSION_ON`; `renderHomeLegacy` preserves the pre-plan home byte-identical.
+Verified: all four states + bonus-in-flight, read-only docs (close not run
+hand-off, no flag leak), budget-driven preview (3-min → 3 revs, 30-min → 5 revs
++ 4 mods), kill-switch flip restores the legacy home (DUE/Continue/learn/practice)
+and flips back clean; JS parses; zero console errors.*
+
+- [x] `renderHome()` session mode: **TODAY card** — content preview from a dry
   `compileSession` (purity, Phase 1) — "7 bytes due · then 4.2 duc.family", or
   review-only / module-only variants; single `▶ start` / `▶ resume`; completed
   state per decision 7's day-complete rule ("session complete — next bytes
   return thu") with `one more module ▶` when a frontier remains; all-clear
   state naming the next return day when nothing compiles.
-- [ ] Demote the map: stage rows stay expandable; module rows show id, name,
+- [x] Demote the map: stage rows stay expandable; module rows show id, name,
   description, CLEARED — **no** learn/practice buttons, no LEARNED chip, plus
   the ghost read-only `docs` link (decision 9; `S.docsReadOnly` hides the run
   hand-off in `renderDocs`).
-- [ ] Remove the DUE card and Continue card from the session-mode home (their
+- [x] Remove the DUE card and Continue card from the session-mode home (their
   logic lives in the compiler now).
-- [ ] Kill switch: every change in this phase branches on `SESSION_ON`; `false`
+- [x] Kill switch: every change in this phase branches on `SESSION_ON`; `false`
   renders the exact pre-plan home and flows.
-- [ ] Copy pass on all new strings in the existing voice (decision 14).
+- [x] Copy pass on all new strings in the existing voice (decision 14).
 
 **Verification (manual):** session-mode home has exactly one primary button and
 **zero startable-work actions** on module rows (the read-only docs link is the
