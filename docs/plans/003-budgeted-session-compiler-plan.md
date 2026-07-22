@@ -464,7 +464,7 @@ never mid-block; flip `SESSION_ON=false` + reload → the old home (DUE card,
 Continue, learn/practice) returns and legacy flows work; flip back → session
 state resumes unharmed.
 
-### Phase 4 — Observer surfaces
+### Phase 4 — Observer surfaces — ✅ COMPLETE
 
 **Skills:** `jony-ive` — the observer panel must stay quiet and parent-legible
 (budget presets, history rows, the alarm number) without leaking anything onto
@@ -472,10 +472,22 @@ kid surfaces; `david-ogilvy` — observer-facing labels and the rewritten
 watch-for item; `documentation` — the `P.sessions` row lifecycle
 (`endedAt:null` = abandoned-by-design) is a contract worth a comment block.
 
-- [ ] Budget control on the observer debrief: `session budget: 10 / 20 / 30 /
+*Done: `recordSessionStart`/`recordBlockDone`/`recordSessionEnd` fill the
+history-row lifecycle (one row per session, appended at start after the
+empty-session guard, `doneBlocks` on each block completion, `endedAt` on
+completion, abandoned = `endedAt:null`; resume reuses via the `reuse` refactor);
+`sessionObsCard` on the debrief — budget presets (10/20/30/45m, tamper-visible),
+starts-this-week + completion-rate over non-bonus rows + due backlog + per-row
+budget·run; watch-for item swapped to "does he press start unprompted?".
+Verified: full lifecycle (start/abandon/resume/complete/bonus), metrics filter
+bonus out (3 starts, 67% of 3), setBudget writes cfg, observer-only (no
+minutes/budget leak to kid home), SESSION_ON-gated; JS parses; zero console
+errors.*
+
+- [x] Budget control on the observer debrief: `session budget: 10 / 20 / 30 /
   45 min` presets writing `P.cfg.budgetMin`; labelled as observer-only
   (tamper-visible model per decision 8).
-- [ ] `P.sessions` — **explicit row lifecycle:** exactly one row per session,
+- [x] `P.sessions` — **explicit row lifecycle:** exactly one row per session,
   **appended at `startSession()`** as `{day, bonus, budgetMin, blocksTotal,
   doneBlocks:0, startedAt, endedAt:null}` (scalars only — never block arrays;
   keeps every `saveP` small, decision 11); the active session's row is the last
@@ -484,12 +496,12 @@ watch-for item; `documentation` — the `P.sessions` row lifecycle
   abandoned session is a row with `endedAt:null`** — honestly visible, which is
   the point: completion rate must read *worst* exactly when the habit is
   failing. Ring-capped at ~30 rows.
-- [ ] Observer panel: **sessions started per week** and completion rate over
+- [x] Observer panel: **sessions started per week** and completion rate over
   **non-bonus rows** (decision 7) — the alarm instrument (if starts slip, the
   budget is too expensive; turn it down before the habit dies) — plus current
   due-backlog size (`dueList().length`) and per-row `budgetMin` (tamper
   visibility).
-- [ ] Extend the observer watch-for list: replace the stale "does he clear the
+- [x] Extend the observer watch-for list: replace the stale "does he clear the
   DUE card" item with "does he press start unprompted?" — the queue is now
   inside the session, so the judge is session starts.
 

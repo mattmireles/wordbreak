@@ -1215,9 +1215,10 @@ function finishReview(){ S.mode="module"; S.queue=[]; S.qIdx=0; S.screen="debrie
    logWord (decision 11), so a reload from any done screen resumes at the next block, never
    replaying a completed one. enterBlock is the sole authority on stale-skip + completion. */
 function startSession(bonus){
-  P.session = (!bonus&&sessionValid(P.session)) ? P.session : compileSession(P.cfg.budgetMin,bonus?{bonus:true}:undefined);
+  const reuse = !bonus&&sessionValid(P.session);            /* resume an in-progress session vs compile a new one */
+  P.session = reuse ? P.session : compileSession(P.cfg.budgetMin,bonus?{bonus:true}:undefined);
   if(!P.session.blocks.length){ P.session=null; saveP(); goHome(); return; }  /* nothing to do — stay home */
-  recordSessionStart();                                     /* Phase 4 history row; no-op-safe until then */
+  if(!reuse) recordSessionStart();                          /* only a NEW session gets a history row (resume keeps its own) */
   saveP(); enterBlock();
 }
 function enterBlock(){
@@ -1289,9 +1290,18 @@ function renderSessionDone(){
   <div class="ln dim">${ret}. that return is where spelling sticks — not this first pass.</div></div>
   <div class="navrow"><div class="spacer"></div><button class="primary" onclick="goHome()">close ▶</button></div></div>`);
 }
-/* Phase 4 stubs — history-row lifecycle lands in Phase 4; safe no-ops until then. */
-function recordSessionStart(){}
-function recordSessionEnd(){}
+/* P.sessions history-row lifecycle (Phase 4, decision 4 + Phase-4 spec). ONE row per session,
+   appended at start (scalars only — never block arrays, so each saveP stays small). The active
+   session is always the LAST row (single active session by construction). An abandoned session
+   is a row whose endedAt stays null — honestly visible, which is the point: completion rate must
+   read worst exactly when the habit is failing. */
+const SESSIONS_CAP=30;
+function recordSessionStart(){
+  const s=P.session;
+  P.sessions.push({day:s.day,bonus:!!s.bonus,budgetMin:s.budgetMin,blocksTotal:s.blocks.length,doneBlocks:0,startedAt:Date.now(),endedAt:null});
+  if(P.sessions.length>SESSIONS_CAP) P.sessions=P.sessions.slice(-SESSIONS_CAP);
+}
+function recordSessionEnd(){ const r=P.sessions[P.sessions.length-1]; if(r&&r.endedAt==null) r.endedAt=Date.now(); }
 function startWord(){
   if(condTimer){ clearTimeout(condTimer); condTimer=null; }
   if(S.mode==="review"&&S.queue[S.qIdx]) S.unit=S.queue[S.qIdx].u;   /* borrow the owning unit for this due word */
@@ -1538,7 +1548,7 @@ function logWord(cleanPath){
   }
   saveP();
 }
-function recordBlockDone(){}                             /* Phase 4 stub */
+function recordBlockDone(){ const r=P.sessions[P.sessions.length-1]; if(r) r.doneBlocks++; }   /* mutate the active (last) row */
 function renderDone(){
   const w=cw(),rev=S.mode==="review";
   const last=rev?(S.qIdx===S.queue.length-1):(S.wordIdx===S.unit.words.length-1);
@@ -1565,6 +1575,35 @@ function renderDone(){
 }
 function closeModule(){ S.screen="debrief"; render(); }
 /* ---------- DEBRIEF ---------- */
+/* observer-only: set the session time budget. tamper-visible, not gated (decision 8) — in a
+   localStorage app any lock is theater; every P.sessions row records its budgetMin, so a dial
+   turned down shows up as shrunken sessions in the history below. */
+function setBudget(n){ P.cfg.budgetMin=n; saveP(); render(); }
+/* the alarm instrument (decision 7 + Phase 4): sessions started per week and completion rate over
+   NON-BONUS rows — if starts slip, the budget is too expensive; turn it down before the habit dies.
+   an abandoned session is a row with endedAt==null, so completion rate reads worst when it should. */
+function sessionObsCard(){
+  if(!SESSION_ON) return "";
+  const rows=P.sessions, nonBonus=rows.filter(r=>!r.bonus);
+  const weekAgo=Date.now()-7*DAY;
+  const startedThisWeek=nonBonus.filter(r=>r.startedAt>=weekAgo).length;
+  const completed=nonBonus.filter(r=>r.endedAt!=null).length;
+  const rate=nonBonus.length?Math.round(100*completed/nonBonus.length):0;
+  const backlog=dueList().length, b=P.cfg.budgetMin;
+  const presets=[10,20,30,45].map(n=>`<button class="small ${n===b?"primary":""}" onclick="setBudget(${n})">${n}m</button>`).join(" ");
+  const recent=rows.slice(-8).reverse().map(r=>{
+    const done=r.endedAt!=null, dur=r.endedAt?Math.max(1,Math.round((r.endedAt-r.startedAt)/60000)):null;
+    return `<tr><td class="dimc">${r.bonus?"bonus":"session"}</td>
+      <td class="${done?"good":"mid"}">${done?"complete":"abandoned"}</td>
+      <td class="dimc">${r.doneBlocks}/${r.blocksTotal} blocks</td>
+      <td class="dimc">${r.budgetMin}m budget${dur!=null?` · ~${dur}m run`:""}</td></tr>`;}).join("");
+  return `<div class="card"><div class="eyebrow"><span class="n">›</span> SESSIONS — THE HABIT (observer)</div>
+  <div class="cluetext" style="margin-bottom:8px">session budget (never shown to him): ${presets}
+    &nbsp;·&nbsp; the budget SHAPES what compiles; it is not a clock he sees.</div>
+  <div class="cluetext"><b style="color:var(--amber)">${startedThisWeek}</b> started this week · <b>${rate}%</b> completed (of ${nonBonus.length}) · <b>${backlog}</b> ${backlog===1?"byte":"bytes"} due now.
+    the number that matters is <b>starts</b> — if it falls, the budget is too expensive; turn it down.</div>
+  ${recent?`<table class="debrief" style="margin-top:8px"><tr><th>kind</th><th>outcome</th><th>done</th><th>budget · run</th></tr>${recent}</table>`:`<div class="cluetext" style="margin-top:6px">no sessions yet.</div>`}</div>`;
+}
 function openDebrief(){ S.session=false; S.docsReadOnly=false; S.screen="debrief"; S.log=[]; render(); }
 function renderDebrief(){
   const rows=(S.log.length?S.log:P.log.slice(-20).map(e=>({module:e.unit,word:e.word,clean:e.clean,aim:e.aim,solve:e.solve,err:e.err})));
@@ -1586,6 +1625,7 @@ function renderDebrief(){
   <div class="cluetext" style="margin-top:8px">a decayed estimate per error-type — not a grade, never shown to the kid. thin evidence reads honestly as «measuring». this is what drives Continue and fast-pass.</div></div>`:"";
   html(`${titlebar("debrief")}
   <div class="card"><div class="eyebrow"><span class="n">›</span> SESSION LOG ${S.log.length?"— this module":"— recent"}</div>${table}</div>
+  ${sessionObsCard()}
   ${profCard}
   <div class="card quiet obs"><div class="eyebrow"><span class="n">›</span> FOR THE OBSERVER — WATCH FOR THESE, SAY NOTHING</div>
   <ol>
@@ -1593,7 +1633,7 @@ function renderDebrief(){
     <li><b>which fork lands harder — the rule verdicts or the source pulls?</b> watch his face at the stress reveal vs. the arithmetic. that tells us where to build.</li>
     <li><b>does the «handed flat» outcome bother him?</b> it should feel like a door closing. if he doesn't care, the aim reward is too weak.</li>
     <li><b>after a faulted build, does he re-run the questions himself on the patch?</b> that's the win condition — the checklist migrating into his head.</li>
-    <li><b>when bytes are DUE on the home screen, does he clear them — or skip past?</b> the tool now schedules the return (missed words tomorrow, cleared words on a widening interval out to day nine and beyond), so day-nine retention no longer depends on him remembering to re-open a module. the remaining question is whether he answers the queue when it's waiting. that's the judge that matters.</li>
+    <li><b>does he press start unprompted — or does it take nagging?</b> the queue now lives INSIDE the session (review comes first, automatically), so there is no due-card to clear anymore. the whole game reduces to one question: does he come back and press start on his own? the SESSIONS card above tracks starts-per-week — if that number falls, the session is too expensive and the budget should come down. that's the judge that matters.</li>
   </ol></div>
   <div class="navrow"><button class="ghost" onclick="goHome()">← back to the stage map</button></div>`);
 }
@@ -1623,7 +1663,7 @@ window.condPick=condPick;window.pullSource=pullSource;window.toPatch=toPatch;win
 window.confirmDone=confirmDone;window.continueGo=continueGo;
 window.closeModule=closeModule;window.openDebrief=openDebrief;window.goHome=goHome;
 window.startReview=startReview;window.reviewNext=reviewNext;window.finishReview=finishReview;
-window.startSession=startSession;window.advanceSession=advanceSession;
+window.startSession=startSession;window.advanceSession=advanceSession;window.setBudget=setBudget;
 resolveErrCodes();
 render();
 setTimeout(precacheAudio,0);
