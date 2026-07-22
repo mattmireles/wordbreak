@@ -138,6 +138,10 @@
   .briefbody .v{color:var(--violet);font-weight:600}
   .cluetext{color:var(--dim);font-size:14px;margin:4px 0 2px}
   .cluetext b{color:var(--text)}
+  /* the build cue — the move, never the answer. reads as the prompt it is:
+     indented off a rule like the word-sum prompts in the run loop. */
+  .kcue{color:var(--text);font-size:15px;margin:8px 0 10px;padding:8px 0 8px 12px;
+        border-left:2px solid var(--amber)}
   .navrow{display:flex;gap:10px;margin-top:20px;flex-wrap:wrap;align-items:center}
   .navrow .spacer{flex:1}
   .wordprompt{font-size:23px;font-weight:700;letter-spacing:.05em;margin:6px 0 2px}
@@ -264,7 +268,7 @@ docs:[
 {s:"01 / INTRO",t:"the oldest fossils",b:"<p><span class='k'>house · water · friend · would</span> — the oldest, most-used English words are Anglo-Saxon fossils. and every bigger word? <b>built from parts like these.</b></p>"},
 {s:"02 / DEVELOP",t:"sun + set",b:"<p>a word is an <span class='g'>assembly of meaning-parts</span>, not a string of sounds. sun + set = <span class='g'>sunset</span>. every letter of both survives the glue.</p>"},
 {s:"03 / THE TWIST",t:"anthill",b:"<p>ant + hill. the middle looks like the sound <span class='r'>‹th›</span> — it isn't. it's a <b>t</b> and an <b>h</b> from two different words, touching at a seam.</p><p class='cluetext'>seams can lie to your eye. read the parts, not the blur.</p>"},
-{s:"04 / YOU RUN IT",t:"cat + fish → ?",b:"",q:{p:"how many letters survive the glue?",o:["all of them","some merge"],c:0,fb:"all. always. parts keep every letter."},ty:"catfish"}],
+{s:"04 / YOU RUN IT",t:"cat + fish → ?",b:"",q:{p:"how many letters survive the glue?",o:["all of them","some merge"],c:0,fb:"all. always. parts keep every letter."},cue:"cat + fish — glue them, keep every letter",ty:"catfish"}],
 words:[
 {a:"sunset",p:{k:"build",s:"sun + set"},hot:{c:"ns",m:2},fork:{k:"cond",qs:[{q:"how many whole words inside?",o:["one","two"],c:1,why:"sun · set — two fossils, glued."}],vd:"two whole words, glued — keep every letter of both: <b>sun·set</b>.",vc:"good"}},
 {a:"backpack",p:{k:"build",s:"back + pack"},hot:{c:"kp",m:3},fork:{k:"cond",qs:[],vd:"back + pack — nothing merges at the seam: <b>back·pack</b>.",vc:"good"}},
@@ -276,7 +280,7 @@ docs:[
 {s:"01 / INTRO",t:"off · ball · pass · buzz",b:"<p>one syllable, short vowel, ending in <span class='k'>f, l, s, z</span> → <span class='g'>double it</span>. the oldest doubling rule in the language.</p>"},
 {s:"02 / DEVELOP",t:"stiff · spell · glass · fizz",b:"<p>run the checks: one beat? short vowel? ends f/l/s/z? all yes → double. this is your first taste of <b>doubling with a reason</b>.</p>"},
 {s:"03 / THE TWIST",t:"bus. gas. if. pal.",b:"<p>a tiny gang of <span class='r'>refusers</span>. they meet every condition and still don't double. no logic — just a short list to know.</p><p class='cluetext'>a rule without its exception list is half a rule.</p>"},
-{s:"04 / YOU RUN IT",t:"fizz",b:"",q:{p:"short i, one beat, ends in z — double it?",o:["double","don't"],c:0,fb:"double: fizz."},ty:"fizz"}],
+{s:"04 / YOU RUN IT",t:"fizz",b:"",q:{p:"short i, one beat, ends in z — double it?",o:["double","don't"],c:0,fb:"double: fizz."},cue:"the sound soda makes — short vowel, then the FLSZ double",ty:"fizz"}],
 words:[
 {a:"spell",p:{k:"say",cl:"to write a word out, letter by letter."},hot:{c:"l",m:2},fork:{k:"cond",qs:[{q:"one syllable?",o:["yes","no"],c:0,why:""},{q:"short vowel?",o:["yes","no"],c:0,why:""}],vd:"short e + one beat + ends in l → <b>double: spell</b>.",vc:"good"}},
 {a:"glass",p:{k:"say",cl:"sand, melted into windows."},hot:{c:"s",m:3},fork:{k:"cond",qs:[],vd:"short a, one beat, ends in s → <b>glass</b>.",vc:"good"}},
@@ -288,7 +292,7 @@ docs:[
 {s:"01 / INTRO",t:"back · sick · sock",b:"<p><span class='k'>ck</span> after a short vowel in a <b>one-syllable</b> word. that's its whole territory.</p>"},
 {s:"02 / DEVELOP",t:"bank · milk · week",b:"<p>everywhere else: plain <span class='k'>k</span> — after a consonant (mil·k), after a long vowel (wee·k).</p>"},
 {s:"03 / THE TWIST",t:"picnic · music · comic",b:"<p>more than one syllable → <span class='r'>never ck</span>. just c.</p><p class='cluetext'>«picknic» is a real rule fired outside its boundary. count the syllables first.</p>"},
-{s:"04 / YOU RUN IT",t:"comic",b:"",q:{p:"two syllables — c, or ck?",o:["ck","just c"],c:1,fb:"multi-syllable → just c: comic."},ty:"comic"}],
+{s:"04 / YOU RUN IT",t:"comic",b:"",q:{p:"two syllables — c, or ck?",o:["ck","just c"],c:1,fb:"multi-syllable → just c: comic."},cue:"a book of drawn panels — the /k/ takes a plain c here",ty:"comic"}],
 words:[
 {a:"back",p:{k:"say",cl:"the opposite of front."},hot:{c:"ck",m:2},fork:{k:"cond",qs:[{q:"syllables?",o:["one","two"],c:0,why:""}],vd:"one syllable, short a → <b>ck</b>: ba·ck.",vc:"good"}},
 {a:"quick",p:{k:"say",cl:"fast."},hot:{c:"ck",m:3},fork:{k:"cond",qs:[],vd:"one syllable, short i → <b>qui·ck</b>.",vc:"good"}},
@@ -300,7 +304,7 @@ docs:[
 {s:"01 / INTRO",t:"hop → hope",b:"<p>the e isn't decoration. it has <span class='g'>a job</span>: make the vowel long. hop → hope. tap → tape.</p>"},
 {s:"02 / DEVELOP",t:"cake · bike · cube",b:"<p>vowel–consonant–<span class='k'>e</span>, every time. see a long vowel? something is making it long.</p>"},
 {s:"03 / THE TWIST",t:"hop stays hop",b:"<p>short vowel → no job → <span class='r'>no e</span>. add one anyway and you invent a different word.</p><p class='cluetext'>this seed grows into the drop-e rule later: when a vowel-suffix arrives to do the job, the e leaves.</p>"},
-{s:"04 / YOU RUN IT",t:"cut + e = ?",b:"",q:{p:"what happens?",o:["still ‹cut›","a new word: cute"],c:1,fb:"the e flips the vowel — cut → cute. that's its whole job."},ty:"cute"}],
+{s:"04 / YOU RUN IT",t:"cut + e = ?",b:"",q:{p:"what happens?",o:["still ‹cut›","a new word: cute"],c:1,fb:"the e flips the vowel — cut → cute. that's its whole job."},cue:"adorable — u saying its name, silent-e doing the job",ty:"cute"}],
 words:[
 {a:"hope",p:{k:"say",cl:"to wish for it."},hot:{c:"e",m:3},fork:{k:"cond",qs:[{q:"the vowel — long or short?",o:["long","short"],c:0,why:""}],vd:"long o needs a worker → silent e: <b>hope</b>.",vc:"good"}},
 {a:"stripe",p:{k:"say",cl:"one line on a zebra."},hot:{c:"e",m:5},fork:{k:"cond",qs:[],vd:"long i → <b>stripe</b>.",vc:"good"}},
@@ -312,7 +316,7 @@ docs:[
 {s:"01 / INTRO",t:"play / paint",b:"<p>same sound, two spellings. the rule is <span class='g'>position</span>: <span class='k'>ay</span> at the end, <span class='k'>ai</span> in the middle.</p>"},
 {s:"02 / DEVELOP",t:"boy / boil",b:"<p>same deal: <span class='k'>oy</span> at the end, <span class='k'>oi</span> in the middle.</p>"},
 {s:"03 / THE TWIST",t:"display",b:"<p>«end» means the end of the sound's word-part — dis·<span class='g'>play</span> still ends in the sound → ay, even inside a longer word.</p>"},
-{s:"04 / YOU RUN IT",t:"appoint",b:"",q:{p:"the /oi/ sound — end or middle?",o:["end → oy","middle → oi"],c:1,fb:"middle → oi: app·oi·nt."},ty:"appoint"}],
+{s:"04 / YOU RUN IT",t:"appoint",b:"",q:{p:"the /oi/ sound — end or middle?",o:["end → oy","middle → oi"],c:1,fb:"middle → oi: app·oi·nt."},cue:"to name someone to a post — ap + the /oy/ team that sits in the middle",ty:"appoint"}],
 words:[
 {a:"display",p:{k:"say",cl:"to show it on screen."},hot:{c:"ay",m:5},fork:{k:"cond",qs:[{q:"the long-a sound — end or middle?",o:["end","middle"],c:0,why:""}],vd:"end of the word-part → <b>ay</b>: displ·ay.",vc:"good"}},
 {a:"paint",p:{k:"say",cl:"what you roll onto walls."},hot:{c:"ai",m:1},fork:{k:"cond",qs:[{q:"end or middle?",o:["end","middle"],c:1,why:""}],vd:"middle → <b>ai</b>: p·ai·nt.",vc:"good"}},
@@ -324,7 +328,7 @@ docs:[
 {s:"01 / INTRO",t:"her · bird · turn",b:"<p>say them. <b>identical sound, three spellings.</b> your ear cannot pick.</p>"},
 {s:"02 / DEVELOP",t:"why?",b:"<p>English is layered — 1,400 years of merges. some sounds ended up with multiple legal spellings and no referee.</p>"},
 {s:"03 / THE TWIST",t:"this is a preview",b:"<p>you just met your first <span class='r'>dead byte</span> — a vowel sound that carries no letter information. the full disease is called the <span class='v'>schwa</span> — stage 6 is the cure kit.</p><p class='cluetext'>for now, honesty: these are memory words.</p>"},
-{s:"04 / YOU RUN IT",t:"dirt",b:"",q:{p:"which spelling?",o:["durt","dirt"],c:1,fb:"memory, honestly. dirt."},ty:"dirt"}],
+{s:"04 / YOU RUN IT",t:"dirt",b:"",q:{p:"which spelling?",o:["durt","dirt"],c:1,fb:"memory, honestly. dirt."},cue:"what's under unwashed fingernails — this /er/ is spelled ir",ty:"dirt"}],
 words:[
 {a:"bird",p:{k:"say",cl:"the animal that tweets."},hot:{v:1,m:1},fork:{k:"mem",note:"er / ir / ur — one sound, three spellings. no rule decides. book the word.",dark:[1]}},
 {a:"turn",p:{k:"say",cl:"to rotate."},hot:{v:1,m:1},fork:{k:"mem",note:"same dead byte, different coat: u·r. gallery word.",dark:[1]}},
@@ -336,7 +340,7 @@ docs:[
 {s:"01 / INTRO",t:"said · was · would · friend",b:"<p>the most-used words in English are the most irregular. that's not an accident.</p>"},
 {s:"02 / DEVELOP",t:"why",b:"<p>age. a thousand years of mouths wore the <b>sounds</b> smooth while the <b>spelling</b> froze. the gap is the irregularity.</p>"},
 {s:"03 / THE TWIST",t:"no trick",b:"<p>anyone selling you a rule for ‹friend› is lying. <span class='r'>no rule saves these.</span> (ok — one hook where it exists: fri·<span class='g'>END</span>, a friend to the end.)</p>"},
-{s:"04 / YOU RUN IT",t:"honest answer",b:"",q:{p:"what fixes these words?",o:["a clever rule","memory + spaced returns"],c:1,fb:"memory, revisited until automatic. that's the whole tool."},ty:"friend"}],
+{s:"04 / YOU RUN IT",t:"honest answer",b:"",q:{p:"what fixes these words?",o:["a clever rule","memory + spaced returns"],c:1,fb:"memory, revisited until automatic. that's the whole tool."},cue:"your buddy — fri + END, the hook from panel 03",ty:"friend"}],
 words:[
 {a:"friend",p:{k:"say",cl:"your buddy."},hot:{c:"ie",m:2},fork:{k:"mem",note:"the ie is pure legacy. hook: fri·END — a friend to the end.",dark:[2,3]}},
 {a:"would",p:{k:"say",cl:"the past of ‹will›."},hot:{c:"oul",m:1},fork:{k:"mem",note:"would · could · should — the oul gang. silent l, no logic.",dark:[1,2,3]}},
@@ -350,7 +354,7 @@ docs:[
 {s:"01 / INTRO",t:"the reframe",b:"<p>every word is <span class='g'>base + parts</span> stuck on front and back. this converts «guess the letters» into <b>«assemble known pieces»</b> — the single most important idea in the system.</p>"},
 {s:"02 / DEVELOP",t:"help →",b:"<p>helps · helped · helping · help<span class='k'>ful</span> · help<span class='k'>less</span> · <span class='k'>un</span>helpful. one base, a dozen words.</p>"},
 {s:"03 / THE TWIST",t:"spell the base first",b:"<p>on any long word: <span class='g'>name the parts before spelling anything.</span> the base first, then attach the pieces. never letter-by-letter through a blob.</p>"},
-{s:"04 / YOU RUN IT",t:"unhelpful",b:"",q:{p:"how many parts?",o:["two","three"],c:1,fb:"un + help + ful."},ty:"unhelpful"}],
+{s:"04 / YOU RUN IT",t:"unhelpful",b:"",q:{p:"how many parts?",o:["two","three"],c:1,fb:"un + help + ful."},cue:"un + help + ful — a base with an affix on each side",ty:"unhelpful"}],
 words:[
 {a:"careless",p:{k:"build",s:"care + less"},hot:{c:"el",m:3},fork:{k:"cond",qs:[],vd:"base stays whole: <b>care·less</b>.",vc:"good"}},
 {a:"playing",p:{k:"build",s:"play + ing"},hot:{c:"yi",m:3},fork:{k:"cond",qs:[],vd:"vowel+y base — nothing changes: <b>play·ing</b>.",vc:"good"}},
@@ -362,7 +366,7 @@ docs:[
 {s:"01 / INTRO",t:"cats · dogs · books",b:"<p>default plural: <span class='k'>-s</span>. done.</p>"},
 {s:"02 / DEVELOP",t:"boxes · wishes",b:"<p>after a hissing/hushing sound (s, x, z, ch, sh) → <span class='k'>-es</span>. why? your mouth can't say ‹boxs› — the e buys you the extra beat.</p>"},
 {s:"03 / THE TWIST",t:"the test is spoken",b:"<p>don't stare — <span class='g'>say the plural</span>. did you add a vowel sound? then it's -es. the rule lives in your mouth, not on paper.</p>"},
-{s:"04 / YOU RUN IT",t:"buzz → plural",b:"",q:{p:"which?",o:["buzzs","buzzes"],c:1,fb:"hiss → -es."},ty:"buzzes"}],
+{s:"04 / YOU RUN IT",t:"buzz → plural",b:"",q:{p:"which?",o:["buzzs","buzzes"],c:1,fb:"hiss → -es."},cue:"more than one buzz — hissing sound, so -es",ty:"buzzes"}],
 words:[
 {a:"boxes",p:{k:"tr",s:"box → plural"},hot:{c:"es",m:3},fork:{k:"cond",qs:[{q:"say it — did you add a vowel sound?",o:["yes","no"],c:0,why:""}],vd:"the mouth demands the e: <b>box·es</b>.",vc:"good"}},
 {a:"wishes",p:{k:"tr",s:"wish → plural"},hot:{c:"es",m:4},fork:{k:"cond",qs:[],vd:"hush sound → <b>wish·es</b>.",vc:"good"}},
@@ -374,7 +378,7 @@ docs:[
 {s:"01 / INTRO",t:"hop → hopping",b:"<p>one beat. one vowel: <span class='k'>o</span>. one final consonant: <span class='k'>p</span>. vowel suffix → double → <span class='g'>hop·p·ing</span>.</p>"},
 {s:"02 / DEVELOP",t:"swim → swimming",b:"<p>the rule: <b>1 syllable · 1 final consonant · 1 vowel letter before it · vowel suffix → double.</b> the double is a fence protecting the short vowel (hopping vs hoping).</p>"},
 {s:"03 / THE TWIST",t:"rain → raining",b:"<p>looks identical — but count the vowels before the n: r·<span class='k'>a</span>·<span class='k'>i</span>·n → <span class='r'>TWO</span>. condition failed → <span class='g'>raining</span>. no double.</p><p class='cluetext'>a rule without its boundary is only half a rule. this exact gap is how «picknic» happens.</p>"},
-{s:"04 / YOU RUN IT",t:"grab + -ing",b:"",q:{p:"double the b?",o:["double","don't"],c:0,fb:"one beat, one vowel ‹a›, one consonant ‹b› → double."},ty:"grabbing"}],
+{s:"04 / YOU RUN IT",t:"grab + -ing",b:"",q:{p:"double the b?",o:["double","don't"],c:0,fb:"one beat, one vowel ‹a›, one consonant ‹b› → double."},cue:"grab + ing — run 1-1-1",ty:"grabbing"}],
 words:[
 {a:"grabbing",p:{k:"build",s:"grab + -ing"},hot:{c:"b",m:1},fork:{k:"cond",qs:[{q:"beats — syllables in the base?",o:["one","two+"],c:0,why:""},{q:"vowel letters right before the final consonant?",o:["one","two"],c:0,why:"g·r·a·b → just the a."},{q:"the suffix starts with a…",o:["vowel","consonant"],c:0,why:""}],vd:"all three hold → <b>DOUBLE the b</b>: grab·b·ing.",vc:"good"}},
 {a:"raining",p:{k:"build",s:"rain + -ing"},hot:{c:"n",m:1},fork:{k:"cond",qs:[{q:"beats?",o:["one","two+"],c:0,why:""},{q:"vowel letters before the n?",o:["one","two"],c:1,why:"r·a·i·n → a, i. two."},{q:"suffix starts with a…",o:["vowel","consonant"],c:0,why:""}],vd:"two vowel letters → condition failed → <b>DON'T double</b>: rain·ing.",vc:"warn"}},
@@ -386,7 +390,7 @@ docs:[
 {s:"01 / INTRO",t:"hope → hoping",b:"<p>vowel suffix arrives → it can keep the vowel long → the e's job is taken → <span class='g'>drop it</span>: hop·ing.</p>"},
 {s:"02 / DEVELOP",t:"hope → hopeful",b:"<p>consonant suffix → no one to do the job → <span class='g'>keep the e</span>: hope·ful, care·ful.</p>"},
 {s:"03 / THE TWIST",t:"noticeable",b:"<p>soft c and g need the e as a <span class='v'>bodyguard</span> — drop it and ‹nocable› goes hard. keep it: notice·able, courage·ous.</p>"},
-{s:"04 / YOU RUN IT",t:"care + ing",b:"",q:{p:"which?",o:["careing","caring"],c:1,fb:"vowel suffix → drop the e."},ty:"caring"}],
+{s:"04 / YOU RUN IT",t:"care + ing",b:"",q:{p:"which?",o:["careing","caring"],c:1,fb:"vowel suffix → drop the e."},cue:"care + ing — run drop-e",ty:"caring"}],
 words:[
 {a:"hoping",p:{k:"build",s:"hope + ing"},hot:{c:"ep",m:1},fork:{k:"cond",qs:[{q:"the suffix starts with a…",o:["vowel","consonant"],c:0,why:""}],vd:"vowel suffix → drop the e: <b>hop·ing</b>. one p — this is a silent-e word, not a 1-1-1 word.",vc:"good"}},
 {a:"hopeful",p:{k:"build",s:"hope + ful"},hot:{c:"ef",m:3},fork:{k:"cond",qs:[{q:"suffix starts with a…",o:["vowel","consonant"],c:1,why:""}],vd:"consonant suffix → the e stays: <b>hope·ful</b>.",vc:"good"}},
@@ -398,7 +402,7 @@ docs:[
 {s:"01 / INTRO",t:"cry → cried",b:"<p>consonant before the y → y flips to <span class='k'>i</span> before a suffix: cried, happier, carried.</p>"},
 {s:"02 / DEVELOP",t:"play → played",b:"<p>vowel before the y → <span class='g'>leave it alone</span>: played, enjoying.</p>"},
 {s:"03 / THE TWIST",t:"carrying",b:"<p>before <span class='k'>-ing</span> the y survives — English refuses <span class='r'>‹ii›</span>. carry·ing, not carriing.</p>"},
-{s:"04 / YOU RUN IT",t:"study + ed",b:"",q:{p:"which?",o:["studyed","studied"],c:1,fb:"consonant + y → i."},ty:"studied"}],
+{s:"04 / YOU RUN IT",t:"study + ed",b:"",q:{p:"which?",o:["studyed","studied"],c:1,fb:"consonant + y → i."},cue:"study + ed — run y-to-i",ty:"studied"}],
 words:[
 {a:"carried",p:{k:"build",s:"carry + ed"},hot:{c:"iy",m:3},fork:{k:"cond",qs:[{q:"letter before the y?",o:["consonant","vowel"],c:0,why:""}],vd:"consonant+y → flip: <b>carr·i·ed</b>.",vc:"good"}},
 {a:"carrying",p:{k:"build",s:"carry + ing"},hot:{c:"iy",m:3},fork:{k:"cond",qs:[{q:"the suffix is -ing — flip the y?",o:["flip to i","keep the y"],c:1,why:"‹carriing› stacks two i's. refused."}],vd:"before -ing the y survives: <b>carry·ing</b>.",vc:"warn"}},
@@ -410,7 +414,7 @@ docs:[
 {s:"01 / INTRO",t:"jumped · played · wanted",b:"<p>say them: /jump<span class='k'>t</span>/ · /play<span class='k'>d</span>/ · /want·<span class='k'>ed</span>/. three different sounds.</p>"},
 {s:"02 / DEVELOP",t:"one spelling",b:"<p>all three are spelled <span class='g'>-ed</span>. the spelling never bends to the sound.</p>"},
 {s:"03 / THE TWIST",t:"the thesis, proven",b:"<p>this is the cleanest demonstration of the whole system: on the page, <b>meaning beats sound</b>. past tense = -ed, whatever your ear says.</p>"},
-{s:"04 / YOU RUN IT",t:"washed",b:"",q:{p:"it ends in the sound /t/ — spell it…",o:["washt","washed"],c:1,fb:"past = -ed. always."},ty:"washed"}],
+{s:"04 / YOU RUN IT",t:"washed",b:"",q:{p:"it ends in the sound /t/ — spell it…",o:["washt","washed"],c:1,fb:"past = -ed. always."},cue:"wash + ed — past tense never bends to the sound",ty:"washed"}],
 words:[
 {a:"jumped",p:{k:"tr",s:"jump → past"},hot:{c:"ed",m:4},fork:{k:"cond",qs:[{q:"say it — the ending sounds like…",o:["/t/","/d/","/ed/"],c:0,why:""}],vd:"sounds like ‹jumpt› — spelled <b>-ed</b>. always.",vc:"good"}},
 {a:"missed",p:{k:"tr",s:"miss → past"},hot:{c:"ed",m:4},fork:{k:"cond",qs:[],vd:"sounds /t/, spelled <b>-ed</b>: miss·ed.",vc:"good"}},
@@ -424,7 +428,7 @@ docs:[
 {s:"01 / INTRO",t:"the glue law",b:"<p>a prefix glues on the front and changes <span class='g'>NOTHING</span>. keep every letter of both parts.</p>"},
 {s:"02 / DEVELOP",t:"mis + spell",b:"<p>mis keeps its s. spell keeps its s. <span class='g'>mis·spell</span> — two s's, no mercy. same law: un·natural, dis·satisfied.</p>"},
 {s:"03 / THE TWIST",t:"‹dissapear›",b:"<p>the classic miss is doubling <span class='r'>in the wrong place</span>. dis|appear: one s (from dis), and the pp belongs to appear. know <b>where the seam is</b> before you double anything.</p>"},
-{s:"04 / YOU RUN IT",t:"un + natural",b:"",q:{p:"n's in the middle?",o:["one","two"],c:1,fb:"both survive: un·natural."},ty:"unnatural"}],
+{s:"04 / YOU RUN IT",t:"un + natural",b:"",q:{p:"n's in the middle?",o:["one","two"],c:1,fb:"both survive: un·natural."},cue:"un + natural — keep every letter of both",ty:"unnatural"}],
 words:[
 {a:"misspell",p:{k:"build",s:"mis + spell"},hot:{c:"s",m:2},fork:{k:"cond",qs:[{q:"s's at the seam?",o:["one","both — two"],c:1,why:"mis keeps its s, spell keeps its s."}],vd:"<b>mis·spell</b> — two s's, no mercy.",vc:"good"}},
 {a:"disappear",p:{k:"build",s:"dis + appear"},hot:{c:"sp",m:2},fork:{k:"cond",qs:[{q:"where could a double go wrong?",o:["‹dissapear› — doubling the s","it can't"],c:0,why:"the seam is dis|appear — single s, and appear owns its pp."}],vd:"<b>dis·appear</b> — one s at the seam, pp belongs to appear.",vc:"good"}},
@@ -436,7 +440,7 @@ docs:[
 {s:"01 / INTRO",t:"spatial logic",b:"<p><span class='k'>sub</span> under · <span class='k'>inter</span> between · <span class='k'>trans</span> across · <span class='k'>super</span> above · <span class='k'>non</span> not. prefixes you can <b>picture</b>.</p>"},
 {s:"02 / DEVELOP",t:"same glue law",b:"<p>inter + act → inter·act. trans + port → trans·port. nothing changes at the seam. ever.</p>"},
 {s:"03 / THE TWIST",t:"‹support›?",b:"<p>that's <span class='v'>sub wearing a disguise</span> — the b bent to match the root. we crack that whole scheme in stage 5. for now: flag it, don't fear it.</p>"},
-{s:"04 / YOU RUN IT",t:"trans + port",b:"",q:{p:"letters lost at the seam?",o:["none","one"],c:0,fb:"none. ever."},ty:"transport"}],
+{s:"04 / YOU RUN IT",t:"trans + port",b:"",q:{p:"letters lost at the seam?",o:["none","one"],c:0,fb:"none. ever."},cue:"trans + port — carry across",ty:"transport"}],
 words:[
 {a:"interact",p:{k:"build",s:"inter + act"},hot:{c:"ra",m:4},fork:{k:"cond",qs:[],vd:"inter (between) + act: <b>inter·act</b>.",vc:"good"}},
 {a:"transport",p:{k:"build",s:"trans + port"},hot:{c:"sp",m:4},fork:{k:"cond",qs:[],vd:"trans (across) + port (carry): <b>trans·port</b>.",vc:"good"}},
@@ -448,7 +452,7 @@ docs:[
 {s:"01 / INTRO",t:"the meaning layer",b:"<p><span class='k'>de</span> down · <span class='k'>ex</span> out · <span class='k'>pro</span> forward · <span class='k'>com/con</span> together · <span class='k'>in/im</span> — in, <b>or</b> not.</p>"},
 {s:"02 / DEVELOP",t:"ex-",b:"<p>ex means out — an <b>ex</b>-friend is out of your life, the <b>ex</b>it is the way out, to <b>ex</b>port is to carry out.</p>"},
 {s:"03 / THE TWIST",t:"con + nect",b:"<p>where's the nn in connect from? <span class='g'>con + nect</span> (to bind). the seam explains the double — a preview of stage 5, where this becomes a superpower.</p>"},
-{s:"04 / YOU RUN IT",t:"import",b:"",q:{p:"the im- here means…",o:["not","in"],c:1,fb:"carry IN."},ty:"import"}],
+{s:"04 / YOU RUN IT",t:"import",b:"",q:{p:"the im- here means…",o:["not","in"],c:1,fb:"carry IN."},cue:"im + port — carry in",ty:"import"}],
 words:[
 {a:"insane",p:{k:"build",s:"in + sane"},hot:{c:"ns",m:1},fork:{k:"cond",qs:[{q:"in- here means…",o:["not","in"],c:0,why:""}],vd:"in (not) + sane: <b>in·sane</b>.",vc:"good"}},
 {a:"inhale",p:{k:"build",s:"in + hale"},hot:{c:"nh",m:1},fork:{k:"cond",qs:[{q:"in- here means…",o:["not","in"],c:1,why:""}],vd:"in (in!) + hale (breathe): <b>in·hale</b>.",vc:"good"}},
@@ -463,7 +467,7 @@ function rootDocs(root,mean,hook,twist,kq){return [
 kq];}
 UNITS.push(
 {id:"4.1",st:4,err:"E7",nm:"root.port",ti:"-port- (carry)",ds:"import · report · support · portable",
-docs:rootDocs("port","carry","a <b>port</b> is where ships carry goods in. <span class='k'>im</span>port carry in · <span class='k'>ex</span>port carry out · <span class='k'>re</span>port carry back.","<span class='v'>support</span> = sub + port, «carry from under» — the prefix bent to match. stage 5 decodes it.",{s:"04 / YOU RUN IT",t:"deport",b:"",q:{p:"the root in ‹deport›?",o:["de","port"],c:1,fb:"port — carry. de- carries it away."},ty:"deport"}),
+docs:rootDocs("port","carry","a <b>port</b> is where ships carry goods in. <span class='k'>im</span>port carry in · <span class='k'>ex</span>port carry out · <span class='k'>re</span>port carry back.","<span class='v'>support</span> = sub + port, «carry from under» — the prefix bent to match. stage 5 decodes it.",{s:"04 / YOU RUN IT",t:"deport",b:"",q:{p:"the root in ‹deport›?",o:["de","port"],c:1,fb:"port — carry. de- carries it away."},cue:"de + port — carry away",ty:"deport"}),
 words:[
 {a:"import",p:{k:"build",s:"im + port"},hot:{c:"mp",m:1},fork:{k:"cond",qs:[],vd:"im (in) + port: carry in. <b>im·port</b>.",vc:"good"}},
 {a:"report",p:{k:"build",s:"re + port"},hot:{c:"ep",m:1},fork:{k:"cond",qs:[],vd:"re (back) + port: carry back. <b>re·port</b>.",vc:"good"}},
@@ -471,7 +475,7 @@ words:[
 {a:"portable",p:{k:"build",s:"port + able"},hot:{v:1,m:4},fork:{k:"cond",qs:[],vd:"port + able — carry-able: <b>port·able</b>. (watch the sleepy a.)",vc:"good"}}]},
 
 {id:"4.2",st:4,err:"E7",nm:"root.struct",ti:"-struct- (build)",ds:"construct · structure · instruct · destruction",
-docs:rootDocs("struct","build","a <b>structure</b> is a thing built. <span class='k'>con</span>struct build together · <span class='k'>in</span>struct build knowledge into someone · <span class='k'>de</span>struction un-building.","the root never changes coats: struct, every time, in every family member.",{s:"04 / YOU RUN IT",t:"infrastructure",b:"",q:{p:"the root?",o:["infra","struct"],c:1,fb:"struct — build. infra- = beneath."},ty:"structure"}),
+docs:rootDocs("struct","build","a <b>structure</b> is a thing built. <span class='k'>con</span>struct build together · <span class='k'>in</span>struct build knowledge into someone · <span class='k'>de</span>struction un-building.","the root never changes coats: struct, every time, in every family member.",{s:"04 / YOU RUN IT",t:"infrastructure",b:"",q:{p:"the root?",o:["infra","struct"],c:1,fb:"struct — build. infra- = beneath."},cue:"struct + ure — a thing built",ty:"structure"}),
 words:[
 {a:"construct",p:{k:"build",s:"con + struct"},hot:{c:"ns",m:2},fork:{k:"cond",qs:[],vd:"con (together) + struct: <b>con·struct</b>.",vc:"good"}},
 {a:"instruct",p:{k:"build",s:"in + struct"},hot:{c:"ns",m:1},fork:{k:"cond",qs:[],vd:"in + struct — build knowledge in: <b>in·struct</b>.",vc:"good"}},
@@ -479,7 +483,7 @@ words:[
 {a:"destruction",p:{k:"build",s:"de + struct + ion"},hot:{c:"ti",m:7},fork:{k:"cond",qs:[],vd:"de + struct + ion: <b>de·struct·ion</b>.",vc:"good"}}]},
 
 {id:"4.3",st:4,err:"E7",nm:"root.spect",ti:"-spect- (look)",ds:"inspect · spectator · respect · perspective",
-docs:rootDocs("spect","look / watch","a <b>spect</b>ator watches. <span class='k'>in</span>spect look into · <span class='k'>re</span>spect look again at · <span class='k'>retro</span>spect look back.","perspective = per (through) + spect — a way of looking through. the meaning is the memory.",{s:"04 / YOU RUN IT",t:"inspect",b:"",q:{p:"inspect means…",o:["look into","build into"],c:0,fb:"spect = look."},ty:"inspect"}),
+docs:rootDocs("spect","look / watch","a <b>spect</b>ator watches. <span class='k'>in</span>spect look into · <span class='k'>re</span>spect look again at · <span class='k'>retro</span>spect look back.","perspective = per (through) + spect — a way of looking through. the meaning is the memory.",{s:"04 / YOU RUN IT",t:"inspect",b:"",q:{p:"inspect means…",o:["look into","build into"],c:0,fb:"spect = look."},cue:"in + spect — look into",ty:"inspect"}),
 words:[
 {a:"inspect",p:{k:"build",s:"in + spect"},hot:{c:"ns",m:1},fork:{k:"cond",qs:[],vd:"in + spect — look into: <b>in·spect</b>.",vc:"good"}},
 {a:"spectator",p:{k:"build",s:"spect + ator"},hot:{v:1,m:5},fork:{k:"cond",qs:[],vd:"spect + ator — the one who looks: <b>spect·ator</b>.",vc:"good"}},
@@ -487,7 +491,7 @@ words:[
 {a:"perspective",p:{k:"build",s:"per + spect + ive"},hot:{c:"si",m:3},fork:{k:"cond",qs:[],vd:"per (through) + spect + ive: <b>per·spect·ive</b>.",vc:"good"}}]},
 
 {id:"4.4",st:4,err:"E7",nm:"root.dict",ti:"-dict- (say)",ds:"predict · dictionary · contradict · verdict",
-docs:rootDocs("dict","say / tell","a <b>dict</b>ator tells everyone what to do. <span class='k'>pre</span>dict say before · <span class='k'>contra</span>dict say against.","a <b>ver·dict</b> is literally a «true saying» (ver = true). the word carries its own definition.",{s:"04 / YOU RUN IT",t:"predict",b:"",q:{p:"predict = say…",o:["before","against"],c:0,fb:"pre = before."},ty:"predict"}),
+docs:rootDocs("dict","say / tell","a <b>dict</b>ator tells everyone what to do. <span class='k'>pre</span>dict say before · <span class='k'>contra</span>dict say against.","a <b>ver·dict</b> is literally a «true saying» (ver = true). the word carries its own definition.",{s:"04 / YOU RUN IT",t:"predict",b:"",q:{p:"predict = say…",o:["before","against"],c:0,fb:"pre = before."},cue:"pre + dict — say beforehand",ty:"predict"}),
 words:[
 {a:"predict",p:{k:"build",s:"pre + dict"},hot:{c:"ed",m:2},fork:{k:"cond",qs:[],vd:"pre + dict — say before: <b>pre·dict</b>.",vc:"good"}},
 {a:"dictionary",p:{k:"build",s:"dict + ionary"},hot:{v:1,m:4},fork:{k:"cond",qs:[],vd:"dict + ionary — the book of sayings: <b>dict·ion·ary</b>.",vc:"good"}},
@@ -495,7 +499,7 @@ words:[
 {a:"verdict",p:{k:"build",s:"ver + dict"},hot:{c:"rd",m:2},fork:{k:"cond",qs:[],vd:"ver (true) + dict — a true saying: <b>ver·dict</b>.",vc:"good"}}]},
 
 {id:"4.5",st:4,err:"E7",nm:"root.rupt",ti:"-rupt- (break)",ds:"erupt · disrupt · interrupt · corrupt",
-docs:rootDocs("rupt","break","a volcano e<b>rupt</b>s — breaks out. <span class='k'>dis</span>rupt break apart · <span class='k'>inter</span>rupt break between.","<span class='g'>inter + rupt</span> — inter ends in r, rupt starts with r. the rr in interrupt is a <b>seam</b>, not a memory fact.",{s:"04 / YOU RUN IT",t:"interrupt",b:"",q:{p:"r's in the middle?",o:["one","two — seam"],c:1,fb:"inter|rupt. both survive."},ty:"interrupt"}),
+docs:rootDocs("rupt","break","a volcano e<b>rupt</b>s — breaks out. <span class='k'>dis</span>rupt break apart · <span class='k'>inter</span>rupt break between.","<span class='g'>inter + rupt</span> — inter ends in r, rupt starts with r. the rr in interrupt is a <b>seam</b>, not a memory fact.",{s:"04 / YOU RUN IT",t:"interrupt",b:"",q:{p:"r's in the middle?",o:["one","two — seam"],c:1,fb:"inter|rupt. both survive."},cue:"inter + rupt — break in between",ty:"interrupt"}),
 words:[
 {a:"erupt",p:{k:"build",s:"e + rupt"},hot:{c:"ru",m:1},fork:{k:"cond",qs:[],vd:"e(x) (out) + rupt — break out: <b>e·rupt</b>.",vc:"good"}},
 {a:"disrupt",p:{k:"build",s:"dis + rupt"},hot:{c:"sr",m:2},fork:{k:"cond",qs:[],vd:"dis (apart) + rupt: <b>dis·rupt</b>.",vc:"good"}},
@@ -503,7 +507,7 @@ words:[
 {a:"corrupt",p:{k:"build",s:"com + rupt → ?"},hot:{c:"r",m:2},fork:{k:"cond",qs:[{q:"the m before r…",o:["stays m","becomes r"],c:1,why:"com bends to cor before r — assimilation, stage 5's game."}],vd:"com→cor: <b>cor·rupt</b> — thoroughly broken. the rr is a disguised prefix.",vc:"good"}}]},
 
 {id:"4.6",st:4,err:"E7",nm:"root.tract",ti:"-tract- (pull)",ds:"subtract · distract · extract · attract",
-docs:rootDocs("tract","pull / drag","a <b>tract</b>or pulls. <span class='k'>sub</span>tract pull from under · <span class='k'>dis</span>tract pull apart · <span class='k'>ex</span>tract pull out.","<span class='v'>attract</span> = ad + tract, pull toward — the d copied the t. your first live look at stage 5's whole idea.",{s:"04 / YOU RUN IT",t:"subtract",b:"",q:{p:"the root?",o:["sub","tract"],c:1,fb:"tract — pull."},ty:"subtract"}),
+docs:rootDocs("tract","pull / drag","a <b>tract</b>or pulls. <span class='k'>sub</span>tract pull from under · <span class='k'>dis</span>tract pull apart · <span class='k'>ex</span>tract pull out.","<span class='v'>attract</span> = ad + tract, pull toward — the d copied the t. your first live look at stage 5's whole idea.",{s:"04 / YOU RUN IT",t:"subtract",b:"",q:{p:"the root?",o:["sub","tract"],c:1,fb:"tract — pull."},cue:"sub + tract — pull from under",ty:"subtract"}),
 words:[
 {a:"subtract",p:{k:"build",s:"sub + tract"},hot:{c:"bt",m:2},fork:{k:"cond",qs:[],vd:"sub (from under) + tract: <b>sub·tract</b>.",vc:"good"}},
 {a:"distract",p:{k:"build",s:"dis + tract"},hot:{c:"st",m:2},fork:{k:"cond",qs:[],vd:"dis (apart) + tract — pull your attention apart: <b>dis·tract</b>.",vc:"good"}},
@@ -511,7 +515,7 @@ words:[
 {a:"attract",p:{k:"build",s:"ad + tract → ?"},hot:{c:"t",m:1},fork:{k:"cond",qs:[{q:"the d before t…",o:["stays d","copies the t"],c:1,why:"ad bends to at — the tt is the fused prefix."}],vd:"ad→at: <b>at·tract</b> — pull toward. double-t decoded.",vc:"good"}}]},
 
 {id:"4.7",st:4,err:"E7",nm:"root.ject",ti:"-ject- (throw)",ds:"eject · reject · project · interject",
-docs:rootDocs("ject","throw","the <b>eject</b> button throws you out. <span class='k'>re</span>ject throw back · <span class='k'>pro</span>ject throw forward.","<span class='g'>inter·ject</span> — throw between: to interject is to throw your point into the conversation. a word for people with things to say.",{s:"04 / YOU RUN IT",t:"reject",b:"",q:{p:"reject = throw…",o:["back","forward"],c:0,fb:"re = back."},ty:"reject"}),
+docs:rootDocs("ject","throw","the <b>eject</b> button throws you out. <span class='k'>re</span>ject throw back · <span class='k'>pro</span>ject throw forward.","<span class='g'>inter·ject</span> — throw between: to interject is to throw your point into the conversation. a word for people with things to say.",{s:"04 / YOU RUN IT",t:"reject",b:"",q:{p:"reject = throw…",o:["back","forward"],c:0,fb:"re = back."},cue:"re + ject — throw back",ty:"reject"}),
 words:[
 {a:"eject",p:{k:"build",s:"e + ject"},hot:{c:"je",m:1},fork:{k:"cond",qs:[],vd:"e(x) (out) + ject: <b>e·ject</b>.",vc:"good"}},
 {a:"reject",p:{k:"build",s:"re + ject"},hot:{c:"ej",m:1},fork:{k:"cond",qs:[],vd:"re (back) + ject: <b>re·ject</b>.",vc:"good"}},
@@ -519,7 +523,7 @@ words:[
 {a:"interject",p:{k:"build",s:"inter + ject"},hot:{c:"rj",m:4},fork:{k:"cond",qs:[],vd:"inter (between) + ject — throw your point in: <b>inter·ject</b>.",vc:"good"}}]},
 
 {id:"4.8",st:4,err:"E8",nm:"root.scrib",ti:"-scrib- / -script- (write)",ds:"the first two-coat root",
-docs:rootDocs("scrib / script","write","a <b>script</b> is something written; a <b>manu</b>script is written by hand (manu = hand); to <b>sub</b>scribe is to write your name under.","one root, <span class='v'>two coats</span>: <b>scrib</b> in the verb (describe, subscribe), <b>script</b> elsewhere (description, manuscript). same family, same meaning — pick the coat that fits the ending.",{s:"04 / YOU RUN IT",t:"prescription",b:"",q:{p:"which coat before -ion?",o:["scrib","script"],c:1,fb:"script + ion."},ty:"prescription"}),
+docs:rootDocs("scrib / script","write","a <b>script</b> is something written; a <b>manu</b>script is written by hand (manu = hand); to <b>sub</b>scribe is to write your name under.","one root, <span class='v'>two coats</span>: <b>scrib</b> in the verb (describe, subscribe), <b>script</b> elsewhere (description, manuscript). same family, same meaning — pick the coat that fits the ending.",{s:"04 / YOU RUN IT",t:"prescription",b:"",q:{p:"which coat before -ion?",o:["scrib","script"],c:1,fb:"script + ion."},cue:"pre + script + ion — what a doctor writes before",ty:"prescription"}),
 words:[
 {a:"describe",p:{k:"build",s:"de + scribe"},hot:{c:"b",m:5},fork:{k:"cond",qs:[{q:"which coat in the verb?",o:["scrib(e)","script"],c:0,why:""}],vd:"verb coat: <b>de·scribe</b>.",vc:"good"}},
 {a:"subscribe",p:{k:"build",s:"sub + scribe"},hot:{c:"b",m:2},fork:{k:"cond",qs:[],vd:"sub (under) + scribe — write your name under: <b>sub·scribe</b>.",vc:"good"}},
@@ -527,7 +531,7 @@ words:[
 {a:"manuscript",p:{k:"build",s:"manu + script"},hot:{c:"us",m:3},fork:{k:"cond",qs:[],vd:"manu (hand) + script — written by hand: <b>manu·script</b>.",vc:"good"}}]},
 
 {id:"4.9",st:4,err:"E8",nm:"root.duct",ti:"-duc- / -duct- (lead)",ds:"produce · reduce · conduct · aqueduct",
-docs:rootDocs("duc / duct","lead","an <b>aque·duct</b> leads water (aqua). to <b>edu</b>cate is to lead out what's in a kid.","two coats again: <b>-duce</b> in silent-e verbs (produce, reduce), <b>-duct</b> elsewhere (conduct, aqueduct).",{s:"04 / YOU RUN IT",t:"conduct",b:"",q:{p:"which coat?",o:["conduce? no — duct","duce"],c:0,fb:"conduct — the duct coat."},ty:"conduct"}),
+docs:rootDocs("duc / duct","lead","an <b>aque·duct</b> leads water (aqua). to <b>edu</b>cate is to lead out what's in a kid.","two coats again: <b>-duce</b> in silent-e verbs (produce, reduce), <b>-duct</b> elsewhere (conduct, aqueduct).",{s:"04 / YOU RUN IT",t:"conduct",b:"",q:{p:"which coat?",o:["conduce? no — duct","duce"],c:0,fb:"conduct — the duct coat."},cue:"con + duct — lead together",ty:"conduct"}),
 words:[
 {a:"produce",p:{k:"build",s:"pro + duce"},hot:{c:"ce",m:5},fork:{k:"cond",qs:[],vd:"pro (forward) + duce — lead forward: <b>pro·duce</b>.",vc:"good"}},
 {a:"reduce",p:{k:"build",s:"re + duce"},hot:{c:"ce",m:4},fork:{k:"cond",qs:[],vd:"re (back) + duce: <b>re·duce</b>.",vc:"good"}},
@@ -535,7 +539,7 @@ words:[
 {a:"aqueduct",p:{k:"build",s:"aque + duct"},hot:{c:"e",m:3},fork:{k:"cond",qs:[],vd:"aque (water) + duct — leads water: <b>aque·duct</b>. mind the quiet e.",vc:"good"}}]},
 
 {id:"4.10",st:4,err:"E8",nm:"root.mit",ti:"-mit- / -miss- (send)",ds:"where «permition» dies",
-docs:rootDocs("mit / miss","send","a <b>miss</b>ile is sent; a <b>mission</b> is what you're sent to do; to <b>ad</b>mit is to send toward — let in.","the coats: <b>-mit</b> in the verb (permit, transmit), <b>-miss-</b> before -ion (per<span class='g'>miss</span>ion, sub<span class='g'>miss</span>ion). «permition» is the wrong coat — now you know why.",{s:"04 / YOU RUN IT",t:"transmit → noun",b:"",q:{p:"which?",o:["transmition","transmission"],c:1,fb:"the -miss- coat before -ion."},ty:"transmission"}),
+docs:rootDocs("mit / miss","send","a <b>miss</b>ile is sent; a <b>mission</b> is what you're sent to do; to <b>ad</b>mit is to send toward — let in.","the coats: <b>-mit</b> in the verb (permit, transmit), <b>-miss-</b> before -ion (per<span class='g'>miss</span>ion, sub<span class='g'>miss</span>ion). «permition» is the wrong coat — now you know why.",{s:"04 / YOU RUN IT",t:"transmit → noun",b:"",q:{p:"which?",o:["transmition","transmission"],c:1,fb:"the -miss- coat before -ion."},cue:"trans + miss + ion — a sending across",ty:"transmission"}),
 words:[
 {a:"permit",p:{k:"build",s:"per + mit"},hot:{c:"t",m:5},fork:{k:"cond",qs:[{q:"verb coat?",o:["-mit","-miss"],c:0,why:""}],vd:"verb coat: <b>per·mit</b> — send through.",vc:"good"}},
 {a:"transmit",p:{k:"build",s:"trans + mit"},hot:{c:"t",m:7},fork:{k:"cond",qs:[],vd:"trans (across) + mit: <b>trans·mit</b>.",vc:"good"}},
@@ -543,7 +547,7 @@ words:[
 {a:"submission",p:{k:"build",s:"sub + miss + ion"},hot:{c:"s",m:5},fork:{k:"cond",qs:[],vd:"<b>sub·miss·ion</b> — sent under. the -miss- coat again.",vc:"good"}}]},
 
 {id:"4.11",st:4,err:"E8",nm:"root.vert",ti:"-vert- / -vers- (turn)",ds:"convert · invert · version · universe",
-docs:rootDocs("vert / vers","turn","the <b>uni·verse</b> is everything turned into one (unus). to <b>con</b>vert is to turn into.","coats: <b>-vert</b> in verbs (convert, invert), <b>-vers-</b> in nouns (version, universe, reverse).",{s:"04 / YOU RUN IT",t:"reverse",b:"",q:{p:"noun/adjective coat?",o:["vert","vers"],c:1,fb:"re·verse — turns back."},ty:"reverse"}),
+docs:rootDocs("vert / vers","turn","the <b>uni·verse</b> is everything turned into one (unus). to <b>con</b>vert is to turn into.","coats: <b>-vert</b> in verbs (convert, invert), <b>-vers-</b> in nouns (version, universe, reverse).",{s:"04 / YOU RUN IT",t:"reverse",b:"",q:{p:"noun/adjective coat?",o:["vert","vers"],c:1,fb:"re·verse — turns back."},cue:"re + vers + e — turn back",ty:"reverse"}),
 words:[
 {a:"convert",p:{k:"build",s:"con + vert"},hot:{c:"t",m:6},fork:{k:"cond",qs:[{q:"verb coat?",o:["vert","vers"],c:0,why:""}],vd:"verb coat: <b>con·vert</b>.",vc:"good"}},
 {a:"invert",p:{k:"build",s:"in + vert"},hot:{c:"t",m:4},fork:{k:"cond",qs:[],vd:"in + vert — turn inward/over: <b>in·vert</b>.",vc:"good"}},
@@ -551,7 +555,7 @@ words:[
 {a:"universe",p:{k:"build",s:"uni + verse"},hot:{c:"s",m:5},fork:{k:"cond",qs:[],vd:"uni (one) + verse — everything turned into one: <b>uni·verse</b>.",vc:"good"}}]},
 
 {id:"4.12",st:4,err:"E8",nm:"root.cede",ti:"-cede / -ceed / -sede (go)",ds:"the notorious trap — pinned by two tiny lists",
-docs:rootDocs("cede / ceed","go / yield","to <b>pro·ceed</b> is to go forward; a receding hairline <b>goes back</b>; suc·cess is going up well.","the whole trap pins with two tiny lists: <span class='g'>only three -ceed words</span> — proceed, exceed, succeed. <span class='g'>only one -sede</span> — supersede. <b>everything else is -cede.</b>",{s:"04 / YOU RUN IT",t:"recede",b:"",q:{p:"on the -ceed shortlist?",o:["yes","no → -cede"],c:1,fb:"not on the list of three → recede."},ty:"recede"}),
+docs:rootDocs("cede / ceed","go / yield","to <b>pro·ceed</b> is to go forward; a receding hairline <b>goes back</b>; suc·cess is going up well.","the whole trap pins with two tiny lists: <span class='g'>only three -ceed words</span> — proceed, exceed, succeed. <span class='g'>only one -sede</span> — supersede. <b>everything else is -cede.</b>",{s:"04 / YOU RUN IT",t:"recede",b:"",q:{p:"on the -ceed shortlist?",o:["yes","no → -cede"],c:1,fb:"not on the list of three → recede."},cue:"re + cede — go back",ty:"recede"}),
 words:[
 {a:"precede",p:{k:"build",s:"pre + cede"},hot:{c:"ce",m:3},fork:{k:"cond",qs:[{q:"on the -ceed shortlist (proceed/exceed/succeed)?",o:["yes","no"],c:1,why:""}],vd:"not on the list → <b>pre·cede</b>.",vc:"good"}},
 {a:"proceed",p:{k:"build",s:"pro + ceed"},hot:{c:"e",m:4},fork:{k:"cond",qs:[{q:"on the shortlist?",o:["yes","no"],c:0,why:"proceed, exceed, succeed — the only three."}],vd:"shortlist member → <b>pro·ceed</b>.",vc:"good"}},
@@ -559,7 +563,7 @@ words:[
 {a:"supersede",p:{k:"build",s:"super + sede"},hot:{c:"s",m:5},fork:{k:"cond",qs:[],vd:"the <b>only</b> -sede in English: <b>super·sede</b> — sits above (sedere: to sit).",vc:"warn"}}]},
 
 {id:"4.13",st:4,err:"E8",nm:"root.ceive",ti:"-ceive- / -cept- (take) + ei",ds:"receive · deceive · reception · accept",
-docs:rootDocs("ceive / cept","take","to <b>re</b>ceive is to take back toward you; a <b>con</b>cept is an idea taken together.","the i-before-e rule lands here: after a <span class='k'>c</span>, it's <span class='g'>e before i</span> — rec·<b>ei</b>·ve, dec·<b>ei</b>·ve. the ei is <i>because of</i> the c.",{s:"04 / YOU RUN IT",t:"deceive",b:"",q:{p:"after the c…",o:["ie","ei"],c:1,fb:"e before i, after c."},ty:"deceive"}),
+docs:rootDocs("ceive / cept","take","to <b>re</b>ceive is to take back toward you; a <b>con</b>cept is an idea taken together.","the i-before-e rule lands here: after a <span class='k'>c</span>, it's <span class='g'>e before i</span> — rec·<b>ei</b>·ve, dec·<b>ei</b>·ve. the ei is <i>because of</i> the c.",{s:"04 / YOU RUN IT",t:"deceive",b:"",q:{p:"after the c…",o:["ie","ei"],c:1,fb:"e before i, after c."},cue:"de + ceive — take someone in. after c, e before i",ty:"deceive"}),
 words:[
 {a:"receive",p:{k:"build",s:"re + ceive"},hot:{c:"ei",m:3},fork:{k:"cond",qs:[{q:"after the c…",o:["ie","ei"],c:1,why:"after c: e before i."}],vd:"<b>rec·ei·ve</b> — the c flips the order.",vc:"good"}},
 {a:"deceive",p:{k:"build",s:"de + ceive"},hot:{c:"ei",m:3},fork:{k:"cond",qs:[],vd:"<b>dec·ei·ve</b> — take someone the wrong way. ei after c.",vc:"good"}},
@@ -573,7 +577,7 @@ docs:[
 {s:"01 / INTRO",t:"the reveal",b:"<p>prefixes <span class='v'>change their last letter to match the root they hit</span> — and THAT is where most double letters come from. ad + tract → <span class='g'>at·tract</span>.</p>"},
 {s:"02 / DEVELOP",t:"a fossil of fusion",b:"<p>the prefix «assimilates» — becomes like its neighbor, the way you pick up an accent. the double letter is a <b>fossil of two words fusing</b>.</p>"},
 {s:"03 / THE TWIST",t:"memory → arithmetic",b:"<p>so «how many letters??» stops being a memory test. it's <span class='g'>math you can re-run</span>: decompose, match, count. ad + similate → as·similate — <b>the word describes itself</b>.</p>"},
-{s:"04 / YOU RUN IT",t:"ad + prove",b:"",q:{p:"result?",o:["adprove","approve"],c:1,fb:"the d copies the p → approve."},ty:"approve"}],
+{s:"04 / YOU RUN IT",t:"ad + prove",b:"",q:{p:"result?",o:["adprove","approve"],c:1,fb:"the d copies the p → approve."},cue:"ad + prove — assimilate the d",ty:"approve"}],
 words:[
 {a:"attract",err:"E5",p:{k:"build",s:"ad + tract → ?"},hot:{c:"t",m:1},fork:{k:"cond",qs:[{q:"the d…",o:["stays d","copies the t"],c:1,why:""}],vd:"ad→at: <b>at·tract</b>. the tt is arithmetic.",vc:"good"}},
 {a:"approve",err:"E5",p:{k:"build",s:"ad + prove → ?"},hot:{c:"p",m:1},fork:{k:"cond",qs:[{q:"the d…",o:["stays d","copies the p"],c:1,why:""}],vd:"ad→ap: <b>ap·prove</b>.",vc:"good"}},
@@ -585,7 +589,7 @@ docs:[
 {s:"01 / INTRO",t:"ad- = toward",b:"<p>every one of these words is about moving <b>toward</b> something — in disguise.</p>"},
 {s:"02 / DEVELOP",t:"the costume rack",b:"<p>ad- becomes <span class='k'>ac · af · ag · al · an · ap · ar · as · at</span> — whatever the root's first letter is.</p>"},
 {s:"03 / THE TWIST",t:"two g's, explained",b:"<p>ad + gress (step) → <span class='g'>ag·gress·ive</span>. two g's, and now you know <i>why</i>. you never memorize this again — you compute it.</p>"},
-{s:"04 / YOU RUN IT",t:"ad + gress + ive",b:"",q:{p:"g's?",o:["one","two"],c:1,fb:"the d copies the g."},ty:"aggressive"}],
+{s:"04 / YOU RUN IT",t:"ad + gress + ive",b:"",q:{p:"g's?",o:["one","two"],c:1,fb:"the d copies the g."},cue:"ad + gress + ive — assimilate the d",ty:"aggressive"}],
 words:[
 {a:"aggressive",err:"E5",p:{k:"build",s:"ad + gress + ive"},hot:{c:"g",m:1},fork:{k:"cond",qs:[{q:"the d…",o:["stays","copies the g"],c:1,why:""}],vd:"ad→ag: <b>ag·gress·ive</b> — stepping toward.",vc:"good"}},
 {a:"appear",err:"E5",p:{k:"build",s:"ad + pear → ?"},hot:{c:"p",m:1},fork:{k:"cond",qs:[{q:"the d…",o:["stays","copies the p"],c:1,why:""}],vd:"ad→ap: <b>ap·pear</b> — come into view toward you.",vc:"good"}},
@@ -597,7 +601,7 @@ docs:[
 {s:"01 / INTRO",t:"the fused ‹not›",b:"<p>in- (not) copies the root's first letter: in+legal → <span class='g'>il·legal</span>, in+mature → <span class='g'>im·mature</span>, in+regular → <span class='g'>ir·regular</span>.</p>"},
 {s:"02 / DEVELOP",t:"before p and b",b:"<p>the n turns to <span class='k'>m</span> before lip-letters: im·possible, im·patient. your mouth already does this — the spelling just follows.</p>"},
 {s:"03 / THE TWIST",t:"two-faced, still",b:"<p>in- still means «in» sometimes: im·migrate (move <b>in</b>) vs im·mature (<b>not</b> mature). meaning-check, then arithmetic.</p>"},
-{s:"04 / YOU RUN IT",t:"in + regular",b:"",q:{p:"result?",o:["inregular","irregular"],c:1,fb:"n copies the r."},ty:"irregular"}],
+{s:"04 / YOU RUN IT",t:"in + regular",b:"",q:{p:"result?",o:["inregular","irregular"],c:1,fb:"n copies the r."},cue:"in + regular — assimilate the n",ty:"irregular"}],
 words:[
 {a:"illegal",err:"E5",p:{k:"build",s:"in + legal → ?"},hot:{c:"l",m:1},fork:{k:"cond",qs:[{q:"the n…",o:["stays","copies the l"],c:1,why:""}],vd:"in→il: <b>il·legal</b> — the ll is the fused «not».",vc:"good"}},
 {a:"immature",err:"E5",p:{k:"build",s:"in + mature → ?"},hot:{c:"m",m:1},fork:{k:"cond",qs:[{q:"the n…",o:["stays","copies the m"],c:1,why:""}],vd:"in→im: <b>im·mature</b>.",vc:"good"}},
@@ -609,7 +613,7 @@ docs:[
 {s:"01 / INTRO",t:"the fused ‹together›",b:"<p>com/con (together) copies too: com+lect → <span class='g'>col·lect</span> (gather together), com+relate → <span class='g'>cor·relate</span>.</p>"},
 {s:"02 / DEVELOP",t:"and sometimes just co-",b:"<p>before a vowel it drops to <span class='k'>co-</span>: co·author, co·exist. no double at all.</p>"},
 {s:"03 / THE TWIST",t:"commit",b:"<p>com + mit (send) → <span class='g'>com·mit</span> — the mm isn't assimilation, it's the plain seam: com ends m, mit starts m. <b>always name which kind of double you're looking at.</b></p>"},
-{s:"04 / YOU RUN IT",t:"com + lect",b:"",q:{p:"result?",o:["comlect","collect"],c:1,fb:"m copies the l → collect."},ty:"collect"}],
+{s:"04 / YOU RUN IT",t:"com + lect",b:"",q:{p:"result?",o:["comlect","collect"],c:1,fb:"m copies the l → collect."},cue:"com + lect — assimilate the m",ty:"collect"}],
 words:[
 {a:"collect",err:"E5",p:{k:"build",s:"com + lect → ?"},hot:{c:"l",m:2},fork:{k:"cond",qs:[{q:"the m…",o:["stays","copies the l"],c:1,why:""}],vd:"com→col: <b>col·lect</b> — gather together.",vc:"good"}},
 {a:"correct",err:"E5",p:{k:"build",s:"com + rect → ?"},hot:{c:"r",m:2},fork:{k:"cond",qs:[{q:"the m…",o:["stays","copies the r"],c:1,why:""}],vd:"com→cor: <b>cor·rect</b> — set straight together.",vc:"good"}},
@@ -621,7 +625,7 @@ docs:[
 {s:"01 / INTRO",t:"the disguise drops",b:"<p><span class='g'>sup·port</span> = sub + port — «carry from under». the pp is sub in costume. once you see it, you can't unsee it.</p>"},
 {s:"02 / DEVELOP",t:"the full rack",b:"<p>sub → <span class='k'>suc, suf, sup, sug</span> · ex → <span class='k'>ef</span> (effect) · ob → <span class='k'>oc, of, op</span> (oppose, occur).</p>"},
 {s:"03 / THE TWIST",t:"success",b:"<p>sub + cess (go) → <span class='g'>suc·cess</span> — going up well. the cc: arithmetic. the ss: the root's own. <b>two doubles, two different sources, both explained.</b></p>"},
-{s:"04 / YOU RUN IT",t:"sub + fer",b:"",q:{p:"result?",o:["subfer","suffer"],c:1,fb:"b copies the f → suffer."},ty:"suffer"}],
+{s:"04 / YOU RUN IT",t:"sub + fer",b:"",q:{p:"result?",o:["subfer","suffer"],c:1,fb:"b copies the f → suffer."},cue:"sub + fer — assimilate the b",ty:"suffer"}],
 words:[
 {a:"support",err:"E5",p:{k:"build",s:"sub + port → ?"},hot:{c:"p",m:2},fork:{k:"cond",qs:[{q:"the b…",o:["stays","copies the p"],c:1,why:""}],vd:"sub→sup: <b>sup·port</b>.",vc:"good"}},
 {a:"suffer",err:"E5",p:{k:"build",s:"sub + fer → ?"},hot:{c:"f",m:2},fork:{k:"cond",qs:[{q:"the b…",o:["stays","copies the f"],c:1,why:"fer = bear/carry."}],vd:"sub→suf: <b>suf·fer</b> — carry from under (fer = bear).",vc:"good"}},
@@ -633,7 +637,7 @@ docs:[
 {s:"01 / INTRO",t:"the monsters",b:"<p>the hardest-to-spell words in English terrify people because they memorize them as random letter-piles. you're going to <span class='g'>disassemble them like machines</span>.</p>"},
 {s:"02 / DEVELOP",t:"accommodate",b:"<p>ad + com + modate → <span class='g'>ac·com·modate</span>. cc from ad→ac, mm from com. <b>two doubles, both arithmetic.</b></p>"},
 {s:"03 / THE TWIST",t:"not every double is assimilation",b:"<p>un + necessary → <span class='g'>un·necessary</span>: that nn is a plain <b>seam</b> (un | necessary), not a bent prefix. label every double by its source — seam, arithmetic, or legacy.</p>"},
-{s:"04 / YOU RUN IT",t:"ad + com + modate",b:"",q:{p:"doubles?",o:["one","two: cc + mm"],c:1,fb:"ac·com·modate — both computed."},ty:"accommodate"}],
+{s:"04 / YOU RUN IT",t:"ad + com + modate",b:"",q:{p:"doubles?",o:["one","two: cc + mm"],c:1,fb:"ac·com·modate — both computed."},cue:"ad + com + modate — run the arithmetic",ty:"accommodate"}],
 words:[
 {a:"accommodate",err:"E5",p:{k:"build",s:"ad + com + modate → ?"},hot:{c:"cm",m:1},fork:{k:"cond",qs:[{q:"how many doubles?",o:["one","two: cc + mm"],c:1,why:"ad→ac gives cc; com gives mm."}],vd:"<b>ac·com·modate</b> — two doubles, both arithmetic. the scariest word in English, disassembled.",vc:"good"}},
 {a:"unnecessary",err:"E7",p:{k:"build",s:"un + necessary"},hot:{c:"nc",m:1},fork:{k:"cond",qs:[{q:"the nn is…",o:["assimilation","a seam: un | necessary"],c:1,why:""}],vd:"<b>un·necessary</b> — seam nn, then necessary's own c and ss.",vc:"good"}},
@@ -647,7 +651,7 @@ docs:[
 {s:"01 / INTRO",t:"the laziest vowel",b:"<p>the <span class='k'>‹uh›</span> in a·bout, tak·en, pen·cil, lem·on — the <b>schwa</b>. roughly one in five vowels you speak collapses into it.</p>"},
 {s:"02 / DEVELOP",t:"why it breaks spelling",b:"<p><b>all five vowel letters can spell it.</b> your ear is officially useless there. this — not stupidity — is why spelling feels impossible. the codebase is the problem.</p>"},
 {s:"03 / THE TWIST",t:"two diseases, one symptom",b:"<p>(1) wrong <span class='r'>LETTER</span> — «definate». (2) missing <span class='r'>SYLLABLE</span> — «famly». <b>different diseases, different cures</b> — the next two units are the cure kit. classify first, always.</p>"},
-{s:"04 / YOU RUN IT",t:"diagnosis",b:"",q:{p:"the schwa problem is…",o:["you need to listen harder","the sound carries no letter info"],c:1,fb:"no amount of listening recovers what isn't there. meaning and memory take over."},ty:"about"}],
+{s:"04 / YOU RUN IT",t:"diagnosis",b:"",q:{p:"the schwa problem is…",o:["you need to listen harder","the sound carries no letter info"],c:1,fb:"no amount of listening recovers what isn't there. meaning and memory take over."},cue:"a + bout — the schwa word from panel 01",ty:"about"}],
 words:[
 {a:"about",err:"E1",p:{k:"say",cl:"roughly; concerning."},hot:{ix:[0]},fork:{k:"cond",qs:[{q:"can your ear tell you that first vowel?",o:["yes","no"],c:1,why:"a·bout — pure ‹uh›."}],vd:"the a of <b>a·bout</b> is a schwa. sound is done helping.",vc:"good"}},
 {a:"lemon",err:"E1",p:{k:"say",cl:"the sour yellow fruit."},hot:{v:1,m:3},fork:{k:"cond",qs:[{q:"can your ear tell you the second vowel?",o:["yes","no"],c:1,why:"lem·uh·n — dead. no common relative wakes the o."}],vd:"lem·<b>o</b>n — dead o, and no common relative wakes it. book this one.",vc:"warn"}},
@@ -659,7 +663,7 @@ docs:[
 {s:"01 / INTRO",t:"author → authority",b:"<p><span class='k'>AW·thər</span> — the second vowel is asleep. wake it: <span class='v'>au·THOR·i·ty</span>. there it is, loud: <span class='g'>o</span>. so: auth·<span class='g'>o</span>·r.</p>"},
 {s:"02 / DEVELOP",t:"grammar → grammatical",b:"<p><span class='k'>GRAM·mər</span> → witness: <span class='v'>gram·MAT·i·cal</span> → <span class='g'>a</span>. the dead byte in one word is a <b>live byte in a relative</b>. read it from the source.</p>"},
 {s:"03 / THE TWIST",t:"not every cousin talks",b:"<p>«definite» — call <span class='v'>definitely</span>? <span class='r'>def·uh·nit·ly — still asleep.</span> genuinely family, won't testify. you need <span class='v'>defini·tion — def·i·NI·tion</span> → <span class='g'>i</span>.</p><p class='cluetext'>«definately» is what happens when you trust a silent witness.</p>"},
-{s:"04 / YOU RUN IT",t:"human — pick the witness",b:"",q:{p:"which source wakes HYU·mən's dead vowel?",o:["humanly","humanity"],c:1,fb:"hu·MAN·i·ty → a. (humanly leaves it asleep.)"},ty:"human"}],
+{s:"04 / YOU RUN IT",t:"human — pick the witness",b:"",q:{p:"which source wakes HYU·mən's dead vowel?",o:["humanly","humanity"],c:1,fb:"hu·MAN·i·ty → a. (humanly leaves it asleep.)"},cue:"a person — wake the dead vowel with hu·MAN·i·ty",ty:"human"}],
 words:[
 {a:"definite",err:"E1",p:{k:"say",cl:"not maybe — 100% certain: «the plan is ______»."},hot:{v:1,m:4},fork:{k:"lineup",items:[
 {w:"definition",role:"witness",stress:[["def·i·",0],["NI",1],["·tion",0]],line:"def·i·<b>NI</b>·tion — stress lands on the dead byte. it speaks: ‹i›"},
@@ -683,7 +687,7 @@ docs:[
 {s:"01 / INTRO",t:"lazy speech eats syllables",b:"<p>«famly». «choclit». «diffrent». casual speech <span class='r'>swallows a whole syllable</span> — and your spelling follows your mouth off the cliff.</p>"},
 {s:"02 / DEVELOP",t:"the fix",b:"<p>say the <span class='g'>careful, over-articulated</span> version and <b>count</b>: fa·mi·ly — three. spell the careful version, not the lazy one.</p>"},
 {s:"03 / THE TWIST",t:"a different disease",b:"<p>this is NOT the anchor's problem. there the letter is <b>wrong</b>; here a syllable is <b>missing</b>. classify before you cure — wrong move, wasted fix.</p>"},
-{s:"04 / YOU RUN IT",t:"interesting",b:"",q:{p:"said carefully — syllables?",o:["three","four"],c:1,fb:"in·ter·est·ing."},ty:"interesting"}],
+{s:"04 / YOU RUN IT",t:"interesting",b:"",q:{p:"said carefully — syllables?",o:["three","four"],c:1,fb:"in·ter·est·ing."},cue:"what a good story is — say the careful version and count the syllables",ty:"interesting"}],
 words:[
 {a:"family",err:"E2",p:{k:"say",cl:"your parents, siblings — your ______."},hot:{v:1,m:0},fork:{k:"cond",qs:[{q:"say it CAREFULLY — syllables?",o:["two","three"],c:1,why:"fa·mi·ly."}],vd:"<b>fa·mi·ly</b> — three. speech eats the middle one; the page keeps it.",vc:"good"}},
 {a:"different",err:"E2",p:{k:"say",cl:"not the same."},hot:{v:1,m:0},fork:{k:"cond",qs:[{q:"careful syllables?",o:["two","three"],c:1,why:"dif·fer·ent."}],vd:"<b>dif·fer·ent</b> — the ‹fer› survives on paper.",vc:"good"}},
@@ -695,7 +699,7 @@ docs:[
 {s:"01 / INTRO",t:"uh-bul",b:"<p>both endings collapse to the same <span class='k'>‹uh-bul›</span> — which is why they're among the most-misspelled endings in English.</p>"},
 {s:"02 / DEVELOP",t:"the lean",b:"<p>a <span class='g'>complete word</span> before the ending → lean <b>-able</b>: comfort·able, enjoy·able. a <span class='g'>bare root</span> → lean <b>-ible</b>: aud·ible, terr·ible.</p>"},
 {s:"03 / THE TWIST",t:"a lean, not a law",b:"<p>it covers a lot, not everything. honesty matters: when the lean fails, the word is family knowledge. know which tool you're holding.</p>"},
-{s:"04 / YOU RUN IT",t:"visible",b:"",q:{p:"vis- is a bare root →",o:["visable","visible"],c:1,fb:"bare root → -ible."},ty:"visible"}],
+{s:"04 / YOU RUN IT",t:"visible",b:"",q:{p:"vis- is a bare root →",o:["visable","visible"],c:1,fb:"bare root → -ible."},cue:"able to be seen — bare root, so lean -ible",ty:"visible"}],
 words:[
 {a:"comfortable",err:"E1",p:{k:"say",cl:"cozy."},hot:{v:1,m:6},fork:{k:"cond",qs:[{q:"complete word before the ending?",o:["yes: comfort","no"],c:0,why:""}],vd:"comfort is a whole word → <b>comfort·able</b>.",vc:"good"}},
 {a:"enjoyable",err:"E1",p:{k:"say",cl:"fun."},hot:{v:1,m:5},fork:{k:"cond",qs:[{q:"complete word before the ending?",o:["yes: enjoy","no"],c:0,why:""}],vd:"enjoy is a whole word → <b>enjoy·able</b>.",vc:"good"}},
@@ -707,7 +711,7 @@ docs:[
 {s:"01 / INTRO",t:"teach·er",b:"<p><span class='k'>-er</span> is the plain-English «one who does»: teacher, writer, baker.</p>"},
 {s:"02 / DEVELOP",t:"act·or",b:"<p><span class='k'>-or</span> is the Latin dress-up of the same job: actor, editor, doctor. Latin root → lean -or.</p>"},
 {s:"03 / THE TWIST",t:"the rare third coat",b:"<p><span class='k'>-ar</span> exists (grammar, dollar, similar) — mostly family knowledge. anchor when you can: grammar → gram·MAT·ical.</p>"},
-{s:"04 / YOU RUN IT",t:"director",b:"",q:{p:"latin root ‹direct› →",o:["directer","director"],c:1,fb:"latin → -or."},ty:"director"}],
+{s:"04 / YOU RUN IT",t:"director",b:"",q:{p:"latin root ‹direct› →",o:["directer","director"],c:1,fb:"latin → -or."},cue:"one who directs a film — Latin root, so lean -or",ty:"director"}],
 words:[
 {a:"doctor",err:"E1",p:{k:"say",cl:"who you see when you're sick."},hot:{v:1,m:4},fork:{k:"cond",qs:[{q:"latin dress-up or plain-english doer?",o:["latin → -or","english → -er"],c:0,why:"doct- = teach (Latin)."}],vd:"latin root → <b>doct·or</b>.",vc:"good"}},
 {a:"teacher",err:"E1",p:{k:"say",cl:"runs the classroom."},hot:{v:1,m:4},fork:{k:"cond",qs:[{q:"latin or plain english?",o:["latin → -or","english → -er"],c:1,why:"teach is a plain english verb."}],vd:"english verb → <b>teach·er</b>.",vc:"good"}},
@@ -721,7 +725,7 @@ docs:[
 {s:"01 / INTRO",t:"the passport",b:"<p>Greek words <span class='g'>wear their origin on their face</span>: <span class='k'>ph</span> = /f/ · <span class='k'>ch</span> = /k/ · <span class='k'>y</span> = short-i · plus <span class='k'>rh, ps, mn, pn</span>.</p>"},
 {s:"02 / DEVELOP",t:"transliterated letters",b:"<p>they look bizarre because they're <b>Greek letters in costume</b> — ph is phi, ch is chi, y is upsilon. the weirdness is a stamp, not a trap.</p>"},
 {s:"03 / THE TWIST",t:"the signal is a GIFT",b:"<p>«foto» fails because photo is Greek. see a science-y word with /f/? expect <span class='g'>ph</span>. the strange spelling is <b>diagnostic</b> — for a rule-reader, free information.</p>"},
-{s:"04 / YOU RUN IT",t:"photograph",b:"",q:{p:"/f/ in a science word — spell it…",o:["f","ph"],c:1,fb:"greek /f/ = ph. both of them."},ty:"photograph"}],
+{s:"04 / YOU RUN IT",t:"photograph",b:"",q:{p:"/f/ in a science word — spell it…",o:["f","ph"],c:1,fb:"greek /f/ = ph. both of them."},cue:"light + writing — the Greek ph, twice",ty:"photograph"}],
 words:[
 {a:"photo",p:{k:"say",cl:"a picture."},hot:{c:"ph",m:0},fork:{k:"cond",qs:[{q:"greek word?",o:["yes → /f/ = ph","no"],c:0,why:"phos = light."}],vd:"greek /f/ = <b>ph</b> (the letter phi): ph·oto.",vc:"good"}},
 {a:"chorus",p:{k:"say",cl:"the part of the song everyone sings."},hot:{c:"ch",m:0},fork:{k:"cond",qs:[],vd:"greek /k/ = <b>ch</b> (chi): ch·orus.",vc:"good"}},
@@ -733,7 +737,7 @@ docs:[
 {s:"01 / INTRO",t:"tele = far",b:"<p>a <b>tele</b>phone is far-sound, a <b>tele</b>scope is far-look, <b>tele</b>vision is far-sight. one block, many machines.</p>"},
 {s:"02 / DEVELOP",t:"the toolkit",b:"<p><span class='k'>auto</span> self · <span class='k'>micro</span> small · <span class='k'>geo</span> earth · <span class='k'>bio</span> life · <span class='k'>thermo</span> heat · <span class='k'>hydro</span> water. spell each block consistently, forever.</p>"},
 {s:"03 / THE TWIST",t:"hybrids everywhere",b:"<p>tech vocabulary loves mixing: <span class='g'>micro·chip</span> = Greek block + English block. your world is built from these seams.</p>"},
-{s:"04 / YOU RUN IT",t:"telescope",b:"",q:{p:"tele means…",o:["sound","far"],c:1,fb:"far-look."},ty:"telescope"}],
+{s:"04 / YOU RUN IT",t:"telescope",b:"",q:{p:"tele means…",o:["sound","far"],c:1,fb:"far-look."},cue:"far + look",ty:"telescope"}],
 words:[
 {a:"telephone",p:{k:"build",s:"tele + phone"},hot:{c:"ph",m:4},fork:{k:"cond",qs:[],vd:"tele (far) + phone (sound): <b>tele·phone</b>. ph, of course — it's greek.",vc:"good"}},
 {a:"automatic",p:{k:"build",s:"auto + matic"},hot:{v:1,m:3},fork:{k:"cond",qs:[],vd:"auto (self) + matic — self-acting: <b>auto·matic</b>. your word.",vc:"good"}},
@@ -745,7 +749,7 @@ docs:[
 {s:"01 / INTRO",t:"-logy = study of",b:"<p><b>bio</b>logy — study of life. <b>geo</b>logy — of earth. <b>psycho</b>logy — of the mind. collect the blocks, decode any science word.</p>"},
 {s:"02 / DEVELOP",t:"the rack",b:"<p><span class='k'>-meter</span> measure · <span class='k'>-scope</span> look · <span class='k'>-phone</span> sound · <span class='k'>-phobia</span> fear · <span class='k'>-graph</span> write.</p>"},
 {s:"03 / THE TWIST",t:"psychology",b:"<p>the <span class='k'>ps</span> is a Greek letter (psi) in costume — silent p, and a signal. psyche = the mind/soul.</p>"},
-{s:"04 / YOU RUN IT",t:"biology",b:"",q:{p:"-logy means…",o:["fear of","study of"],c:1,fb:"study of life."},ty:"biology"}],
+{s:"04 / YOU RUN IT",t:"biology",b:"",q:{p:"-logy means…",o:["fear of","study of"],c:1,fb:"study of life."},cue:"life + study",ty:"biology"}],
 words:[
 {a:"psychology",p:{k:"build",s:"psycho + logy"},hot:{c:"psy",m:0},fork:{k:"cond",qs:[{q:"the first letter…",o:["silent p — greek psi","no p"],c:0,why:""}],vd:"ps signal + logy: <b>psych·o·logy</b> — study of the mind.",vc:"good"}},
 {a:"thermometer",p:{k:"build",s:"thermo + meter"},hot:{c:"o",m:5},fork:{k:"cond",qs:[],vd:"thermo (heat) + meter (measure): <b>thermo·meter</b>.",vc:"good"}},
@@ -757,7 +761,7 @@ docs:[
 {s:"01 / INTRO",t:"therm·O·meter",b:"<p>Greek blocks join with a connecting <span class='g'>-o-</span>: therm·o·meter, chron·o·logy, phot·o·graph. that's where the «extra» o comes from.</p>"},
 {s:"02 / DEVELOP",t:"different glue",b:"<p>Latin tends to glue with <span class='k'>-i-</span> instead. the glue letter is a fingerprint of the word's origin.</p>"},
 {s:"03 / THE TWIST",t:"the o is often the swallowed byte",b:"<p>speech eats the glue: «thermometer» said fast loses its o. the restore move applies — say it carefully, keep the glue.</p>"},
-{s:"04 / YOU RUN IT",t:"therm_meter",b:"",q:{p:"the missing byte?",o:["nothing","o — the glue"],c:1,fb:"therm·o·meter."},ty:"thermometer"}],
+{s:"04 / YOU RUN IT",t:"therm_meter",b:"",q:{p:"the missing byte?",o:["nothing","o — the glue"],c:1,fb:"therm·o·meter."},cue:"heat + measure, joined by the connecting -o-",ty:"thermometer"}],
 words:[
 {a:"chronology",p:{k:"build",s:"chron + ? + logy"},hot:{c:"o",m:4},fork:{k:"cond",qs:[{q:"what joins greek blocks?",o:["nothing","an o"],c:1,why:""}],vd:"chron (time) ·<b>o</b>· logy: <b>chron·o·logy</b>.",vc:"good"}},
 {a:"technology",p:{k:"build",s:"techn + ? + logy"},hot:{c:"o",m:4},fork:{k:"cond",qs:[],vd:"techn (craft) ·<b>o</b>· logy: <b>techn·o·logy</b>. your entire world, one glue-letter.",vc:"good"}},
@@ -769,7 +773,7 @@ docs:[
 {s:"01 / INTRO",t:"they kept their plurals",b:"<p>some borrowed words kept their <b>original</b> plural machinery: one crisis, two <span class='g'>crises</span>.</p>"},
 {s:"02 / DEVELOP",t:"the patterns",b:"<p><span class='k'>-is → -es</span> (crisis→crises) · <span class='k'>-on → -a</span> (phenomenon→phenomena) · <span class='k'>-um → -a</span> (medium→media).</p>"},
 {s:"03 / THE TWIST",t:"criteria",b:"<p>«a criteria» is a bug — <b>criterion</b> is the singular, <b>criteria</b> the plural. knowing this puts you ahead of most adults.</p>"},
-{s:"04 / YOU RUN IT",t:"criterion → plural",b:"",q:{p:"which?",o:["criterions","criteria"],c:1,fb:"-on → -a."},ty:"criteria"}],
+{s:"04 / YOU RUN IT",t:"criterion → plural",b:"",q:{p:"which?",o:["criterions","criteria"],c:1,fb:"-on → -a."},cue:"more than one criterion — take the Greek plural",ty:"criteria"}],
 words:[
 {a:"crises",p:{k:"tr",s:"crisis → plural"},hot:{c:"es",m:4},fork:{k:"cond",qs:[{q:"-is becomes…",o:["-ises","-es"],c:1,why:""}],vd:"crisis → <b>cris·es</b>.",vc:"good"}},
 {a:"phenomena",p:{k:"tr",s:"phenomenon → plural"},hot:{c:"a",m:8},fork:{k:"cond",qs:[{q:"-on becomes…",o:["-ons","-a"],c:1,why:""}],vd:"phenomenon → <b>phenomen·a</b>.",vc:"good"}},
@@ -783,7 +787,7 @@ docs:[
 {s:"01 / INTRO",t:"the secret",b:"<p>the longest words in English are the <span class='g'>easiest</span> — they're just many small known blocks in a row.</p>"},
 {s:"02 / DEVELOP",t:"in + com + prehens + ible",b:"<p>don't spell the blob. <b>break at every seam, spell each block, snap together.</b></p>"},
 {s:"03 / THE TWIST",t:"everything cashes out",b:"<p>seams (stage 3), coats (stage 4), arithmetic (stage 5), -ible (stage 6) — one word can use all of it. this is the whole system, compounding.</p>"},
-{s:"04 / YOU RUN IT",t:"misunderstanding",b:"",q:{p:"parts?",o:["three","four"],c:1,fb:"mis + under + stand + ing."},ty:"misunderstanding"}],
+{s:"04 / YOU RUN IT",t:"misunderstanding",b:"",q:{p:"parts?",o:["three","four"],c:1,fb:"mis + under + stand + ing."},cue:"mis + under + stand + ing — break at every seam",ty:"misunderstanding"}],
 words:[
 {a:"misunderstanding",p:{k:"build",s:"mis + under + stand + ing"},hot:{c:"su",m:2},fork:{k:"cond",qs:[],vd:"four blocks, zero letters lost: <b>mis·under·stand·ing</b>.",vc:"good"}},
 {a:"unconstitutional",p:{k:"build",s:"un + con + stitut + ion + al"},hot:{c:"n",m:1},fork:{k:"cond",qs:[],vd:"five blocks: <b>un·con·stitut·ion·al</b>. spell blocks, not blobs.",vc:"good"}},
@@ -795,7 +799,7 @@ docs:[
 {s:"01 / INTRO",t:"stolen goods",b:"<p>English stole words from everywhere and <b>kept the foreign spelling</b>. restaurant is French. yacht is Dutch. colonel is an Italian-French pileup.</p>"},
 {s:"02 / DEVELOP",t:"no rule. none.",b:"<p>these resist the whole system. <span class='r'>don't invent fake rules</span> — study the culprit's face and book it.</p>"},
 {s:"03 / THE TWIST",t:"why the honesty matters",b:"<p>a system that tells you what is <b>NOT</b> rule-governed is a system you can trust about what IS. the gallery keeps the rules credible.</p>"},
-{s:"04 / YOU RUN IT",t:"colonel",b:"",q:{p:"what fixes it?",o:["a rule","the gallery"],c:1,fb:"memory, spaced. that's the tool."},ty:"colonel"}],
+{s:"04 / YOU RUN IT",t:"colonel",b:"",q:{p:"what fixes it?",o:["a rule","the gallery"],c:1,fb:"memory, spaced. that's the tool."},cue:"the officer ranked above a major — pure outlaw, memory only",ty:"colonel"}],
 words:[
 {a:"Wednesday",p:{k:"say",cl:"the middle of the week."},hot:{c:"dne",m:2},fork:{k:"mem",note:"Woden's day — the norse god fossilized in the middle: Wed·nes·day. say the hidden syllable to spell it.",dark:[2,3,4]}},
 {a:"colonel",p:{k:"say",cl:"the military rank — sounds like ‹kernel›."},hot:{c:"olne",m:1},fork:{k:"mem",note:"an italian word (colonnello) that took a french pronunciation (coronel). spelling from one, sound from the other. pure legacy.",dark:[2,3,4]}},
@@ -807,7 +811,7 @@ docs:[
 {s:"01 / INTRO",t:"not a spelling problem",b:"<p>homophones are <span class='g'>meaning problems in disguise</span>. pick the meaning; it picks the spelling.</p>"},
 {s:"02 / DEVELOP",t:"hooks live inside",b:"<p>the <span class='k'>heir</span> in t·heir owns things · station·<span class='k'>e</span>ry has a lett·<span class='k'>e</span>r in it · the princip·<span class='k'>al</span> is your p·<span class='k'>al</span>.</p>"},
 {s:"03 / THE TWIST",t:"affect / effect",b:"<p>the everyday split: <b>a</b>ffect = the <b>A</b>ction (verb) · <b>e</b>ffect = the <b>E</b>nd result (noun). pick the job the word is doing.</p>"},
-{s:"04 / YOU RUN IT",t:"«the school's principle»?",b:"",q:{p:"the person — right spelling?",o:["yes","no — principal"],c:1,fb:"the person is your pal."},ty:"principal"}],
+{s:"04 / YOU RUN IT",t:"«the school's principle»?",b:"",q:{p:"the person — right spelling?",o:["yes","no — principal"],c:1,fb:"the person is your pal."},cue:"the head of your school — the princip·al is your p·al",ty:"principal"}],
 words:[
 {a:"their",p:{k:"say",cl:"belonging to them: «______ base got raided»."},hot:{c:"ei",m:2},fork:{k:"cond",qs:[{q:"which meaning?",o:["place (there)","possessive (their)"],c:1,why:""}],vd:"possessive → <b>their</b> — the heir inside owns things.",vc:"good"}},
 {a:"stationery",p:{k:"say",cl:"paper and envelopes."},hot:{v:1,m:6},fork:{k:"cond",qs:[{q:"which meaning?",o:["standing still","paper"],c:1,why:""}],vd:"paper → <b>station·ery</b> (the lettER inside).",vc:"good"}},
@@ -1144,9 +1148,10 @@ function togStage(n){ S.openStage=(S.openStage===n)?null:n; render(); }
 /* opts.session → this open is a session block (keep S.session true). opts.readOnly → the map's
    reference-only lesson (no run hand-off). Default (no opts) is the legacy/map entry: both flags
    off. This is the single owner of the flag lifecycle (plan 003, decision 12) — every entry sets
-   both flags, so a read-only lesson or a session can never leak into the next flow. */
+   both flags, so a read-only lesson or a session can never leak into the next flow.
+   S.ketsuMiss resets per lesson so the closing exercise's reveal-after-3 escape hatch starts fresh. */
 function openDocs(id,opts){ opts=opts||{}; S.session=!!opts.session; S.docsReadOnly=!!opts.readOnly;
-  S.unit=UNITS.find(u=>u.id===id); S.screen="docs"; S.docsIdx=0; S.ketsuPick=null; S.ketsuTyped=false; render(); }
+  S.unit=UNITS.find(u=>u.id===id); S.screen="docs"; S.docsIdx=0; S.ketsuPick=null; S.ketsuTyped=false; S.ketsuMiss=0; render(); }
 function renderDocs(){
   const u=S.unit, i=S.docsIdx, p=u.docs[i], last=i===3;
   let inner=`<div class="panelstep"><b>${esc(p.s)}</b> &nbsp;·&nbsp; ${esc(u.id)} ${esc(u.nm)} — panel ${i+1}/4</div>
@@ -1161,8 +1166,9 @@ function renderDocs(){
     if(S.ketsuPick!==null){
       inner+=`<div class="term"><div class="ln ${S.ketsuPick===q.c?"ok":"bad"}">${S.ketsuPick===q.c?"✓":"✗"} ${esc(q.fb)}</div></div>`;
       if(S.ketsuPick===q.c&&!S.ketsuTyped){
-        inner+=`<div class="cluetext">now write it — the lesson closes with your fingers, not your eyes:</div>
-        <div class="inputrow"><input type="text" id="ktype" autocomplete="off" autocapitalize="off" spellcheck="false">
+        inner+=`<div class="cluetext">now build it — the lesson closes with your fingers, not your eyes:</div>
+        <div class="kcue">${esc(p.cue||"")}</div>
+        <div class="inputrow"><input type="text" id="ktype" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="type the word">
         <button class="primary" onclick="ketsuType()">commit</button></div><div id="kmsg"></div>`;
       }
       /* seam removal (decision 5): in a session the lesson flows straight into the run — no
@@ -1194,7 +1200,16 @@ function ketsuType(){
   const inp=document.getElementById("ktype"); if(!inp)return;
   const v=inp.value.trim().toLowerCase(), target=S.unit.docs[3].ty.toLowerCase();
   if(v===target){ S.ketsuTyped=true; P.docs[S.unit.id]=true; saveP(); render(); }
-  else{ document.getElementById("kmsg").innerHTML=`<div class="term"><div class="ln bad">✗ not yet — check the panel above and run it again.</div></div>`; inp.select(); }
+  else{
+    /* three misses and the answer is shown once, then taken away — same escape hatch
+       as PATCH. it is never the first response: the cue has to fail on its own first. */
+    S.ketsuMiss=(S.ketsuMiss||0)+1;
+    const msg=S.ketsuMiss>=3
+      ? `✗ here it is once: <b>${esc(target)}</b> — now cover it and type it.`
+      : `✗ not yet — re-read the build above and run it again.`;
+    document.getElementById("kmsg").innerHTML=`<div class="term"><div class="ln bad">${msg}</div></div>`;
+    inp.select();
+  }
 }
 /* ---------- RUN ---------- */
 function openRun(id,opts){ opts=opts||{}; const u=UNITS.find(x=>x.id===id); if(!P.docs[id])return;
