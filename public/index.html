@@ -243,8 +243,13 @@ P.docs=P.docs||{}; P.cleared=P.cleared||{}; P.log=P.log||[];
 /* session compiler state (plan 003) — additive; deleting these three keys resets the
    session layer only, leaving progress/schedule/profile untouched. cfg is observer-owned
    (budget in minutes); session is the current frozen queue+cursor or null; sessions is the
-   observer history ring (per-session scalars, never block arrays — keeps each saveP small). */
-P.cfg=P.cfg||{budgetMin:30}; P.session=P.session||null; P.sessions=P.sessions||[];
+   observer history ring (per-session scalars, never block arrays — keeps each saveP small).
+   v1 used a 30-minute default; v2 shortens that inherited default, while preserving any
+   observer-selected budget other than the old default. */
+const DEFAULT_SESSION_MIN=10;
+P.cfg=P.cfg||{budgetMin:DEFAULT_SESSION_MIN,v:2};
+if(P.cfg.v==null){ if(P.cfg.budgetMin===30) P.cfg.budgetMin=DEFAULT_SESSION_MIN; P.cfg.v=2; }
+P.session=P.session||null; P.sessions=P.sessions||[];
 if(P.log.length>LOG_CAP) P.log=P.log.slice(-LOG_CAP);
 function saveP(){
   try{ localStorage.setItem("wb2",JSON.stringify(P)); }
@@ -835,6 +840,7 @@ const REVIEW_CAP=12;                                    /* legacy per-batch cap 
    crude on purpose (calibration targets, not promises), and nothing kid-facing shows a clock.
    SESSION_ON is the full-path kill switch: false → the entire pre-plan home + flows return. */
 const SEC_REV=60, SEC_PANEL=30, SEC_WORD=90;
+const REVIEW_BLOCKS_PER_SESSION=4;                       /* enough spacing practice to matter, never a review wall */
 const SESSION_ON=true;
 /* weight = how hard the code is to automate → how eagerly the queue resurfaces it.
    memory (E11) and schwa (E1/E2) sit at the top; foundation (E0/E3) at the bottom. */
@@ -967,18 +973,28 @@ function compileSession(budgetMin,opts){
     const cand=frontierUnits({blocks});
     if(cand.length){ const u=cand[0]; blocks.push({k:"mod",id:u.id,cells:modCells(u),pc:modPanelCells(u)}); }
   } else {
-    /* tier 1 — due reviews, budget-bounded (no fixed count cap). the crossing item is
-       included: fill while est < budget, the item that reaches budget is the last one. */
+    /* Lead with one frontier module whenever one exists: completing it moves the visible
+       map forward. Reviews still matter, but a backlog must not turn the only start button
+       into a long, scoreless-looking wall of old work. */
+    const frontier=frontierUnits({blocks});
+    if(frontier.length){
+      const u=frontier.shift();
+      blocks.push({k:"mod",id:u.id,cells:modCells(u),pc:modPanelCells(u)});
+      est+=estMod(u);
+    }
+    /* A small review dose follows. The budget remains a time guard; the hard cap makes a
+       long absence resumable instead of assigning the entire backlog at once. */
+    let reviews=0;
     for(const d of dueList()){
-      if(est>=budgetSec) break;
+      if(est>=budgetSec||reviews>=REVIEW_BLOCKS_PER_SESSION) break;
       blocks.push({k:"rev",key:schedKey(d.u,d.w),cells:1});
       est+=SEC_REV;
+      reviews++;
     }
-    /* tier 2 — frontier modules (atomic). if tier 1 already met budget (est>=budgetSec),
-       the first iteration breaks → none compile; otherwise the guard passes once before the
-       next check, so ≥1 module always compiles when a frontier exists. */
-    for(const u of frontierUnits({blocks})){
-      if(est>=budgetSec) break;
+    /* A longer observer-selected budget can include more modules, but the first is always
+       the visible win and the review dose above never grows into the session itself. */
+    for(const u of frontier){
+      if(est+estMod(u)>budgetSec) break;                 /* only the first module may cross the budget line */
       blocks.push({k:"mod",id:u.id,cells:modCells(u),pc:modPanelCells(u)});
       est+=estMod(u);
     }
@@ -1087,7 +1103,7 @@ function todayCard(){
   }
   const pv=compileSession(P.cfg.budgetMin);   /* pure dry-run for the preview (Phase 1 purity) */
   if(!pv.blocks.length) return wrap("TODAY — ALL CLEAR", `nothing due, every module cleared. ${nd!==null?`next bytes return in <b>${nd} ${nd===1?"day":"days"}</b>`:`come back when the queue refills`}.`, ``);
-  return wrap("TODAY", `${describeBlocks(pv.blocks)}. review first, then the frontier — one press runs the lot.`, `<button class="primary" onclick="startSession()">▶ start</button>`);
+  return wrap("TODAY", `${describeBlocks(pv.blocks)}. clear a new module, then make a few old bytes stick.`, `<button class="primary" onclick="startSession()">▶ start</button>`);
 }
 function renderHome(){
   if(!SESSION_ON) return renderHomeLegacy();

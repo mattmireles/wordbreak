@@ -13,6 +13,41 @@ disagreement on facts: the finding sets overlapped heavily and none
 contradicted each other. All P0/P1 findings were verified against the live file
 and integrated; the current plan reflects them.
 
+## Session review-wall feedback — 2026-07-30 — resolved
+
+**Summary:** A real learner reported that the single start action opened an
+unusually long assignment whose repeated words did not appear to advance map
+progress. The session compiler now leads with one frontier module and treats
+reviews as a short maintenance dose.
+
+**Symptom:** A session displayed `block 15/29`: a 30-minute inherited budget
+compiled almost entirely from one-word review blocks. Reviews correctly updated
+their spaced-return schedule, but do not clear modules, so they looked like a
+long scoreless assignment.
+
+**Repro:** Seed 29 due schedule entries with an uncleared frontier module, then
+start a session using the original `{budgetMin:30}` configuration.
+
+**Root cause:** Decision 2 made reviews a strict, budget-only first tier. With
+`SEC_REV=60`, the default 30-minute budget admitted 30 reviews before any
+module; the inherited default also gave the learner no visible indication that
+they had been assigned a half-hour session.
+
+**Fix / status:** New and legacy-default configurations use 10 minutes (only a
+legacy `budgetMin:30` value is migrated; explicit later choices stay intact).
+`compileSession()` queues one frontier module first, limits reviews to four,
+and only adds later modules when they fit the observer-selected budget. The
+home copy now promises a new module followed by a few reviews.
+
+**Verification:** Proven locally in a real browser: the legacy 30-minute
+configuration migrated to a 10-minute `mod, rev, rev` session; an explicitly
+selected 30-minute compile started with `mod` and contained exactly four review
+blocks (rather than 29). Both shipped HTML files parse and remain identical.
+
+**Related:** [README](../../README.md#7-whats-deliberately-not-in-here),
+[methodology](../../methodology.md), and
+[session compiler plan](../plans/003-budgeted-session-compiler-plan.md).
+
 ## P0s (both integrated)
 
 | Finding | Source | Verified? | Disposition in plan |
