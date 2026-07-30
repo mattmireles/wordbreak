@@ -33,11 +33,14 @@ start a session using the original `{budgetMin:30}` configuration.
 module; the inherited default also gave the learner no visible indication that
 they had been assigned a half-hour session.
 
-**Fix / status:** New and legacy-default configurations use 10 minutes (only a
-legacy `budgetMin:30` value is migrated; explicit later choices stay intact).
-`compileSession()` queues one frontier module first, limits reviews to four,
-and only adds later modules when they fit the observer-selected budget. The
-home copy now promises a new module followed by a few reviews.
+**Fix / status:** New configurations use 10 minutes. Every pre-v3 30-minute
+configuration resets once, because stored data cannot tell an old default from
+an old deliberate choice; choices made after this release are versioned and
+remain intact. `compileSession()` queues one frontier module
+first, limits reviews to four, and only adds later modules when they fit the
+observer-selected budget. Versioned queues also invalidate the previously
+frozen review wall and recompile it on the next load. The home copy now
+promises a new module followed by a few reviews.
 
 **Verification:** Proven locally in a real browser: the legacy 30-minute
 configuration migrated to a 10-minute `mod, rev, rev` session; an explicitly
