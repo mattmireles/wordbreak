@@ -5,10 +5,11 @@ description: >-
   Architecture, Correctness risk, and Complexity debt are all grade A, then runs
   the same fresh Codex + Claude CLI cross-agent review used by create-plan and
   keeps looping until both internal and external reviewers agree on A/A/A, then
-  commits via git-commit. Explicitly invokes elon-musk before each audit pass.
-  Use ONLY when the user explicitly invokes audit-fix-loop, $audit-fix-loop, or
-  “use audit-fix-loop”—not for standalone audits, plan execution, or implicit
-  routing. Does not replace phase-audit or ship gates.
+  commits only loop-owned changes via git-commit. Explicitly invokes elon-musk
+  before each audit pass. Use ONLY when the user explicitly invokes
+  audit-fix-loop, $audit-fix-loop, or "use audit-fix-loop"—not for standalone
+  audits, plan execution, whole-repo cleanup inferred from a narrow task, or
+  implicit routing. Does not replace phase-audit or ship gates.
 ---
 
 # Audit–Fix Loop
@@ -19,6 +20,9 @@ description: >-
 cross-agent audit → fix → repeat both gates** until **internal and external
 reviewers all agree on A / A / A**, then **one final `git-commit`** for the
 accumulated fixes.
+
+This is not a license to repair the whole repository. A narrow user task stays
+narrow even when repo-wide checks expose unrelated debt.
 
 No new helper scripts. **This skill owns** the concrete **Codex + `claude -p`**
 command block for cross-agent review. `create-plan` and other workflows reuse
@@ -53,9 +57,10 @@ Explicit invocation of **`audit-fix-loop`** authorizes:
 - **Multiple** external cross-agent CLI review cycles using fresh **`codex exec`**
   and **`claude -p`** threads—the same mechanism as **`create-plan`**, not a
   separate repo script.
-- **`git-commit`** once **after** **both gates** pass, following **`git-commit`**
-  staging and message rules. Stage only files changed by this loop unless the
-  user explicitly requests a broader commit.
+- **`git-commit`** once **after** **both gates** pass, following
+  **`git-commit`** message rules but overriding its whole-tree staging default:
+  stage only files created or changed by this audit-fix loop for the authorized
+  task.
 
 If **`audit-fix-loop`** was only inferred from vague wording—**stop** before
 fixes or commit and confirm intent.
@@ -105,9 +110,17 @@ move and is the one the auditors will not propose on their own.
 
 ### Part A — Internal audit gate
 
-1. **Establish scope** once (whole repo, paths, diff, or feature)—same table as
-   **`audit`**. State it in each audit report header. Keep this scope stable
-   across both gates unless the diff or risk surface grows.
+1. **Freeze the task scope before auditing:**
+   - Translate the user's task into concrete flows, paths, or a git-defined
+     diff. Whole-repo scope is allowed only when the user explicitly requested
+     a whole-repo audit-fix loop.
+   - Record the starting `git status` and diff so pre-existing user/agent
+     changes are distinguishable from loop-owned changes.
+   - Name relevant tests, contracts, guides, and notes that constrain the task.
+   - State the frozen scope in every audit report header. Keep this scope
+     stable across both gates.
+   - If investigation reveals a separate defect outside that scope, report it
+     as an out-of-scope finding; do not fix it or silently expand the task.
 
 2. **`elon-musk`:** Before each audit pass (internal **and** external), **read
    and follow** [**`elon-musk`**](../elon-musk/SKILL.md). Keep deletion-first,
@@ -207,15 +220,20 @@ Run only after Part A passes in the same cycle. **Do not add a new script.**
    grades, external reviewer grades, and the blocker, and **ask the user**—do
    not spin forever.
 
-3. **Final commit:** When both gates pass in the same cycle, run **`git-commit`**
-   once for the files changed by this loop (subject/body per **`git-commit`**).
-   Do not stage unrelated dirty files unless the user explicitly expands the
-   commit scope.
+3. **Final commit:** When both gates pass in the same cycle, run
+   **`git-commit`** once for the files produced by this loop. Use
+   **`git-commit`** for subject/body quality, but explicitly override
+   whole-tree staging. Never include unrelated dirty files, pre-existing user
+   edits, or another agent's work merely because they are present.
 
 ## Boundaries
 
 - Do **not** grade-inflate; **`audit`** rubric applies to both gates.
 - Do **not** lower thresholds to reach **A**—raise quality.
+- Do **not** audit or fix the whole repository when the user authorized a
+  narrower task.
+- Do **not** treat unrelated repo-wide check failures as task failures. Report
+  them separately with their pre-existing/out-of-scope status.
 - Do **not** skip Part B after Part A passes.
 - Do **not** add repo scripts for Part B; keep the CLI invocation inline.
 - Do **not** treat a failed/missing external reviewer as an automatic pass.
