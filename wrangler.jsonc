@@ -1,16 +1,30 @@
 {
   "$schema": "./node_modules/wrangler/config-schema.json",
   "name": "wordbreak",
+  "main": "src/worker.js",
   "compatibility_date": "2026-07-16",
-  "workers_dev": true,
-  "preview_urls": true,
+  "workers_dev": false,
+  "preview_urls": false,
   "assets": {
     "directory": "./public",
+    "binding": "ASSETS",
+    "run_worker_first": true,
     "not_found_handling": "single-page-application",
     "html_handling": "auto-trailing-slash"
   },
   "routes": [
     { "pattern": "wordbreak.fun", "custom_domain": true },
     { "pattern": "www.wordbreak.fun", "custom_domain": true }
-  ]
+  ],
+  "d1_databases": [
+    {
+      "binding": "REPORTING_DB",
+      "database_name": "wordbreak-reporting",
+      "database_id": "9af59c56-e70e-4adc-a701-33350d37f69f",
+      "migrations_dir": "migrations"
+    }
+  ],
+  "triggers": {
+    "crons": ["0 16 * * *"]
+  }
 }

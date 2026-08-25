@@ -168,6 +168,13 @@
 <div id="app"></div>
 <script>
 "use strict";
+/* Enrollment is a URL fragment so it never reaches an HTTP log. Scrub it before
+   touching the DOM or either localStorage ledger. */
+let REPORT_ENROLL_CODE=null;
+if(location.hash.startsWith("#report-enroll=")){
+  REPORT_ENROLL_CODE=decodeURIComponent(location.hash.slice(15));
+  history.replaceState(null,"",location.pathname+location.search);
+}
 const VOWELS="aeiou";
 const AUDIO_GEN="g1";
 const AUDIO_VOICE="af_heart";
@@ -189,6 +196,7 @@ let curAudio=null, curObjectUrl=null, saySeq=0;
 function speakFallback(text,slow){ try{ const u=new SpeechSynthesisUtterance(text);
   u.rate=slow?0.6:0.85; speechSynthesis.cancel(); speechSynthesis.speak(u); }catch(e){} }
 function say(audioText,slow,fallbackText){
+  reportActivity();
   const clickSeq=++saySeq;
   const fallback=()=>speakFallback(fallbackText??audioText,slow);
   curAudio?.pause(); speechSynthesis.cancel();
@@ -236,7 +244,18 @@ function wireSay(){
   });
 }
 /* persistence */
+const ASSESSMENT_VERSION=2;
+const ASSESSMENT_ON=true;
+const FIELD_PACK_VERSION=1;
+const FIELD_PACK_ON=true;
+const FIELD_PACK_IDS=Object.freeze(["9.1","9.2","9.3","9.4"]);
 const LOG_CAP=500;
+const REPORT_KEY="wb2-report-credential", REPORT_MAX_BYTES=128*1024;
+const REPORT_ZONE="America/Los_Angeles";
+let reportSyncTimer=null, reportSyncing=false, reportSaveFailed=false;
+let reportLastActivity=performance.now(), reportLastSample=performance.now();
+let reportCredential=null;
+try{ reportCredential=JSON.parse(localStorage.getItem(REPORT_KEY)||"null"); }catch(e){}
 let P;
 try{ P=JSON.parse(localStorage.getItem("wb2"))||{}; }catch(e){ P={}; }
 P.docs=P.docs||{}; P.cleared=P.cleared||{}; P.log=P.log||[];
@@ -245,11 +264,86 @@ P.docs=P.docs||{}; P.cleared=P.cleared||{}; P.log=P.log||[];
    (budget in minutes); session is the current frozen queue+cursor or null; sessions is the
    observer history ring (per-session scalars, never block arrays — keeps each saveP small). */
 P.cfg=P.cfg||{budgetMin:30}; P.session=P.session||null; P.sessions=P.sessions||[];
-if(P.log.length>LOG_CAP) P.log=P.log.slice(-LOG_CAP);
-function saveP(){
-  try{ localStorage.setItem("wb2",JSON.stringify(P)); }
-  catch(e){ try{ P.log=P.log.slice(-Math.floor(LOG_CAP/2)); localStorage.setItem("wb2",JSON.stringify(P)); }catch(e2){} }
+P.reporting=P.reporting||{version:1,sourceRevision:0,days:{},acked:{},gaps:[],deadLetters:[],legacy:null};
+function freshAssessment(completed){return {version:ASSESSMENT_VERSION,assignment:null,runs:[],nonbonusCompletedTotal:completed||0};}
+const completedSessions=P.sessions.filter(x=>!x.bonus&&x.status==="completed").length;
+if(!P.assessment||P.assessment.version!==ASSESSMENT_VERSION||!Array.isArray(P.assessment.runs)){
+  const hadAssessment=!!P.assessment;
+  P.assessment=freshAssessment(completedSessions);
+  if(hadAssessment)P.assessment.runs.push({id:"quarantined-"+Date.now(),status:"corrupt_noncomparable",role:"unknown",
+    comparable:false,reasons:["invalid persisted assessment shape"],startedAt:Date.now(),completedAt:null,responses:[]});
 }
+P.assessment.nonbonusCompletedTotal=Math.max(Number(P.assessment.nonbonusCompletedTotal)||0,completedSessions);
+if(P.log.length>LOG_CAP) P.log=P.log.slice(-LOG_CAP);
+function reportDay(ts){
+  return new Intl.DateTimeFormat("en-CA",{timeZone:REPORT_ZONE,year:"numeric",month:"2-digit",day:"2-digit"}).format(ts??Date.now());
+}
+function reportEmpty(day){ return {day,revision:0,activeMs:0,practiceEvents:0,clean:0,liveAim:0,
+  reviewEvents:0,reviewClean:0,reviewLiveAim:0,sessionsStarted:0,sessionsCompleted:0,
+  sessionsAbandoned:0,bonusStarted:0,bonusCompleted:0,modulesCleared:[],codes:{}}; }
+function reportTouch(day){
+  const r=P.reporting, d=r.days[day]||(r.days[day]=reportEmpty(day));
+  r.sourceRevision++; d.revision++; return d;
+}
+function reportAdd(day,key,n=1){ const d=reportTouch(day); d[key]=(d[key]||0)+n; }
+function reportGap(day,reason){
+  if(!P.reporting.gaps.some(g=>g.start===day&&g.end===day)) P.reporting.gaps.push({start:day,end:day,reason});
+}
+function reportCompact(){
+  const r=P.reporting, cutoff=Date.now()-60*86400000;
+  Object.keys(r.days).sort().forEach(day=>{ if(Date.parse(day+"T12:00:00Z")<cutoff&&(r.acked[day]||0)>=r.days[day].revision) delete r.days[day]; });
+  while(new TextEncoder().encode(JSON.stringify(r)).length>REPORT_MAX_BYTES){
+    const day=Object.keys(r.days).sort().find(x=>(r.acked[x]||0)<r.days[x].revision);
+    if(!day)break; reportGap(day,"local_storage_limit"); delete r.days[day]; delete r.acked[day];
+  }
+  r.deadLetters=r.deadLetters.slice(-20);
+}
+function saveP(){
+  reportCompact();
+  try{ localStorage.setItem("wb2",JSON.stringify(P)); reportSaveFailed=false; scheduleReportSync(); return true; }
+  catch(e){
+    try{ P.log=P.log.slice(-Math.floor(LOG_CAP/2)); localStorage.setItem("wb2",JSON.stringify(P)); reportSaveFailed=false; scheduleReportSync(); return true; }
+    catch(e2){ reportSaveFailed=true; setTimeout(()=>alert("Wordbreak could not safely save this step. Free browser storage, then retry before continuing."),0); return false; }
+  }
+}
+function isPackUnit(unit){return !!unit&&(unit.meta?.packVersion===FIELD_PACK_VERSION||FIELD_PACK_IDS.includes(unit.id));}
+function isEnabledUnit(unit){return !!unit&&(!isPackUnit(unit)||FIELD_PACK_ON);}
+function validFieldPackDescriptor(value){
+  if(!value||!Number.isInteger(value.version)||!Array.isArray(value.unitIds)||value.unitIds.length<1||value.unitIds.length>32)return false;
+  const ids=value.unitIds.map(String);return new Set(ids).size===ids.length&&ids.every(id=>/^\d+\.\d+$/.test(id));
+}
+function knownFieldPackDescriptor(value){return validFieldPackDescriptor(value)&&value.version===FIELD_PACK_VERSION&&value.unitIds.length===FIELD_PACK_IDS.length&&value.unitIds.every((id,i)=>id===FIELD_PACK_IDS[i]);}
+function normalizeImportedProgress(value,now=Date.now()){
+  if(!value||typeof value!=="object"||Array.isArray(value))return {ok:false,error:"invalid_progress"};
+  const next=structuredClone(value), descriptor=next.fieldPack;
+  if(!descriptor)return {ok:true,state:next};
+  if(!validFieldPackDescriptor(descriptor))return {ok:false,error:"invalid_field_pack_descriptor"};
+  if(knownFieldPackDescriptor(descriptor))return {ok:true,state:next};
+  const quarantine=next.quarantine&&typeof next.quarantine==="object"?next.quarantine:{}, entries=Array.isArray(quarantine.fieldPacks)?quarantine.fieldPacks:[];
+  if(entries.length>=4)return {ok:false,error:"field_pack_quarantine_full"};
+  const ids=new Set(descriptor.unitIds), docs={},cleared={},sched={},reportingModules={};
+  next.docs=next.docs&&typeof next.docs==="object"?next.docs:{};next.cleared=next.cleared&&typeof next.cleared==="object"?next.cleared:{};next.sched=next.sched&&typeof next.sched==="object"?next.sched:{};
+  for(const id of ids){if(Object.hasOwn(next.docs,id)){docs[id]=next.docs[id];delete next.docs[id];}if(Object.hasOwn(next.cleared,id)){cleared[id]=next.cleared[id];delete next.cleared[id];}}
+  for(const [key,event] of Object.entries(next.sched)){if(ids.has(event?.unit)){sched[key]=event;delete next.sched[key];}}
+  let session=null;
+  const blocks=next.session&&Array.isArray(next.session.blocks)?next.session.blocks:[];
+  const touchesPack=blocks.some(block=>ids.has(block.id)||ids.has(sched[block.key]?.unit));
+  if(touchesPack){session=structuredClone(next.session);const sessionId=next.session.id;next.session.status="abandoned";next.session.endedAt=now;next.session.reason="unknown_pack_version";
+    const row=Array.isArray(next.sessions)?next.sessions.find(x=>x.id===sessionId):null;if(row){row.status="abandoned";row.endedAt=now;row.reason="unknown_pack_version";row.revision=(row.revision||1)+1;}next.session=null;}
+  if(next.reporting?.days&&typeof next.reporting.days==="object")for(const [day,bucket] of Object.entries(next.reporting.days)){
+    if(!Array.isArray(bucket.modulesCleared))continue;const removed=bucket.modulesCleared.filter(id=>ids.has(id));if(removed.length){reportingModules[day]=removed;bucket.modulesCleared=bucket.modulesCleared.filter(id=>!ids.has(id));}}
+  entries.push({version:descriptor.version,unitIds:descriptor.unitIds.slice(),quarantinedAt:now,docs,cleared,sched,session,reportingModules});
+  next.quarantine={...quarantine,fieldPacks:entries};delete next.fieldPack;
+  return {ok:true,state:next,quarantined:true};
+}
+function reportFillDays(){
+  const r=P.reporting, today=reportDay(), keys=Object.keys(r.days).sort();let changed=false;
+  let cursor=keys.length?new Date(keys[keys.length-1]+"T12:00:00Z"):new Date(today+"T12:00:00Z");
+  const end=new Date(today+"T12:00:00Z");
+  while(cursor<=end){ const day=reportDay(cursor.getTime()); if(!r.days[day]){reportTouch(day);changed=true;} cursor.setUTCDate(cursor.getUTCDate()+1); }
+  return changed;
+}
+reportFillDays();
 /* hot test */
 function isHot(w,typed,idx){
   const h=w.hot, ch=(typed[idx]||"").toLowerCase();
@@ -818,6 +912,108 @@ words:[
 {a:"principal",p:{k:"say",cl:"head of the school."},hot:{v:1,m:6},fork:{k:"cond",qs:[{q:"person or rule?",o:["person","rule"],c:0,why:""}],vd:"the person is your PAL → <b>princip·al</b>.",vc:"good"}},
 {a:"affect",p:{k:"say",cl:"the verb: «lag can ______ your aim»."},hot:{c:"a",m:0},fork:{k:"cond",qs:[{q:"verb or noun?",o:["verb","noun"],c:0,why:""}],vd:"the Action verb → <b>a·ffect</b>. (the End result noun → effect.)",vc:"good"}}]}
 );
+/* ================= STAGE 9 — FIELD PACK =================
+   Disabled until FIELD_PACK_ON is explicitly released. These are deliberately
+   separate from the probe bank: the validator rejects every probe word across
+   all learner-visible pack surfaces. */
+UNITS.push(
+{id:"9.1",st:9,err:"E1",nm:"field.anchor",ti:"Anchor the family",ds:"politics → political: keep the family spelling when the vowel blurs",meta:{packVersion:1,morphemes:["politic","-al","-ian"],rule:"When a related word shifts stress, anchor its spelling in a clear family member before writing the blurred vowel.",etymologyHook:"politician is built from politic(s) + -ian; the written family stays visible even as the first vowel weakens in speech.",tiers:["hear the anchor","name the family","write the coat"],completionMeaning:"You can hold a family spelling steady when speech makes one vowel vague.",dictationFrames:["The local political debate lasted an hour.","A politician answered the question."],sourceNotes:["Merriam-Webster dictionary entries checked for politician and its word history; pronunciation checked before authoring."]},docs:[
+{s:"01 / INTRO",t:"politics → political",b:"<p>say <span class='k'>POL</span>·i·tics. now say po·<span class='k'>LIT</span>·i·cal. the stress moved, and the first vowel got blurry. the <b>family spelling did not move.</b></p>"},
+{s:"02 / DEVELOP",t:"find the anchor",b:"<p>when a vowel is hard to hear, don't guess from the sound. find the family member where it speaks clearly, then carry that spelling across.</p>"},
+{s:"03 / THE TWIST",t:"sound changed. letters stayed.",b:"<p><span class='g'>politics · political · politician</span>. different jobs, same family signal: <b>polit</b>. this is not a sound rule. it is a <b>family rule</b>.</p>"},
+{s:"04 / YOU RUN IT",t:"politics → ?",b:"",q:{p:"the family anchor says the first letters are…",o:["pol-","pal-"],c:0,fb:"politics anchors political: pol-."},cue:"about government — borrow the clear spelling from politics",ty:"political"}],words:[
+{a:"political",p:{k:"build",s:"politics + al"},hot:{v:1,m:1},fork:{k:"cond",qs:[{q:"what anchors the blurred first vowel?",o:["politics","the sound alone"],c:0,why:"politics keeps the family spelling clear."}],vd:"family first: <b>polit</b>ics → <b>polit</b>ical.",vc:"good"}},
+{a:"politician",p:{k:"build",s:"politic + ian"},hot:{v:1,m:1},fork:{k:"cond",qs:[],vd:"same family signal: <b>polit</b>ician.",vc:"good"}},
+{a:"politics",p:{k:"say",cl:"the work and study of government."},hot:{v:1,m:1},fork:{k:"cond",qs:[],vd:"the clear anchor: <b>pol</b>itics.",vc:"good"}},
+{a:"politic",p:{k:"say",cl:"wise about practical affairs."},hot:{v:1,m:1},fork:{k:"cond",qs:[],vd:"same written family: <b>polit</b>ic.",vc:"good"}}]},
+
+{id:"9.2",st:9,err:"E2",nm:"field.restore",ti:"Restore the swallowed beat",ds:"speech compresses; spelling keeps the syllables",meta:{packVersion:1,morphemes:["in-ter-est","li-brar-y","gen-er-al","sev-er-al"],rule:"If quick speech swallows a weak syllable, slow the word into its written beats before you type it.",etymologyHook:"These are ordinary school words whose everyday pronunciations often compress a vowel; the spelling records the full word.",tiers:["slow it","mark the beats","type every beat"],completionMeaning:"You can restore a quiet syllable instead of letting fast speech erase it.",dictationFrames:["Her interest grew after the first chapter.","The library stayed open after school."],sourceNotes:["Merriam-Webster dictionary entries and pronunciations checked for interest, library, general, and several."]},docs:[
+{s:"01 / INTRO",t:"speech takes shortcuts",b:"<p>fast speech can make <span class='k'>library</span> sound like it has fewer beats. spelling does not follow the shortcut. it keeps <b>li·brar·y</b>.</p>"},
+{s:"02 / DEVELOP",t:"restore, don't guess",b:"<p>when a word feels shorter than it looks, slow it down. tap the written beats: <span class='g'>in·ter·est · gen·er·al · sev·er·al</span>.</p>"},
+{s:"03 / THE TWIST",t:"the quiet beat still counts",b:"<p>the weak vowel may be barely audible. it is still a letter job. <b>Say it carefully, then spell every beat you can see.</b></p>"},
+{s:"04 / YOU RUN IT",t:"li _ brar _",b:"",q:{p:"how many written beats in library?",o:["two","three"],c:1,fb:"li·brar·y — three written beats."},cue:"a room full of books — slow it to li·brar·y",ty:"library"}],words:[
+{a:"interest",p:{k:"say",cl:"curiosity or attention toward something."},hot:{v:1,m:3},fork:{k:"cond",qs:[{q:"when speech races, what do you restore?",o:["every written beat","only the loud beats"],c:0,why:"spelling keeps the full word."}],vd:"slow it: <b>in·ter·est</b>.",vc:"good"}},
+{a:"library",p:{k:"say",cl:"a place where books are borrowed."},hot:{v:1,m:3},fork:{k:"cond",qs:[],vd:"three written beats: <b>li·brar·y</b>.",vc:"good"}},
+{a:"general",p:{k:"say",cl:"broad rather than detailed."},hot:{v:1,m:3},fork:{k:"cond",qs:[],vd:"restore the middle: <b>gen·er·al</b>.",vc:"good"}},
+{a:"several",p:{k:"say",cl:"more than two, but not many."},hot:{v:1,m:3},fork:{k:"cond",qs:[],vd:"all three beats stay: <b>sev·er·al</b>.",vc:"good"}}]},
+
+{id:"9.3",st:9,err:"E5",nm:"field.arithmetic",ti:"Prefix arithmetic",ds:"the prefix changes its last letter to meet the root",meta:{packVersion:1,morphemes:["ad + gression","ob + position","in + responsible","in + patient"],rule:"Some Latin prefixes change their final consonant beside a matching root sound. Read the seam; do not invent or remove a letter by ear.",etymologyHook:"ad-, ob-, and in- have historical assimilated forms before certain consonants; the doubled-looking start records the seam's history.",tiers:["find the prefix","notice the match","keep the earned letters"],completionMeaning:"You can explain a changed prefix as a seam, not a random double.",dictationFrames:["The coach stopped the aggression early.","He was irresponsible with the equipment."],sourceNotes:["Merriam-Webster dictionary entries and word histories checked; morphology wording limited to the historical prefix change, not a claim that modern speakers build these words freely."]},docs:[
+{s:"01 / INTRO",t:"the prefix bends",b:"<p>some old prefixes change their last letter to match what comes next: <span class='g'>ad + gression → aggression</span>. the spelling is a record of a seam doing arithmetic.</p>"},
+{s:"02 / DEVELOP",t:"match, then write",b:"<p><span class='k'>ob</span> meets p in <b>opposition</b>. <span class='k'>in</span> meets r in <b>irresponsible</b> and p in <b>impatient</b>. the start is not random.</p>"},
+{s:"03 / THE TWIST",t:"not every double is a rule",b:"<p>don't fire this pattern on every word. use it when you know the family. the move is: <b>see the prefix seam, then keep the spelling it earned.</b></p>"},
+{s:"04 / YOU RUN IT",t:"in + patient → ?",b:"",q:{p:"which start matches the p?",o:["inp-","imp-"],c:1,fb:"in- changes beside p: impatient."},cue:"unable to wait calmly — in meets p, so write imp-",ty:"impatient"}],words:[
+{a:"aggression",p:{k:"build",s:"ad + gression"},hot:{c:"gg",m:1},fork:{k:"cond",qs:[{q:"what does the doubled-looking start record?",o:["a changed prefix seam","a random extra letter"],c:0,why:"ad- changed next to g."}],vd:"ad meets g: <b>a·ggression</b>.",vc:"good"}},
+{a:"opposition",p:{k:"build",s:"ob + position"},hot:{c:"pp",m:1},fork:{k:"cond",qs:[],vd:"ob meets p: <b>op·position</b>.",vc:"good"}},
+{a:"irresponsible",p:{k:"build",s:"in + responsible"},hot:{c:"rr",m:1},fork:{k:"cond",qs:[],vd:"in meets r: <b>ir·responsible</b>.",vc:"good"}},
+{a:"impatient",p:{k:"build",s:"in + patient"},hot:{c:"mp",m:1},fork:{k:"cond",qs:[],vd:"in meets p: <b>im·patient</b>.",vc:"good"}}]},
+
+{id:"9.4",st:9,err:"E8",nm:"field.coat",ti:"Put on the -ion coat",ds:"a related word can change shape at the ending",meta:{packVersion:1,morphemes:["admit → admission","express → expression","conclude → conclusion","expand → expansion"],rule:"Before -ion, a related base may take a fixed spelling coat. Use the known family pair; do not spell the ending from sound alone.",etymologyHook:"Latin-derived families preserve different written forms before -ion. The ending is learned as a family relationship, not as a universal sound rule.",tiers:["name the base","find the -ion coat","write the full family word"],completionMeaning:"You can use a related base to choose the correct -ion spelling coat.",dictationFrames:["Admission to the museum was free.","The scientist wrote a conclusion."],sourceNotes:["Merriam-Webster dictionary entries and word histories checked for admission, expression, conclusion, and expansion; claims are framed as family spelling, not a productive rule."]},docs:[
+{s:"01 / INTRO",t:"the ending changes the coat",b:"<p>a word family can change shape when <span class='k'>-ion</span> arrives: admit → <span class='g'>admission</span>. don't spell from the sound. start with the family you know.</p>"},
+{s:"02 / DEVELOP",t:"base first",b:"<p><b>express → expression</b> · <b>conclude → conclusion</b> · <b>expand → expansion</b>. each ending has a coat. the base tells you which family you are in.</p>"},
+{s:"03 / THE TWIST",t:"not one giant -ion rule",b:"<p>these are not identical transformations. that is fine. the dependable move is smaller: <b>say the base, then recall its family coat.</b></p>"},
+{s:"04 / YOU RUN IT",t:"expand → ?",b:"",q:{p:"which family coat belongs here?",o:["expandion","expansion"],c:1,fb:"expand → expansion."},cue:"growth outward — begin with expand, then use its -ion coat",ty:"expansion"}],words:[
+{a:"admission",p:{k:"build",s:"admit → admission"},hot:{c:"ss",m:3},fork:{k:"cond",qs:[{q:"what comes first?",o:["the family base: admit","guessing the ending sound"],c:0,why:"the base points to its coat."}],vd:"admit wears its -ion coat: <b>ad·mission</b>.",vc:"good"}},
+{a:"expression",p:{k:"build",s:"express → expression"},hot:{c:"ss",m:4},fork:{k:"cond",qs:[],vd:"express → <b>ex·pression</b>.",vc:"good"}},
+{a:"conclusion",p:{k:"build",s:"conclude → conclusion"},hot:{c:"s",m:5},fork:{k:"cond",qs:[],vd:"conclude → <b>con·clusion</b>.",vc:"good"}},
+{a:"expansion",p:{k:"build",s:"expand → expansion"},hot:{c:"s",m:4},fork:{k:"cond",qs:[],vd:"expand → <b>ex·pansion</b>.",vc:"good"}}]}
+);
+/* ===================== BEFORE / AFTER SPELLING PROBE ===================== */
+function assessmentItem(id,target,before,after,primaryCode,syllables,frequencyBand,ambiguity,sourceNote){
+  return {id,form:id[0],target,audioText:`${target}. ${before}${target}${after}`,sentenceBefore:before,
+    sentenceAfter:after,primaryCode,secondaryCodes:[],syllables,frequencyBand,ambiguity,sourceNote};
+}
+const ASSESSMENT_FORMS={version:ASSESSMENT_VERSION,
+A:[
+assessmentItem("A-E1-01","category","Choose the "," that best fits the project.","E1",4,"school",[3],"unstressed medial vowel; dictionary checked"),
+assessmentItem("A-E1-02","privilege","Access to the server is a ",", not a right.","E1",3,"school",[4,6],"unstressed vowels; dictionary checked"),
+assessmentItem("A-E2-01","temperature","Check the "," before the experiment begins.","E2",4,"school",[5,7],"commonly compressed syllable; dictionary checked"),
+assessmentItem("A-E2-02","laboratory","The sample stayed in the "," overnight.","E2",5,"school",[5,7],"commonly compressed syllables; dictionary checked"),
+assessmentItem("A-E3-01","opening","The "," scene reveals the hidden map.","E3",3,"common",[3],"unstressed suffix boundary; dictionary checked"),
+assessmentItem("A-E3-02","listening","Careful "," helped her catch the clue.","E3",3,"common",[5],"unstressed suffix boundary; dictionary checked"),
+assessmentItem("A-E4-01","admitted","He "," the first calculation was wrong.","E4",3,"common",[2,3],"stressed final syllable doubles; dictionary checked"),
+assessmentItem("A-E4-02","regretted","She "," deleting the only backup.","E4",3,"common",[2,3],"stressed final syllable doubles; dictionary checked"),
+assessmentItem("A-E5-01","accumulate","Dust can "," inside a neglected computer.","E5",4,"school",[1,2],"assimilated prefix spelling; derivation checked"),
+assessmentItem("A-E5-02","illustrate","Use one diagram to "," the process.","E5",3,"school",[1,2],"assimilated prefix spelling; derivation checked"),
+assessmentItem("A-E6-01","safely","The files were copied "," to a second drive.","E6",2,"common",[3,4],"silent-e suffix boundary; dictionary checked"),
+assessmentItem("A-E6-02","argument","They settled the "," with better evidence.","E6",3,"school",[4,5],"drop-e suffix boundary; dictionary checked"),
+assessmentItem("A-E7-01","withhold","Do not "," important details from the team.","E7",2,"school",[3,4],"morpheme seam; dictionary checked"),
+assessmentItem("A-E7-02","bookkeeper","The "," balanced every account.","E7",3,"school",[3,4,7],"compound seam preserves letters; dictionary checked"),
+assessmentItem("A-E8-01","explanation","His "," made the strange result clear.","E8",4,"school",[4,5],"variant root coat; derivation checked"),
+assessmentItem("A-E8-02","decision","The final "," belonged to the whole group.","E8",3,"school",[3,4],"variant root coat; derivation checked"),
+assessmentItem("A-E9-01","microscope","The cells became visible under the ",".","E9",3,"school",[1,5],"Greek combining forms; derivation checked"),
+assessmentItem("A-E9-02","architecture","The system's "," determines how its parts connect.","E9",4,"school",[2,3],"Greek origin marker; dictionary checked"),
+assessmentItem("A-E10-01","compliment","Her coach gave a sincere "," after the game.","E10",3,"school",[5],"meaning-selected homophone; dictionary checked"),
+assessmentItem("A-E10-02","council","The city "," voted on the new park.","E10",2,"school",[4,5],"meaning-selected homophone; dictionary checked"),
+assessmentItem("A-E11-01","conscience","His "," would not let him take the credit.","E11",2,"advanced",[3,5,6],"irregular spelling; dictionary checked"),
+assessmentItem("A-E11-02","questionnaire","Complete the "," before the interview begins.","E11",3,"advanced",[0,1,7,8,10],"irregular borrowing; dictionary checked"),
+assessmentItem("A-E11-03","liaison","She served as the "," between the two teams.","E11",3,"advanced",[1,2,4],"irregular borrowing; dictionary checked"),
+assessmentItem("A-E11-04","debris","The storm left "," across the road.","E11",2,"school",[1,2,4],"irregular borrowing; dictionary checked")],
+B:[
+assessmentItem("B-E1-01","ceremony","The awards "," begins at noon.","E1",4,"school",[3],"unstressed medial vowel; dictionary checked"),
+assessmentItem("B-E1-02","relevant","Include only evidence "," to the question.","E1",3,"school",[3,5],"unstressed vowels; dictionary checked"),
+assessmentItem("B-E2-01","literature","The class compared science fiction ",".","E2",4,"school",[4,6],"commonly compressed syllable; dictionary checked"),
+assessmentItem("B-E2-02","veterinary","The injured dog needed "," care.","E2",5,"school",[3,5],"commonly compressed syllables; dictionary checked"),
+assessmentItem("B-E3-01","visiting","We are "," the museum after lunch.","E3",3,"common",[3],"unstressed suffix boundary; dictionary checked"),
+assessmentItem("B-E3-02","marketing","The "," plan targets new players.","E3",3,"common",[5],"unstressed suffix boundary; dictionary checked"),
+assessmentItem("B-E4-01","occurring","The error kept "," at the same step.","E4",3,"school",[1,2],"stressed final syllable doubles; dictionary checked"),
+assessmentItem("B-E4-02","preferred","Most testers "," the simpler layout.","E4",2,"common",[2,3],"stressed final syllable doubles; dictionary checked"),
+assessmentItem("B-E5-01","apparatus","The glass "," must be cleaned after use.","E5",4,"school",[1,2],"assimilated prefix spelling; derivation checked"),
+assessmentItem("B-E5-02","collaborate","The two teams will "," on the prototype.","E5",4,"school",[1,2],"assimilated prefix spelling; derivation checked"),
+assessmentItem("B-E6-01","likely","Rain is "," after midnight.","E6",2,"common",[3,4],"silent-e suffix boundary; dictionary checked"),
+assessmentItem("B-E6-02","movement","The sensor detected "," in the hallway.","E6",2,"common",[3,4],"silent-e suffix boundary; dictionary checked"),
+assessmentItem("B-E7-01","withstand","The bridge can "," powerful winds.","E7",2,"school",[3,4],"morpheme seam; dictionary checked"),
+assessmentItem("B-E7-02","schoolbook","She left the "," in her locker.","E7",2,"school",[5,6],"compound seam preserves letters; dictionary checked"),
+assessmentItem("B-E8-01","declaration","The mayor signed the "," before the meeting.","E8",4,"school",[5,6],"variant root coat; derivation checked"),
+assessmentItem("B-E8-02","revision","The second "," made the argument clearer.","E8",3,"school",[3,4],"variant root coat; derivation checked"),
+assessmentItem("B-E9-01","symphony","The orchestra performed a new ",".","E9",3,"school",[0,3,6],"Greek origin marker; dictionary checked"),
+assessmentItem("B-E9-02","catastrophe","The failed launch became a public ",".","E9",4,"school",[5,8],"Greek origin marker; dictionary checked"),
+assessmentItem("B-E10-01","aloud","Please read the final paragraph ",".","E10",2,"common",[0,1],"meaning-selected homophone; dictionary checked"),
+assessmentItem("B-E10-02","dessert","We shared chocolate cake for ",".","E10",2,"common",[2,3],"meaning-selected homophone; dictionary checked"),
+assessmentItem("B-E11-01","foreign","The museum displayed coins from a "," country.","E11",2,"school",[3,4],"irregular spelling; dictionary checked"),
+assessmentItem("B-E11-02","acquaintance","An old "," recognized him at the station.","E11",3,"advanced",[1,2,5],"irregular spelling; dictionary checked"),
+assessmentItem("B-E11-03","silhouette","The mountain formed a dark "," against the sky.","E11",3,"advanced",[1,2,5,8],"irregular borrowing; dictionary checked"),
+assessmentItem("B-E11-04","business","The family "," opened a second location.","E11",2,"school",[2,3],"irregular spelling; dictionary checked")]
+};
 /* ===================== SPACED RETRIEVAL — THE DUE QUEUE ===================== */
 /* the load-bearing addition: cleared words come back on a widening interval, missed
    words come back tomorrow. day nine stops depending on the kid re-opening a module. */
@@ -870,7 +1066,7 @@ function dueList(){
   const t=today(), out=[];
   for(const k in P.sched){
     const e=P.sched[k]; if(e.due>t) continue;
-    const u=UNITS.find(x=>x.id===e.unit); if(!u) continue;
+    const u=UNITS.find(x=>x.id===e.unit); if(!isEnabledUnit(u)) continue;
     const w=u.words.find(x=>x.a.toLowerCase()===e.word); if(!w) continue;
     out.push({u,w,e});
   }
@@ -923,6 +1119,7 @@ const UNIT_PREREQ={"8.1":["E8","E5","E1","E2"]};   /* monster decomp needs 4+5+6
 function codeBroken(c){ const p=P.codes[c]; return !!p&&p.seen>=N_GATE&&theta(c)<THETA_LO; }
 function codeSolid(c){ const p=P.codes[c]; return !!p&&p.seen>=N_SOLID&&theta(c)>=THETA_HI; }
 function unitLocked(u){
+  if(!isEnabledUnit(u))return true;
   if(u.err==="E0")return false;
   return (UNIT_PREREQ[u.id]||CODE_PREREQ[u.err]||[]).some(codeBroken);
 }
@@ -930,7 +1127,7 @@ function fastPass(u){ return !P.cleared[u.id]&&!unitLocked(u)&&u.err!=="E0"&&cod
 function idKey(u){ const m=(u.id.split(".")[1]||""); return [u.st,parseInt(m,10)||0,m.replace(/^\d+/,"")]; }
 function cmpUnits(a,b){ const x=idKey(a),y=idKey(b); return (x[0]-y[0])||(x[1]-y[1])||(x[2]<y[2]?-1:x[2]>y[2]?1:0); }
 function placement(){
-  const cand=UNITS.filter(u=>!P.cleared[u.id]&&!unitLocked(u)).sort(cmpUnits);
+  const cand=UNITS.filter(u=>isEnabledUnit(u)&&!P.cleared[u.id]&&!unitLocked(u)).sort(cmpUnits);
   if(cand.length) return {recommend:cand[0],mode:"unit"};
   return {recommend:null,mode:dueList().length?"review":"allclear"};
 }
@@ -956,9 +1153,9 @@ function modPanelCells(u){ return P.docs[u.id]?0:u.docs.length; }   /* unread le
 function modCells(u){ return modPanelCells(u)+(fastPass(u)?1:u.words.length); }
 function estMod(u){ return (P.docs[u.id]?0:u.docs.length*SEC_PANEL)+(fastPass(u)?1:u.words.length)*SEC_WORD; }
 function synthBlocks(){ return []; }   /* tier 3 slot — named but empty in v1 (no filler; a short session is honest) */
-function frontierUnits(session){       /* uncleared, unlocked, not already queued — placement's own order */
+function frontierUnits(session){       /* uncleared, unlocked, enabled, not already queued — placement's own order */
   const have=new Set((session&&session.blocks||[]).filter(b=>b.k==="mod").map(b=>b.id));
-  return UNITS.filter(u=>!P.cleared[u.id]&&!unitLocked(u)&&!have.has(u.id)).sort(cmpUnits);
+  return UNITS.filter(u=>isEnabledUnit(u)&&!P.cleared[u.id]&&!unitLocked(u)&&!have.has(u.id)).sort(cmpUnits);
 }
 function compileSession(budgetMin,opts){
   const bonus=!!(opts&&opts.bonus), budgetSec=budgetMin*60;
@@ -984,7 +1181,9 @@ function compileSession(budgetMin,opts){
     }
   }
   blocks.push(...synthBlocks());       /* tier 3 — empty in v1 */
-  return {day:localDay(),budgetMin,blocks,idx:0,done:false,bonus,baseDone:bonus,stats:{words:0,clean:0}};
+  return {id:crypto.randomUUID(),day:localDay(),startReportDay:reportDay(),startedAt:Date.now(),
+    status:"in_progress",revision:1,activeMs:0,budgetMin,blocks,idx:0,done:false,bonus,
+    baseDone:bonus,stats:{words:0,clean:0}};
 }
 /* staleness (decision 4): a compiled block no longer actionable on resume. entries are
    UPDATED in place by scheduleWord, never deleted — so a completed review's block is stale
@@ -996,7 +1195,7 @@ function blockStale(b){
     const w=u.words.find(x=>x.a.toLowerCase()===e.word); if(!w) return true;
     return e.due>today();
   }
-  if(b.k==="mod") return !!P.cleared[b.id];
+  if(b.k==="mod"){ const u=UNITS.find(x=>x.id===b.id); return !isEnabledUnit(u)||!!P.cleared[b.id]; }
   return true;
 }
 function nextLiveIdx(s){ let i=s.idx; while(i<s.blocks.length&&blockStale(s.blocks[i])) i++; return i; }
@@ -1011,18 +1210,21 @@ const STAGES=[
 {n:6,t:"the schwa frontier",d:"the anchor & the restore — the real work"},
 {n:7,t:"greek combining forms",d:"the origin signals"},
 {n:8,t:"synthesis & hard cases",d:"capstone"}];
+const FIELD_STAGE={n:9,t:"next field pack",d:"four fixed spelling moves — unlocks after the core"};
+function visibleStages(){return FIELD_PACK_ON?[...STAGES,FIELD_STAGE]:STAGES;}
 let S={screen:"home",openStage:null,unit:null,docsIdx:0,ketsuPick:null,ketsuTyped:false,
   mode:"module",queue:[],qIdx:0,
   wordIdx:0,phase:"type",typed:"",flagIdx:null,aimGood:false,firstClean:false,walkAnyway:false,
   condQ:0,condPicks:{},lineupSpent:{},witnessFound:false,memPhase:"study",
   patchTries:0,reveal:false,log:[],runGen:0,
   tShown:0,latency:null,fastPass:false,fastCleared:false,
-  session:false,docsReadOnly:false};   /* session=inside the compiled session flow; docsReadOnly=map's reference-only lesson (plan 003, decision 12) */
+  session:false,docsReadOnly:false,assessmentAudioBusy:false,assessmentPagehideRecorded:false};   /* session=inside the compiled session flow; docsReadOnly=map's reference-only lesson (plan 003, decision 12) */
 let condTimer=null;
 const app=document.getElementById("app");
 function html(s){ app.innerHTML=s; }
 function titlebar(path){ return `<div class="titlebar"><div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div><div class="path">~/wordbreak/<b>${path}</b></div></div>`; }
-function clearedCount(){ return Object.keys(P.cleared).length; }
+function clearedCount(){ return UNITS.filter(u=>isEnabledUnit(u)&&P.cleared[u.id]).length; }
+function enabledUnitCount(){ return UNITS.filter(isEnabledUnit).length; }
 /* ---------- HOME ---------- */
 /* one-line factual preview of a block list, e.g. "7 bytes due, then 4.2 · duc.family (+2 more)".
    describes what the compiler assembled — no clock, no promise (README §7). */
@@ -1040,8 +1242,8 @@ function describeBlocks(blocks){
    is the only way in. */
 function mapRows(){
   let rows="";
-  for(const st of STAGES){
-    const units=UNITS.filter(u=>u.st===st.n);
+  for(const st of visibleStages()){
+    const units=UNITS.filter(u=>isEnabledUnit(u)&&u.st===st.n);
     const done=units.filter(u=>P.cleared[u.id]).length;
     const open=S.openStage===st.n;
     let inner="";
@@ -1093,18 +1295,18 @@ function renderHome(){
   if(!SESSION_ON) return renderHomeLegacy();
   html(`${titlebar("main")}
   <h1 class="big">WORDBREAK<span class="cursor"></span></h1>
-  <div class="sub">english is legacy code. find the byte you don't trust, pull the source. // v0.2 — full build, 48 modules</div>
+  <div class="sub">english is legacy code. find the byte you don't trust, pull the source. // v0.2 — ${FIELD_PACK_ON?"core + field pack":"core build"}, ${enabledUnitCount()} modules</div>
   ${todayCard()}
-  <div class="eyebrow" style="margin:22px 2px 8px"><span class="n">›</span> THE MAP // where you are — read only</div>
+  <div class="eyebrow" style="margin:22px 2px 8px"><span class="n">›</span> THE MAP // CORE · 8 STAGES${FIELD_PACK_ON?" + NEXT FIELD PACK":""} — read only</div>
   ${mapRows()}
   <div class="navrow"><button class="ghost" onclick="openDebrief()">session log — for the observer →</button></div>
-  <div class="footer">wordbreak v0.2 // teach → flag → interrogate → patch // ${clearedCount()}/48 modules cleared</div>`);
+  <div class="footer">wordbreak v0.2 // teach → flag → interrogate → patch // ${clearedCount()}/${enabledUnitCount()} modules cleared</div>`);
 }
 /* legacy home — restored verbatim when SESSION_ON=false (kill switch, decision 13) */
 function renderHomeLegacy(){
   let rows="";
-  for(const st of STAGES){
-    const units=UNITS.filter(u=>u.st===st.n);
+  for(const st of visibleStages()){
+    const units=UNITS.filter(u=>isEnabledUnit(u)&&u.st===st.n);
     const done=units.filter(u=>P.cleared[u.id]).length;
     const open=S.openStage===st.n;
     let inner="";
@@ -1150,8 +1352,8 @@ function togStage(n){ S.openStage=(S.openStage===n)?null:n; render(); }
    off. This is the single owner of the flag lifecycle (plan 003, decision 12) — every entry sets
    both flags, so a read-only lesson or a session can never leak into the next flow.
    S.ketsuMiss resets per lesson so the closing exercise's reveal-after-3 escape hatch starts fresh. */
-function openDocs(id,opts){ opts=opts||{}; S.session=!!opts.session; S.docsReadOnly=!!opts.readOnly;
-  S.unit=UNITS.find(u=>u.id===id); S.screen="docs"; S.docsIdx=0; S.ketsuPick=null; S.ketsuTyped=false; S.ketsuMiss=0; render(); }
+function openDocs(id,opts){ opts=opts||{}; const unit=UNITS.find(u=>u.id===id); if(!isEnabledUnit(unit))return goHome(); S.session=!!opts.session; S.docsReadOnly=!!opts.readOnly;
+  S.unit=unit; S.screen="docs"; S.docsIdx=0; S.ketsuPick=null; S.ketsuTyped=false; S.ketsuMiss=0; render(); }
 function renderDocs(){
   const u=S.unit, i=S.docsIdx, p=u.docs[i], last=i===3;
   let inner=`<div class="panelstep"><b>${esc(p.s)}</b> &nbsp;·&nbsp; ${esc(u.id)} ${esc(u.nm)} — panel ${i+1}/4</div>
@@ -1212,7 +1414,7 @@ function ketsuType(){
   }
 }
 /* ---------- RUN ---------- */
-function openRun(id,opts){ opts=opts||{}; const u=UNITS.find(x=>x.id===id); if(!P.docs[id])return;
+function openRun(id,opts){ opts=opts||{}; const u=UNITS.find(x=>x.id===id); if(!isEnabledUnit(u)||!P.docs[id])return goHome();
   S.session=!!opts.session; S.docsReadOnly=false;             /* flag owner (decision 12); run is never read-only */
   S.mode="module"; S.unit=u; S.screen="run"; S.wordIdx=0; S.log=[];
   S.fastPass=PLACEMENT_ON&&fastPass(u); S.fastCleared=false;   /* snapshot at open — a mid-run θ change can't move the bar */
@@ -1231,6 +1433,7 @@ function finishReview(){ S.mode="module"; S.queue=[]; S.qIdx=0; S.screen="debrie
    replaying a completed one. enterBlock is the sole authority on stale-skip + completion. */
 function startSession(bonus){
   const reuse = !bonus&&sessionValid(P.session);            /* resume an in-progress session vs compile a new one */
+  if(!reuse&&P.session&&P.session.status==="in_progress")recordSessionEnd("abandoned");
   P.session = reuse ? P.session : compileSession(P.cfg.budgetMin,bonus?{bonus:true}:undefined);
   if(!P.session.blocks.length){ P.session=null; saveP(); goHome(); return; }  /* nothing to do — stay home */
   if(!reuse) recordSessionStart();                          /* only a NEW session gets a history row (resume keeps its own) */
@@ -1248,7 +1451,7 @@ function enterBlock(){
     if(!P.docs[b.id]) openDocs(b.id,{session:true}); else openRun(b.id,{session:true});
   }
 }
-function advanceSession(){ if(P.session&&P.session.done){ recordSessionEnd(); saveP(); S.screen="sessionDone"; render(); } else enterBlock(); }
+function advanceSession(){ if(P.session&&P.session.done){ recordSessionEnd("completed"); saveP(); S.screen="sessionDone"; render(); } else enterBlock(); }
 /* current-block sub-progress in CELL units, for the strip only (display; never moves the cursor) */
 function blockProgress(){
   const s=P.session, b=s&&s.blocks[s.idx]; if(!b) return 0;
@@ -1313,10 +1516,19 @@ function renderSessionDone(){
 const SESSIONS_CAP=30;
 function recordSessionStart(){
   const s=P.session;
-  P.sessions.push({day:s.day,bonus:!!s.bonus,budgetMin:s.budgetMin,blocksTotal:s.blocks.length,doneBlocks:0,startedAt:Date.now(),endedAt:null});
+  P.sessions.push({id:s.id,day:s.day,startReportDay:s.startReportDay,status:"in_progress",revision:1,
+    bonus:!!s.bonus,budgetMin:s.budgetMin,blocksTotal:s.blocks.length,doneBlocks:0,
+    activeMs:0,startedAt:s.startedAt,endedAt:null});
+  reportAdd(s.startReportDay,s.bonus?"bonusStarted":"sessionsStarted");
   if(P.sessions.length>SESSIONS_CAP) P.sessions=P.sessions.slice(-SESSIONS_CAP);
 }
-function recordSessionEnd(){ const r=P.sessions[P.sessions.length-1]; if(r&&r.endedAt==null) r.endedAt=Date.now(); }
+function recordSessionEnd(status){
+  const s=P.session,r=s&&P.sessions.find(x=>x.id===s.id);if(!s||!r||r.status!=="in_progress")return;
+  status=status||"completed";const now=Date.now();r.status=status;r.endedAt=now;r.revision=(r.revision||1)+1;
+  s.status=status;s.endedAt=now;s.revision=(s.revision||1)+1;
+  reportAdd(s.startReportDay||reportDay(s.startedAt),status==="completed"?(s.bonus?"bonusCompleted":"sessionsCompleted"):"sessionsAbandoned");
+  if(status==="completed"&&!s.bonus)P.assessment.nonbonusCompletedTotal++;
+}
 function startWord(){
   if(condTimer){ clearTimeout(condTimer); condTimer=null; }
   if(S.mode==="review"&&S.queue[S.qIdx]) S.unit=S.queue[S.qIdx].u;   /* borrow the owning unit for this due word */
@@ -1539,6 +1751,13 @@ function logWord(cleanPath){
   const ev={t:Date.now(),unit:S.unit.id,word:w.a,clean:S.firstClean,aim:S.aimGood,solve:solve,err:w.err,
     latency:S.latency,tries:S.patchTries,revealed:S.reveal};
   P.log.push(ev);
+  const day=reportTouch(reportDay(ev.t));
+  day.practiceEvents++;if(S.firstClean)day.clean++;if(S.aimGood)day.liveAim++;
+  if(S.mode==="review"){day.reviewEvents++;if(S.firstClean)day.reviewClean++;if(S.aimGood)day.reviewLiveAim++;}
+  if(w.err&&w.err!=="E0"){
+    const c=day.codes[w.err]||(day.codes[w.err]={seen:0,clean:0,aim:0});
+    c.seen++;if(S.firstClean)c.clean++;if(S.aimGood)c.aim++;
+  }
   if(P.log.length>LOG_CAP) P.log=P.log.slice(-LOG_CAP);
   scheduleWord(w,S.firstClean);                         /* set its next return — the widening interval */
   onEncounter(ev);                                      /* feed the measured profile (skips E0 internally) */
@@ -1547,7 +1766,11 @@ function logWord(cleanPath){
     lastWord=S.wordIdx===S.unit.words.length-1;
     fastClear=S.fastPass&&cleanPath&&S.wordIdx===0;     /* one CLEAN FIRST build clears it; a word-0 fault falls
                                                             back to the full word set (mastery wasn't demonstrated) */
-    if(lastWord||fastClear){ P.cleared[S.unit.id]=true; if(fastClear&&!lastWord) S.fastCleared=true; }
+    if(lastWord||fastClear){
+      const newlyCleared=!P.cleared[S.unit.id];P.cleared[S.unit.id]=true;
+      if(newlyCleared&&!day.modulesCleared.includes(S.unit.id))day.modulesCleared.push(S.unit.id);
+      if(fastClear&&!lastWord) S.fastCleared=true;
+    }
   }
   /* atomic session advance (decision 11): the cursor moves in the SAME saveP as the ledger
      writes above, so a reload from the done screen resumes at the next block — never replaying
@@ -1558,7 +1781,7 @@ function logWord(cleanPath){
     if(blockDone){
       P.session.idx++;
       recordBlockDone();                                /* Phase 4 history row (no-op until then) */
-      if(P.session.idx>=P.session.blocks.length) P.session.done=true;
+      if(P.session.idx>=P.session.blocks.length){ P.session.done=true; recordSessionEnd("completed"); }
     }
   }
   saveP();
@@ -1589,6 +1812,136 @@ function renderDone(){
   <div class="navrow"><div class="spacer"></div>${nextBtn}</div></div>`;
 }
 function closeModule(){ S.screen="debrief"; render(); }
+/* ===================== BEFORE / AFTER SPELLING PROBE ===================== */
+const ASSESSMENT_WAIT_DAYS=28, ASSESSMENT_WAIT_SESSIONS=12;
+function assessmentId(){
+  if(crypto.randomUUID)return crypto.randomUUID();
+  const b=new Uint8Array(16);crypto.getRandomValues(b);return Array.from(b,x=>x.toString(16).padStart(2,"0")).join("");
+}
+function assessmentShuffle(ids,seed){
+  let x=parseInt(fnv1a32(seed),16)>>>0,a=ids.slice();
+  for(let i=a.length-1;i>0;i--){x=(Math.imul(x,1664525)+1013904223)>>>0;const j=x%(i+1);[a[i],a[j]]=[a[j],a[i]];}
+  return a;
+}
+function assessmentRuns(role,status){return P.assessment.runs.filter(r=>(!role||r.role===role)&&(!status||r.status===status));}
+function assessmentActive(){return P.assessment.runs.find(r=>r.status==="in_progress")||null;}
+function assessmentComplete(role){return assessmentRuns(role,"completed").slice(-1)[0]||null;}
+function assessmentPhase(){
+  const active=assessmentActive();if(active)return active.role+"_in_progress";
+  if(assessmentComplete("followup"))return "complete";
+  if(assessmentComplete("baseline"))return "baseline_complete";
+  return "unstarted";
+}
+function assessmentCalendarDays(a,b){const x=new Date(a),y=new Date(b);return Math.floor((Date.UTC(y.getFullYear(),y.getMonth(),y.getDate())-Date.UTC(x.getFullYear(),x.getMonth(),x.getDate()))/86400000);}
+function assessmentEligibility(){
+  const b=assessmentComplete("baseline");if(!b)return {eligible:false,days:0,sessions:0};
+  const days=assessmentCalendarDays(b.completedAt,Date.now()),sessions=Math.max(0,P.assessment.nonbonusCompletedTotal-b.completedNonbonusTotal);
+  return {eligible:days>=ASSESSMENT_WAIT_DAYS&&sessions>=ASSESSMENT_WAIT_SESSIONS,days,sessions};
+}
+function assessmentItemFor(run){const id=run.order[run.cursor];return ASSESSMENT_FORMS[run.form].find(x=>x.id===id)||null;}
+function assessmentNormalize(value){return String(value).normalize("NFC").trim().toLowerCase();}
+function assessmentScore(run){
+  const form=ASSESSMENT_FORMS[run.form],byId=Object.fromEntries(form.map(x=>[x.id,x])),groups={};let correct=0;
+  for(const answer of run.responses){const item=byId[answer.itemId];if(!item)continue;const hit=assessmentNormalize(answer.response)===item.target;
+    if(hit)correct++;const g=groups[item.primaryCode]||(groups[item.primaryCode]={correct:0,attempted:0});g.attempted++;if(hit)g.correct++;}
+  return {correct,total:form.length,groups};
+}
+function assessmentDevice(){return {userAgent:navigator.userAgent,platform:navigator.platform||"unknown"};}
+function startAssessment(role,override){
+  if(!ASSESSMENT_ON||assessmentActive())return;
+  const baseline=assessmentComplete("baseline");
+  if(role==="followup"){
+    if(!baseline||assessmentComplete("followup"))return;
+    const e=assessmentEligibility();
+    if(!e.eligible&&!override)return;
+  }
+  if(role==="followup"&&!assessmentEligibility().eligible&&!confirm("This follow-up is earlier than the 28-day and 12-session gate. Continue and permanently label the comparison noncomparable?"))return;
+  if(!confirm("Run this spelling calibration in one quiet sitting, on this device with headphones, without hints, spellcheck, or outside help?"))return;
+  const overrideReason=role==="followup"&&!assessmentEligibility().eligible?"observer timing override":null;
+  const before=structuredClone(P.assessment),id=assessmentId();
+  if(!P.assessment.assignment){const b=new Uint8Array(1);crypto.getRandomValues(b);P.assessment.assignment=b[0]%2?"A":"B";}
+  const form=role==="baseline"?P.assessment.assignment:(P.assessment.assignment==="A"?"B":"A");
+  const priorRestart=assessmentRuns(role).some(r=>r.status==="abandoned_noncomparable");
+  const reasons=[];if(priorRestart)reasons.push(role+" was restarted");if(overrideReason)reasons.push("timing override: "+overrideReason.trim());
+  P.assessment.runs.push({id,role,form,status:"in_progress",order:assessmentShuffle(ASSESSMENT_FORMS[form].map(x=>x.id),id),cursor:0,
+    responses:[],replays:{},startedAt:Date.now(),completedAt:null,completedNonbonusTotal:null,interruptions:0,
+    comparable:!reasons.length,reasons,device:assessmentDevice(),staticAudioFailed:false});
+  if(!saveP()){P.assessment=before;return;}
+  S.screen="assessment";S.assessmentPagehideRecorded=false;render();
+}
+function resumeAssessment(){if(!assessmentActive())return;S.screen="assessment";S.assessmentPagehideRecorded=false;render();}
+function abandonAssessment(){
+  const run=assessmentActive();if(!run||!confirm("Stop this calibration? The attempt will be retained and any restart will make the comparison noncomparable."))return;
+  const before=structuredClone(P.assessment);run.status="abandoned_noncomparable";run.completedAt=Date.now();run.comparable=false;run.reasons.push("run was restarted");
+  if(!saveP()){P.assessment=before;return;}goHome();
+}
+async function playAssessmentAudio(){
+  const run=assessmentActive(),item=run&&assessmentItemFor(run);if(!run||!item||S.assessmentAudioBusy)return;
+  const plays=run.replays[item.id]||0;if(plays>=2)return;S.assessmentAudioBusy=true;
+  const key=fnv1a32([AUDIO_GEN,AUDIO_VOICE,"n",normalize(item.audioText)].join("|")),url=AUDIO_BASE+key+".mp3";
+  try{
+    curAudio?.pause();speechSynthesis.cancel();let src=url,objectUrl=null;
+    if(typeof caches!=="undefined"){const cached=await caches.match(url);if(cached){objectUrl=URL.createObjectURL(await cached.blob());src=objectUrl;}}
+    const audio=new Audio(src);curAudio=audio;
+    await new Promise((resolve,reject)=>{audio.addEventListener("playing",resolve,{once:true});audio.addEventListener("error",()=>reject(new Error("audio")),{once:true});audio.play().catch(reject);});
+    const before=structuredClone(P.assessment);run.replays[item.id]=plays+1;if(!saveP())P.assessment=before;
+    if(objectUrl)audio.addEventListener("ended",()=>URL.revokeObjectURL(objectUrl),{once:true});render();
+  }catch(e){run.staticAudioFailed=true;run.comparable=false;if(!run.reasons.includes("static audio failed"))run.reasons.push("static audio failed");saveP();render();}
+  finally{S.assessmentAudioBusy=false;}
+}
+function submitAssessmentResponse(itemId,response){
+  const run=assessmentActive();if(!run)return false;
+  const normalized=assessmentNormalize(response),item=assessmentItemFor(run);
+  const last=run.responses[run.responses.length-1];
+  if(last&&last.itemId===itemId&&assessmentNormalize(last.response)===normalized)return true;
+  if(!item||item.id!==itemId||!normalized){run.status="corrupt_noncomparable";run.comparable=false;run.reasons.push("invalid response transition");saveP();render();return false;}
+  if(!(run.replays[item.id]>0)){alert("Play the word before submitting.");return false;}
+  const before=structuredClone(P.assessment);run.responses.push({itemId,response:normalized});run.cursor++;
+  if(run.cursor===run.order.length){run.status="completed";run.completedAt=Date.now();run.completedNonbonusTotal=P.assessment.nonbonusCompletedTotal;}
+  if(!saveP()){P.assessment=before;return false;}
+  if(run.status==="completed")S.screen="assessmentDone";render();return true;
+}
+function renderAssessment(){
+  const run=assessmentActive();if(!run){goHome();return;}const item=assessmentItemFor(run);
+  if(!item){run.status="corrupt_noncomparable";run.comparable=false;run.reasons.push("missing frozen item");saveP();goHome();return;}
+  const plays=run.replays[item.id]||0,failed=run.staticAudioFailed;
+  html(`${titlebar("calibration")}
+  <div class="card" style="max-width:680px;margin:22px auto"><div class="eyebrow"><span class="n">›</span> SPELLING CALIBRATION · ${run.cursor+1}/${run.order.length}</div>
+  <div class="brieftitle">listen. then type the word.</div><div class="cluetext">${esc(item.sentenceBefore)}<b>______</b>${esc(item.sentenceAfter)}</div>
+  ${failed?`<div class="term"><div class="ln warn">The exact recording could not play. Pause here and retry on a stable connection; browser speech is not substituted.</div></div>`:""}
+  <div class="navrow"><button class="primary" onclick="playAssessmentAudio()" ${plays>=2?"disabled":""}>${plays?"▶ replay once":"▶ play word"}</button><span class="cluetext">${plays}/2 plays used</span></div>
+  <form id="assessment-form" style="margin-top:14px"><input id="assessment-answer" class="wordinput" aria-label="Spell the spoken word" spellcheck="false" autocorrect="off" autocomplete="off" autocapitalize="none" ${plays?"":"disabled"}>
+  <div class="navrow"><button type="button" class="ghost" onclick="abandonAssessment()">stop</button><div class="spacer"></div><button class="primary" ${plays?"":"disabled"}>submit ▶</button></div></form></div>`);
+  const input=document.getElementById("assessment-answer");input?.addEventListener("paste",e=>e.preventDefault());input?.addEventListener("drop",e=>e.preventDefault());
+  document.getElementById("assessment-form")?.addEventListener("submit",e=>{e.preventDefault();submitAssessmentResponse(item.id,input.value);});if(plays)input?.focus();
+}
+function renderAssessmentDone(){
+  html(`${titlebar("calibration/done")}<div class="card" style="max-width:680px;margin:22px auto"><div class="eyebrow"><span class="n">›</span> CALIBRATION COMPLETE</div>
+  <div class="brieftitle">done. hand the device back.</div><div class="cluetext">No answers or score appear here. The observer can review the frozen result privately.</div>
+  <div class="navrow"><div class="spacer"></div><button class="primary" onclick="goHome()">close ▶</button></div></div>`);
+}
+function assessmentConditions(run){const xs=[];if(run.interruptions)xs.push(`${run.interruptions} interruption${run.interruptions===1?"":"s"}`);if(Object.values(run.replays||{}).some(n=>n>1))xs.push("one or more replays");return xs.length?xs.join(" · "):"no recorded interruptions; no replays";}
+function assessmentResult(run){
+  const score=assessmentScore(run),form=ASSESSMENT_FORMS[run.form],byId=Object.fromEntries(form.map(x=>[x.id,x]));
+  const rows=Object.keys(score.groups).sort((a,b)=>Number(a.slice(1))-Number(b.slice(1))).map(code=>{const g=score.groups[code];return `<tr><td>items selected as ${code} tripwires</td><td>${g.correct}/${g.attempted}</td></tr>`;}).join("");
+  const answers=run.responses.map(x=>{const item=byId[x.itemId],hit=item&&assessmentNormalize(x.response)===item.target;return `<tr><td>${esc(x.itemId)}</td><td>${esc(item?.target||"missing")}</td><td>${esc(x.response)}</td><td class="${hit?"good":"bad"}">${hit?"exact":"not exact"}</td></tr>`;}).join("");
+  return `<div class="cluetext"><b>Form ${run.form}: ${score.correct}/${score.total}</b> exact spellings · ${assessmentConditions(run)}</div><table class="debrief"><tr><th>selected tripwire</th><th>exact</th></tr>${rows}</table><details><summary class="cluetext">private item responses</summary><table class="debrief"><tr><th>item</th><th>target</th><th>response</th><th>result</th></tr>${answers}</table></details>`;
+}
+function assessmentObsCard(){
+  if(!ASSESSMENT_ON)return "";const phase=assessmentPhase(),active=assessmentActive(),baseline=assessmentComplete("baseline"),followup=assessmentComplete("followup"),e=assessmentEligibility();let controls="",body="";
+  if(active){body=`${active.role} · Form ${active.form} · ${active.cursor}/${active.order.length} responses saved.`;controls=`<button class="primary" onclick="resumeAssessment()">resume calibration ▶</button>`;}
+  else if(!baseline){body="No baseline yet. Run it before adding the next curriculum layer.";controls=`<button class="primary" onclick="startAssessment('baseline')">start baseline ▶</button>`;}
+  else if(!followup){body=`Follow-up gate: ${e.days}/28 calendar days · ${e.sessions}/12 completed sessions.`;controls=e.eligible?`<button class="primary" onclick="startAssessment('followup')">start follow-up ▶</button>`:`<button class="ghost small" onclick="startAssessment('followup',true)">override gate</button>`;}
+  else body="The baseline/follow-up pair is complete. V1 does not repeat exposed forms.";
+  let results=baseline?assessmentResult(baseline):"";
+  if(followup){const a=assessmentScore(baseline),b=assessmentScore(followup),same=baseline.comparable&&followup.comparable&&baseline.device?.userAgent===followup.device?.userAgent;
+    const codes=Array.from(new Set([...Object.keys(a.groups),...Object.keys(b.groups)])).sort((x,y)=>Number(x.slice(1))-Number(y.slice(1)));
+    const deltas=codes.map(code=>`<tr><td>${code}</td><td>${a.groups[code]?.correct||0}/${a.groups[code]?.attempted||0}</td><td>${b.groups[code]?.correct||0}/${b.groups[code]?.attempted||0}</td></tr>`).join("");
+    results+=assessmentResult(followup)+`<div class="term"><div class="ln ${same?"ok":"warn"}">${same?"descriptive comparison":"NONCOMPARABLE"}: Form ${followup.form} minus Form ${baseline.form} = <b>${b.correct-a.correct>=0?"+":""}${b.correct-a.correct}</b>. Unknown form difficulty is part of this difference; it is not a learning-effect claim.</div></div><table class="debrief"><tr><th>tripwire</th><th>Form ${baseline.form}</th><th>Form ${followup.form}</th></tr>${deltas}</table>`;}
+  return `<div class="card"><div class="eyebrow"><span class="n">›</span> BEFORE / AFTER SPELLING CALIBRATION (observer)</div><div class="cluetext">${body}</div>${results}<div class="navrow">${controls}<div class="spacer"></div></div>
+  <details style="margin-top:10px"><summary class="cluetext">reset assessment</summary><div class="inputrow"><input type="text" id="assessment-reset-confirm" autocomplete="off" spellcheck="false" placeholder="type RESET"><button class="ghost small" onclick="resetAssessment()">erase assessment responses</button></div></details></div>`;
+}
+function resetAssessment(){const input=document.getElementById("assessment-reset-confirm");if(input?.value!=="RESET"){alert("Type RESET exactly to erase assessment responses.");return;}const completed=P.assessment.nonbonusCompletedTotal;P.assessment=freshAssessment(completed);saveP();render();}
 /* ---------- DEBRIEF ---------- */
 /* observer-only: set the session time budget. tamper-visible, not gated (decision 8) — in a
    localStorage app any lock is theater; every P.sessions row records its budgetMin, so a dial
@@ -1638,10 +1991,14 @@ function renderDebrief(){
     <td><span style="display:inline-block;width:88px;height:8px;background:#0b0e13;border:1px solid var(--line);border-radius:4px;vertical-align:middle;margin-right:8px"><span style="display:block;width:${pct}%;height:100%;background:${barColor(p.band)}"></span></span>${pct}%</td>
     <td class="dimc">${p.seen} seen</td><td class="${bc}">${esc(p.band)}</td></tr>`;}).join("")+`</table>
   <div class="cluetext" style="margin-top:8px">a decayed estimate per error-type — not a grade, never shown to the kid. thin evidence reads honestly as «measuring». this is what drives Continue and fast-pass.</div></div>`:"";
+  const fieldPackCard=FIELD_PACK_ON?`<div class="card quiet obs"><div class="eyebrow"><span class="n">›</span> NEXT FIELD PACK — FIXED, NOT DIAGNOSED</div><div class="cluetext">four short modules follow the core: family anchors, restored quiet syllables, prefix arithmetic, and -ion family coats. They were fixed before this pack was exposed; Luca's private baseline did not choose them.</div></div>`:"";
   html(`${titlebar("debrief")}
   <div class="card"><div class="eyebrow"><span class="n">›</span> SESSION LOG ${S.log.length?"— this module":"— recent"}</div>${table}</div>
   ${sessionObsCard()}
+  ${reportingObsCard()}
+  ${assessmentObsCard()}
   ${profCard}
+  ${fieldPackCard}
   <div class="card quiet obs"><div class="eyebrow"><span class="n">›</span> FOR THE OBSERVER — WATCH FOR THESE, SAY NOTHING</div>
   <ol>
     <li><b>does he pause before flagging, or tap instantly?</b> a pause means the wager is doing its job — real risk assessment. instant tapping means it's decoration; tell me.</li>
@@ -1651,6 +2008,111 @@ function renderDebrief(){
     <li><b>does he press start unprompted — or does it take nagging?</b> the queue now lives INSIDE the session (review comes first, automatically), so there is no due-card to clear anymore. the whole game reduces to one question: does he come back and press start on his own? the SESSIONS card above tracks starts-per-week — if that number falls, the session is too expensive and the budget should come down. that's the judge that matters.</li>
   </ol></div>
   <div class="navrow"><button class="ghost" onclick="goHome()">← back to the stage map</button></div>`);
+}
+/* ===================== PRIVATE AGGREGATE REPORTING ===================== */
+function reportActivity(){ reportLastActivity=performance.now(); }
+function reportCredit(start,end){
+  let a=start;
+  while(a<end){
+    const day=reportDay(Date.now()-(performance.now()-a));
+    let b=end;
+    if(reportDay(Date.now()-(performance.now()-end))!==day){
+      let lo=a,hi=end; while(hi-lo>1){const mid=(lo+hi)/2;if(reportDay(Date.now()-(performance.now()-mid))===day)lo=mid;else hi=mid;} b=hi;
+    }
+    const ms=Math.max(0,Math.round(b-a));
+    if(ms){ reportAdd(day,"activeMs",ms); if(P.session){P.session.activeMs=(P.session.activeMs||0)+ms;const row=P.sessions.find(x=>x.id===P.session.id);if(row)row.activeMs=(row.activeMs||0)+ms;} }
+    a=b;
+  }
+}
+function reportSample(force){
+  const now=performance.now(), delta=Math.min(5000,Math.max(0,now-reportLastSample));
+  const active=typeof S!=="undefined"&&S.session&&(S.screen==="docs"||S.screen==="run")&&!document.hidden&&now-reportLastActivity<=30000;
+  if(active&&delta) reportCredit(now-delta,now);
+  reportLastSample=now;
+  if((active||force)&&delta) saveP();
+}
+function reportState(){ return {revision:Math.max(1,P.reporting.sourceRevision),
+  cleared:Object.keys(P.cleared).filter(k=>P.cleared[k]&&isEnabledUnit(UNITS.find(u=>u.id===k))).sort(),docsCount:Object.keys(P.docs).filter(k=>isEnabledUnit(UNITS.find(u=>u.id===k))).length,
+  dueCount:dueList().length,profile:Object.fromEntries(codeProfile().map(x=>[x.code,{theta:x.theta,seen:x.seen,band:x.band}])),
+  legacy:P.reporting.legacy||{},incompleteSince:P.reporting.gaps.length?Date.now():null}; }
+function reportCheckpoint(){
+  const days=Object.keys(P.reporting.days).sort(), today=reportDay();
+  return {earliestCompleteDay:days[0]||today,completeThroughDay:days.filter(x=>x<today).slice(-1)[0]||days[0]||today,gaps:P.reporting.gaps};
+}
+function reportDirty(){ return Object.values(P.reporting.days).filter(d=>(P.reporting.acked[d.day]||0)<d.revision).sort((a,b)=>a.day.localeCompare(b.day)); }
+function scheduleReportSync(delay=300){
+  if(!reportCredential||reportSaveFailed||reportSyncing)return;
+  clearTimeout(reportSyncTimer); reportSyncTimer=setTimeout(reportPump,delay);
+}
+async function reportPump(){
+  if(!reportCredential||reportSyncing||reportSaveFailed||!navigator.onLine)return;
+  const dirty=reportDirty().slice(0,14), drained=!dirty.length;
+  const payload={schemaVersion:1,sourceRevision:Math.max(1,P.reporting.sourceRevision),days:dirty,
+    outboxDepth:dirty.length,state:reportState()};
+  if(drained)payload.checkpoint=reportCheckpoint();
+  reportSyncing=true;let nextDelay=null;
+  try{
+    const ctl=new AbortController(), timer=setTimeout(()=>ctl.abort(),8000);
+    const response=await fetch("/api/reporting/sync",{method:"POST",headers:{"content-type":"application/json","authorization":"Bearer "+reportCredential.token},body:JSON.stringify(payload),signal:ctl.signal,keepalive:false});
+    clearTimeout(timer);
+    if(response.status===401){ reportCredential=null;localStorage.removeItem(REPORT_KEY);return; }
+    if([404,405,409].includes(response.status))return;
+    if(response.status===429||response.status>=500)throw new Error("retry");
+    const data=await response.json();
+    (data.accepted||[]).forEach(x=>{P.reporting.acked[x.day]=Math.max(P.reporting.acked[x.day]||0,x.revision);});
+    (data.rejected||[]).forEach(x=>{P.reporting.deadLetters.push({day:x.day,revision:x.revision,error:x.error});reportGap(x.day,"terminal_rejection");P.reporting.acked[x.day]=Math.max(P.reporting.acked[x.day]||0,x.revision||0);});
+    saveP(); nextDelay=dirty.length?1100:86400000;
+  }catch(e){ nextDelay=5000+Math.floor(Math.random()*2000); }
+  finally{ reportSyncing=false;if(nextDelay!==null)scheduleReportSync(nextDelay); }
+}
+async function finishReportEnrollment(){
+  const code=REPORT_ENROLL_CODE; REPORT_ENROLL_CODE=null;
+  if(!code)return;
+  const ok=confirm("Connect private parent reports? Only aggregate practice totals, estimated active time, session completion, and spelling-pattern codes leave this browser. Typed words and mistakes stay here.");
+  if(!ok)return;
+  try{
+    const response=await fetch("/api/reporting/enroll",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({code})});
+    if(!response.ok)throw new Error("pairing failed");
+    reportCredential=await response.json();
+    localStorage.setItem(REPORT_KEY,JSON.stringify(reportCredential));
+    if(!P.reporting.legacy){ const times=P.log.map(x=>x.t).filter(Number.isFinite);P.reporting.legacy={observedFrom:times.length?Math.min(...times):null,observedThrough:times.length?Math.max(...times):null,practiceEvents:P.log.length,sessions:P.sessions.length,unknown:["activeMs","reviewProvenance","moduleClearDates","coverage"]}; }
+    saveP(); try{await navigator.clipboard?.writeText("");}catch(e){} scheduleReportSync();
+    alert("Private weekly reporting is connected. Spelling text stays on this device.");
+  }catch(e){ alert("Reporting could not be connected. Ask the observer for a fresh link."); }
+}
+function reportingObsCard(){
+  const state=!reportCredential?"not connected":P.reporting.gaps.length?"connected · incomplete coverage":reportSaveFailed?"storage needs attention":"connected";
+  return `<div class="card"><div class="eyebrow"><span class="n">›</span> PRIVATE WEEKLY REPORT (observer)</div><div class="cluetext">${esc(state)} · aggregate totals only; typed spellings stay here.</div><div class="navrow"><button class="ghost small" onclick="exportProgress()">export progress</button><button class="ghost small" onclick="importProgress()">import progress</button></div></div>`;
+}
+function exportProgress(){
+  if(!confirm("Export private Wordbreak progress? The file includes word-level practice history and assessment responses and should be stored securely."))return;
+  const blob=new Blob([JSON.stringify({format:"wordbreak-progress",version:1,exportedAt:Date.now(),wb2:P})],{type:"application/json"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="wordbreak-progress.json";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+}
+function importProgress(){
+  const input=document.createElement("input");input.type="file";input.accept="application/json";input.onchange=async()=>{
+    try{const x=JSON.parse(await input.files[0].text());if(x.format!=="wordbreak-progress"||x.version!==1||!x.wb2)throw new Error();const normalized=normalizeImportedProgress(x.wb2);if(!normalized.ok)throw new Error(normalized.error);if(!confirm("Replace this browser's Wordbreak progress? Reporting will disconnect so imported progress cannot use another learner's credential."))return;reportCredential=null;localStorage.removeItem(REPORT_KEY);localStorage.setItem("wb2",JSON.stringify(normalized.state));location.reload();}catch(e){alert("That is not a valid or compatible Wordbreak progress export.");}
+  };input.click();
+}
+let reportWriter=true, reportLockRelease=null;
+function claimReportWriter(){
+  if(!reportCredential)return;
+  if(navigator.locks){
+    reportWriter=false;
+    navigator.locks.request("wordbreak-reporting-writer",{ifAvailable:true},async lock=>{
+      if(!lock){alert("Wordbreak is already open in another tab. Close the other tab before practicing here.");return;}
+      reportWriter=true;await new Promise(resolve=>{reportLockRelease=resolve;});
+    });
+  }
+}
+function reportPagehide(){
+  reportSample(true);
+  const assessmentRun=assessmentActive();
+  if(assessmentRun&&S.screen==="assessment"&&!S.assessmentPagehideRecorded){assessmentRun.interruptions=(assessmentRun.interruptions||0)+1;S.assessmentPagehideRecorded=true;saveP();}
+  const dirty=reportDirty().slice(0,14);if(!reportCredential||!dirty.length)return;
+  const payload={schemaVersion:1,sourceRevision:Math.max(1,P.reporting.sourceRevision),days:dirty,outboxDepth:dirty.length,state:reportState()};
+  const raw=JSON.stringify(payload);if(new TextEncoder().encode(raw).length>48*1024)return;
+  fetch("/api/reporting/sync",{method:"POST",headers:{"content-type":"application/json","authorization":"Bearer "+reportCredential.token},body:raw,keepalive:true}).catch(()=>{});
 }
 /* ---------- DISPATCH ---------- */
 /* goHome clears the session-flow flags (decision 12) but LEAVES P.session intact — a paused or
@@ -1662,6 +2124,8 @@ function render(){
   else if(S.screen==="run")renderRun();
   else if(S.screen==="sessionDone")renderSessionDone();
   else if(S.screen==="debrief")renderDebrief();
+  else if(S.screen==="assessment")renderAssessment();
+  else if(S.screen==="assessmentDone")renderAssessmentDone();
 }
 document.addEventListener("keydown",e=>{
   if(S.screen!=="run"||S.phase!=="flag") return;
@@ -1679,8 +2143,23 @@ window.confirmDone=confirmDone;window.continueGo=continueGo;
 window.closeModule=closeModule;window.openDebrief=openDebrief;window.goHome=goHome;
 window.startReview=startReview;window.reviewNext=reviewNext;window.finishReview=finishReview;
 window.startSession=startSession;window.advanceSession=advanceSession;window.setBudget=setBudget;
+window.exportProgress=exportProgress;window.importProgress=importProgress;
+window.startAssessment=startAssessment;window.resumeAssessment=resumeAssessment;window.abandonAssessment=abandonAssessment;
+window.playAssessmentAudio=playAssessmentAudio;window.resetAssessment=resetAssessment;
 resolveErrCodes();
 render();
+saveP();
+claimReportWriter();
+setInterval(()=>reportSample(false),5000);
+setInterval(()=>{if(reportFillDays())saveP();},60000);
+for(const event of ["pointerdown","keydown","touchstart"])document.addEventListener(event,reportActivity,{passive:true});
+document.addEventListener("click",e=>{
+  if((reportCredential&&!reportWriter)||reportSaveFailed){e.preventDefault();e.stopImmediatePropagation();alert(reportSaveFailed?"This step is paused until Wordbreak can save safely.":"Close the other Wordbreak tab before practicing here.");}
+},true);
+document.addEventListener("visibilitychange",()=>{reportSample(true);if(!document.hidden){if(reportFillDays())saveP();scheduleReportSync();}});
+window.addEventListener("online",()=>scheduleReportSync());
+window.addEventListener("pagehide",reportPagehide);
+finishReportEnrollment();
 setTimeout(precacheAudio,0);
 </script>
 </body>

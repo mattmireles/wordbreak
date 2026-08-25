@@ -2,10 +2,15 @@
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { resolve } from "node:path";
 
+import { buildAudioWorklist } from "./worklist.mjs";
+
 const root = resolve(import.meta.dirname, "../..");
 const manifest = JSON.parse(readFileSync(resolve(root, "docs/audio/audio-manifest.json"), "utf8"));
 const runtimeFiles = JSON.parse(readFileSync(resolve(root, "public/audio/manifest.json"), "utf8"));
 const audioDir = resolve(root, "public/audio");
+const derived = buildAudioWorklist(root);
+if (JSON.stringify(manifest) !== JSON.stringify(derived.manifest)) throw new Error("Checked-in audio manifest is stale; run npm run extract:audio");
+if (JSON.stringify(runtimeFiles) !== JSON.stringify(derived.runtimeFiles)) throw new Error("Runtime audio manifest is stale; run npm run extract:audio");
 
 function isMp3(bytes) {
   const hasId3 = bytes[0] === 0x49 && bytes[1] === 0x44 && bytes[2] === 0x33;

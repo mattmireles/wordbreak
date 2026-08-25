@@ -49,7 +49,8 @@ for (const p of candidates) {
   }
 }
 
-const env = { ...process.env, ...loaded };
+// Explicit CI/operator environment always wins over a convenience env file.
+const env = { ...loaded, ...process.env };
 for (const k of KEYS) {
   if (!env[k]) {
     console.error(
@@ -60,6 +61,24 @@ for (const k of KEYS) {
 }
 
 if (from) console.log(`==> Cloudflare credentials from ${from}`);
+
+const expectedAccount = "dc678e9a2bc3233faab6a99bbb4c4292";
+if (env.CLOUDFLARE_ACCOUNT_ID !== expectedAccount) {
+  console.error("Refusing deploy: unexpected Cloudflare account.");
+  process.exit(1);
+}
+const config = readFileSync(resolve(root, "wrangler.jsonc"), "utf8");
+for (const required of [
+  '"name": "wordbreak"',
+  '"database_id": "9af59c56-e70e-4adc-a701-33350d37f69f"',
+  '"pattern": "wordbreak.fun"',
+  '"pattern": "www.wordbreak.fun"',
+]) {
+  if (!config.includes(required)) {
+    console.error("Refusing deploy: Wrangler identity assertion failed.");
+    process.exit(1);
+  }
+}
 
 const r = spawnSync("npx", ["wrangler", "deploy"], {
   cwd: root,

@@ -4,8 +4,16 @@
   "type": "module",
   "scripts": {
     "sync:public": "mkdir -p public && cp wordbreak_v2.html public/index.html",
+    "extract:audio": "node scripts/audio/extract-worklist.mjs",
     "deploy": "npm run sync:public && node scripts/deploy.mjs",
-    "dev": "npm run sync:public && wrangler dev"
+    "dev": "npm run sync:public && wrangler dev --test-scheduled",
+    "test": "npm run validate:curriculum && npm run validate:assessment && npm run test:unit && npm run test:reporting-integration && npm run test:d1 && npm run verify:assets",
+    "validate:curriculum": "node scripts/curriculum/validate-content.mjs",
+    "validate:assessment": "node scripts/assessment/validate-bank.mjs",
+    "test:unit": "node --test src/*.test.js scripts/audio/*.test.mjs",
+    "test:reporting-integration": "node scripts/reporting-local-smoke.mjs",
+    "test:d1": "wrangler d1 migrations apply wordbreak-reporting --local && wrangler d1 execute wordbreak-reporting --local --command \"SELECT key,value FROM service_config ORDER BY key\"",
+    "verify:assets": "npm run sync:public && node scripts/audio/verify-assets.mjs"
   },
   "devDependencies": {
     "wrangler": "^4.111.0"

@@ -2718,6 +2718,1126 @@
       "text": "affect",
       "speed": 0.7,
       "speedTag": "s"
+    },
+    {
+      "key": "45dd556a",
+      "file": "45dd556a.mp3",
+      "text": "political",
+      "kind": "field_pack",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "a1d177d5",
+      "file": "a1d177d5.mp3",
+      "text": "political",
+      "kind": "field_pack",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "68874c9d",
+      "file": "68874c9d.mp3",
+      "text": "politician",
+      "kind": "field_pack",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "ee9149f8",
+      "file": "ee9149f8.mp3",
+      "text": "politician",
+      "kind": "field_pack",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "044ac2ec",
+      "file": "044ac2ec.mp3",
+      "text": "politics",
+      "kind": "field_pack",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "ae740b91",
+      "file": "ae740b91.mp3",
+      "text": "politics",
+      "kind": "field_pack",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "18dab497",
+      "file": "18dab497.mp3",
+      "text": "politic",
+      "kind": "field_pack",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "84b184b8",
+      "file": "84b184b8.mp3",
+      "text": "politic",
+      "kind": "field_pack",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "4b284611",
+      "file": "4b284611.mp3",
+      "text": "interest",
+      "kind": "field_pack",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "7b47b078",
+      "file": "7b47b078.mp3",
+      "text": "interest",
+      "kind": "field_pack",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "dfff07f2",
+      "file": "dfff07f2.mp3",
+      "text": "library",
+      "kind": "field_pack",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "1a2d3f85",
+      "file": "1a2d3f85.mp3",
+      "text": "library",
+      "kind": "field_pack",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "b0424ec5",
+      "file": "b0424ec5.mp3",
+      "text": "general",
+      "kind": "field_pack",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "c9b4e14a",
+      "file": "c9b4e14a.mp3",
+      "text": "general",
+      "kind": "field_pack",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "c638b609",
+      "file": "c638b609.mp3",
+      "text": "several",
+      "kind": "field_pack",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "fabf6e26",
+      "file": "fabf6e26.mp3",
+      "text": "several",
+      "kind": "field_pack",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "b8b2b273",
+      "file": "b8b2b273.mp3",
+      "text": "aggression",
+      "kind": "field_pack",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "521c5cfa",
+      "file": "521c5cfa.mp3",
+      "text": "aggression",
+      "kind": "field_pack",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "f3ccf5d3",
+      "file": "f3ccf5d3.mp3",
+      "text": "opposition",
+      "kind": "field_pack",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "b570c36a",
+      "file": "b570c36a.mp3",
+      "text": "opposition",
+      "kind": "field_pack",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "d0dc5aa0",
+      "file": "d0dc5aa0.mp3",
+      "text": "irresponsible",
+      "kind": "field_pack",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "bb70f387",
+      "file": "bb70f387.mp3",
+      "text": "irresponsible",
+      "kind": "field_pack",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "e44ed216",
+      "file": "e44ed216.mp3",
+      "text": "impatient",
+      "kind": "field_pack",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "0d0713c5",
+      "file": "0d0713c5.mp3",
+      "text": "impatient",
+      "kind": "field_pack",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "12b3e38c",
+      "file": "12b3e38c.mp3",
+      "text": "admission",
+      "kind": "field_pack",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "37860e87",
+      "file": "37860e87.mp3",
+      "text": "admission",
+      "kind": "field_pack",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "55b64f91",
+      "file": "55b64f91.mp3",
+      "text": "expression",
+      "kind": "field_pack",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "623d5510",
+      "file": "623d5510.mp3",
+      "text": "expression",
+      "kind": "field_pack",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "f6f184bc",
+      "file": "f6f184bc.mp3",
+      "text": "conclusion",
+      "kind": "field_pack",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "4241aaa5",
+      "file": "4241aaa5.mp3",
+      "text": "conclusion",
+      "kind": "field_pack",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "3d345d68",
+      "file": "3d345d68.mp3",
+      "text": "expansion",
+      "kind": "field_pack",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "e657819b",
+      "file": "e657819b.mp3",
+      "text": "expansion",
+      "kind": "field_pack",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "11b23a28",
+      "file": "11b23a28.mp3",
+      "text": "category. Choose the category that best fits the project.",
+      "kind": "assessment",
+      "itemId": "A-E1-01",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "71259b77",
+      "file": "71259b77.mp3",
+      "text": "category. Choose the category that best fits the project.",
+      "kind": "assessment",
+      "itemId": "A-E1-01",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "84726ebb",
+      "file": "84726ebb.mp3",
+      "text": "privilege. Access to the server is a privilege, not a right.",
+      "kind": "assessment",
+      "itemId": "A-E1-02",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "e9118d4e",
+      "file": "e9118d4e.mp3",
+      "text": "privilege. Access to the server is a privilege, not a right.",
+      "kind": "assessment",
+      "itemId": "A-E1-02",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "416dc929",
+      "file": "416dc929.mp3",
+      "text": "temperature. Check the temperature before the experiment begins.",
+      "kind": "assessment",
+      "itemId": "A-E2-01",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "6dc85634",
+      "file": "6dc85634.mp3",
+      "text": "temperature. Check the temperature before the experiment begins.",
+      "kind": "assessment",
+      "itemId": "A-E2-01",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "09b62d06",
+      "file": "09b62d06.mp3",
+      "text": "laboratory. The sample stayed in the laboratory overnight.",
+      "kind": "assessment",
+      "itemId": "A-E2-02",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "c5172a3b",
+      "file": "c5172a3b.mp3",
+      "text": "laboratory. The sample stayed in the laboratory overnight.",
+      "kind": "assessment",
+      "itemId": "A-E2-02",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "8bb9328b",
+      "file": "8bb9328b.mp3",
+      "text": "opening. The opening scene reveals the hidden map.",
+      "kind": "assessment",
+      "itemId": "A-E3-01",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "1274e782",
+      "file": "1274e782.mp3",
+      "text": "opening. The opening scene reveals the hidden map.",
+      "kind": "assessment",
+      "itemId": "A-E3-01",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "a0077389",
+      "file": "a0077389.mp3",
+      "text": "listening. Careful listening helped her catch the clue.",
+      "kind": "assessment",
+      "itemId": "A-E3-02",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "a59bdb82",
+      "file": "a59bdb82.mp3",
+      "text": "listening. Careful listening helped her catch the clue.",
+      "kind": "assessment",
+      "itemId": "A-E3-02",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "e2a3a2e4",
+      "file": "e2a3a2e4.mp3",
+      "text": "admitted. He admitted the first calculation was wrong.",
+      "kind": "assessment",
+      "itemId": "A-E4-01",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "20e1d8ed",
+      "file": "20e1d8ed.mp3",
+      "text": "admitted. He admitted the first calculation was wrong.",
+      "kind": "assessment",
+      "itemId": "A-E4-01",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "b2384030",
+      "file": "b2384030.mp3",
+      "text": "regretted. She regretted deleting the only backup.",
+      "kind": "assessment",
+      "itemId": "A-E4-02",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "3d03f5b9",
+      "file": "3d03f5b9.mp3",
+      "text": "regretted. She regretted deleting the only backup.",
+      "kind": "assessment",
+      "itemId": "A-E4-02",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "1e14aede",
+      "file": "1e14aede.mp3",
+      "text": "accumulate. Dust can accumulate inside a neglected computer.",
+      "kind": "assessment",
+      "itemId": "A-E5-01",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "d2a8fafb",
+      "file": "d2a8fafb.mp3",
+      "text": "accumulate. Dust can accumulate inside a neglected computer.",
+      "kind": "assessment",
+      "itemId": "A-E5-01",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "87f49cc4",
+      "file": "87f49cc4.mp3",
+      "text": "illustrate. Use one diagram to illustrate the process.",
+      "kind": "assessment",
+      "itemId": "A-E5-02",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "a5936299",
+      "file": "a5936299.mp3",
+      "text": "illustrate. Use one diagram to illustrate the process.",
+      "kind": "assessment",
+      "itemId": "A-E5-02",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "f7d40f54",
+      "file": "f7d40f54.mp3",
+      "text": "safely. The files were copied safely to a second drive.",
+      "kind": "assessment",
+      "itemId": "A-E6-01",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "998f11cb",
+      "file": "998f11cb.mp3",
+      "text": "safely. The files were copied safely to a second drive.",
+      "kind": "assessment",
+      "itemId": "A-E6-01",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "5db624b6",
+      "file": "5db624b6.mp3",
+      "text": "argument. They settled the argument with better evidence.",
+      "kind": "assessment",
+      "itemId": "A-E6-02",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "9e9f2f0d",
+      "file": "9e9f2f0d.mp3",
+      "text": "argument. They settled the argument with better evidence.",
+      "kind": "assessment",
+      "itemId": "A-E6-02",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "84dc5f61",
+      "file": "84dc5f61.mp3",
+      "text": "withhold. Do not withhold important details from the team.",
+      "kind": "assessment",
+      "itemId": "A-E7-01",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "bcc04358",
+      "file": "bcc04358.mp3",
+      "text": "withhold. Do not withhold important details from the team.",
+      "kind": "assessment",
+      "itemId": "A-E7-01",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "101f9aca",
+      "file": "101f9aca.mp3",
+      "text": "bookkeeper. The bookkeeper balanced every account.",
+      "kind": "assessment",
+      "itemId": "A-E7-02",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "5f43fafb",
+      "file": "5f43fafb.mp3",
+      "text": "bookkeeper. The bookkeeper balanced every account.",
+      "kind": "assessment",
+      "itemId": "A-E7-02",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "d20ee2d9",
+      "file": "d20ee2d9.mp3",
+      "text": "explanation. His explanation made the strange result clear.",
+      "kind": "assessment",
+      "itemId": "A-E8-01",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "b0fe1f2e",
+      "file": "b0fe1f2e.mp3",
+      "text": "explanation. His explanation made the strange result clear.",
+      "kind": "assessment",
+      "itemId": "A-E8-01",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "d86afaf6",
+      "file": "d86afaf6.mp3",
+      "text": "decision. The final decision belonged to the whole group.",
+      "kind": "assessment",
+      "itemId": "A-E8-02",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "6e9893a9",
+      "file": "6e9893a9.mp3",
+      "text": "decision. The final decision belonged to the whole group.",
+      "kind": "assessment",
+      "itemId": "A-E8-02",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "c1c9a81d",
+      "file": "c1c9a81d.mp3",
+      "text": "microscope. The cells became visible under the microscope.",
+      "kind": "assessment",
+      "itemId": "A-E9-01",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "24c7caa4",
+      "file": "24c7caa4.mp3",
+      "text": "microscope. The cells became visible under the microscope.",
+      "kind": "assessment",
+      "itemId": "A-E9-01",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "7bf56aab",
+      "file": "7bf56aab.mp3",
+      "text": "architecture. The system's architecture determines how its parts connect.",
+      "kind": "assessment",
+      "itemId": "A-E9-02",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "8cbd2b20",
+      "file": "8cbd2b20.mp3",
+      "text": "architecture. The system's architecture determines how its parts connect.",
+      "kind": "assessment",
+      "itemId": "A-E9-02",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "b724ee70",
+      "file": "b724ee70.mp3",
+      "text": "compliment. Her coach gave a sincere compliment after the game.",
+      "kind": "assessment",
+      "itemId": "A-E10-01",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "086a8c9f",
+      "file": "086a8c9f.mp3",
+      "text": "compliment. Her coach gave a sincere compliment after the game.",
+      "kind": "assessment",
+      "itemId": "A-E10-01",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "83d75b09",
+      "file": "83d75b09.mp3",
+      "text": "council. The city council voted on the new park.",
+      "kind": "assessment",
+      "itemId": "A-E10-02",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "bcf9be2c",
+      "file": "bcf9be2c.mp3",
+      "text": "council. The city council voted on the new park.",
+      "kind": "assessment",
+      "itemId": "A-E10-02",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "7edf3bff",
+      "file": "7edf3bff.mp3",
+      "text": "conscience. His conscience would not let him take the credit.",
+      "kind": "assessment",
+      "itemId": "A-E11-01",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "cc210534",
+      "file": "cc210534.mp3",
+      "text": "conscience. His conscience would not let him take the credit.",
+      "kind": "assessment",
+      "itemId": "A-E11-01",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "300fe69e",
+      "file": "300fe69e.mp3",
+      "text": "questionnaire. Complete the questionnaire before the interview begins.",
+      "kind": "assessment",
+      "itemId": "A-E11-02",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "0ab804ff",
+      "file": "0ab804ff.mp3",
+      "text": "questionnaire. Complete the questionnaire before the interview begins.",
+      "kind": "assessment",
+      "itemId": "A-E11-02",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "6960458c",
+      "file": "6960458c.mp3",
+      "text": "liaison. She served as the liaison between the two teams.",
+      "kind": "assessment",
+      "itemId": "A-E11-03",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "0fc1492b",
+      "file": "0fc1492b.mp3",
+      "text": "liaison. She served as the liaison between the two teams.",
+      "kind": "assessment",
+      "itemId": "A-E11-03",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "31077de6",
+      "file": "31077de6.mp3",
+      "text": "debris. The storm left debris across the road.",
+      "kind": "assessment",
+      "itemId": "A-E11-04",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "33d3dedb",
+      "file": "33d3dedb.mp3",
+      "text": "debris. The storm left debris across the road.",
+      "kind": "assessment",
+      "itemId": "A-E11-04",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "d2ecfe0d",
+      "file": "d2ecfe0d.mp3",
+      "text": "ceremony. The awards ceremony begins at noon.",
+      "kind": "assessment",
+      "itemId": "B-E1-01",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "0992f882",
+      "file": "0992f882.mp3",
+      "text": "ceremony. The awards ceremony begins at noon.",
+      "kind": "assessment",
+      "itemId": "B-E1-01",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "b4a00670",
+      "file": "b4a00670.mp3",
+      "text": "relevant. Include only evidence relevant to the question.",
+      "kind": "assessment",
+      "itemId": "B-E1-02",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "21b30d23",
+      "file": "21b30d23.mp3",
+      "text": "relevant. Include only evidence relevant to the question.",
+      "kind": "assessment",
+      "itemId": "B-E1-02",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "0a17ac6f",
+      "file": "0a17ac6f.mp3",
+      "text": "literature. The class compared science fiction literature.",
+      "kind": "assessment",
+      "itemId": "B-E2-01",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "1d23243e",
+      "file": "1d23243e.mp3",
+      "text": "literature. The class compared science fiction literature.",
+      "kind": "assessment",
+      "itemId": "B-E2-01",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "58b95deb",
+      "file": "58b95deb.mp3",
+      "text": "veterinary. The injured dog needed veterinary care.",
+      "kind": "assessment",
+      "itemId": "B-E2-02",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "707b1b70",
+      "file": "707b1b70.mp3",
+      "text": "veterinary. The injured dog needed veterinary care.",
+      "kind": "assessment",
+      "itemId": "B-E2-02",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "5abd7f64",
+      "file": "5abd7f64.mp3",
+      "text": "visiting. We are visiting the museum after lunch.",
+      "kind": "assessment",
+      "itemId": "B-E3-01",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "ef491743",
+      "file": "ef491743.mp3",
+      "text": "visiting. We are visiting the museum after lunch.",
+      "kind": "assessment",
+      "itemId": "B-E3-01",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "c56e9eff",
+      "file": "c56e9eff.mp3",
+      "text": "marketing. The marketing plan targets new players.",
+      "kind": "assessment",
+      "itemId": "B-E3-02",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "8515220a",
+      "file": "8515220a.mp3",
+      "text": "marketing. The marketing plan targets new players.",
+      "kind": "assessment",
+      "itemId": "B-E3-02",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "7eeb4c80",
+      "file": "7eeb4c80.mp3",
+      "text": "occurring. The error kept occurring at the same step.",
+      "kind": "assessment",
+      "itemId": "B-E4-01",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "7e16e57b",
+      "file": "7e16e57b.mp3",
+      "text": "occurring. The error kept occurring at the same step.",
+      "kind": "assessment",
+      "itemId": "B-E4-01",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "617faa8b",
+      "file": "617faa8b.mp3",
+      "text": "preferred. Most testers preferred the simpler layout.",
+      "kind": "assessment",
+      "itemId": "B-E4-02",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "b8467090",
+      "file": "b8467090.mp3",
+      "text": "preferred. Most testers preferred the simpler layout.",
+      "kind": "assessment",
+      "itemId": "B-E4-02",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "eae30feb",
+      "file": "eae30feb.mp3",
+      "text": "apparatus. The glass apparatus must be cleaned after use.",
+      "kind": "assessment",
+      "itemId": "B-E5-01",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "be7ce504",
+      "file": "be7ce504.mp3",
+      "text": "apparatus. The glass apparatus must be cleaned after use.",
+      "kind": "assessment",
+      "itemId": "B-E5-01",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "db99dd54",
+      "file": "db99dd54.mp3",
+      "text": "collaborate. The two teams will collaborate on the prototype.",
+      "kind": "assessment",
+      "itemId": "B-E5-02",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "cb25b6bf",
+      "file": "cb25b6bf.mp3",
+      "text": "collaborate. The two teams will collaborate on the prototype.",
+      "kind": "assessment",
+      "itemId": "B-E5-02",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "cd4ca9cb",
+      "file": "cd4ca9cb.mp3",
+      "text": "likely. Rain is likely after midnight.",
+      "kind": "assessment",
+      "itemId": "B-E6-01",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "cf4eedfe",
+      "file": "cf4eedfe.mp3",
+      "text": "likely. Rain is likely after midnight.",
+      "kind": "assessment",
+      "itemId": "B-E6-01",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "418d50e4",
+      "file": "418d50e4.mp3",
+      "text": "movement. The sensor detected movement in the hallway.",
+      "kind": "assessment",
+      "itemId": "B-E6-02",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "fab85c5d",
+      "file": "fab85c5d.mp3",
+      "text": "movement. The sensor detected movement in the hallway.",
+      "kind": "assessment",
+      "itemId": "B-E6-02",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "36731696",
+      "file": "36731696.mp3",
+      "text": "withstand. The bridge can withstand powerful winds.",
+      "kind": "assessment",
+      "itemId": "B-E7-01",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "7b71c69d",
+      "file": "7b71c69d.mp3",
+      "text": "withstand. The bridge can withstand powerful winds.",
+      "kind": "assessment",
+      "itemId": "B-E7-01",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "881c3ab9",
+      "file": "881c3ab9.mp3",
+      "text": "schoolbook. She left the schoolbook in her locker.",
+      "kind": "assessment",
+      "itemId": "B-E7-02",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "2623d130",
+      "file": "2623d130.mp3",
+      "text": "schoolbook. She left the schoolbook in her locker.",
+      "kind": "assessment",
+      "itemId": "B-E7-02",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "eff2075c",
+      "file": "eff2075c.mp3",
+      "text": "declaration. The mayor signed the declaration before the meeting.",
+      "kind": "assessment",
+      "itemId": "B-E8-01",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "ef513c73",
+      "file": "ef513c73.mp3",
+      "text": "declaration. The mayor signed the declaration before the meeting.",
+      "kind": "assessment",
+      "itemId": "B-E8-01",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "a5840131",
+      "file": "a5840131.mp3",
+      "text": "revision. The second revision made the argument clearer.",
+      "kind": "assessment",
+      "itemId": "B-E8-02",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "3c4a6bb4",
+      "file": "3c4a6bb4.mp3",
+      "text": "revision. The second revision made the argument clearer.",
+      "kind": "assessment",
+      "itemId": "B-E8-02",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "1c697720",
+      "file": "1c697720.mp3",
+      "text": "symphony. The orchestra performed a new symphony.",
+      "kind": "assessment",
+      "itemId": "B-E9-01",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "fb2c0373",
+      "file": "fb2c0373.mp3",
+      "text": "symphony. The orchestra performed a new symphony.",
+      "kind": "assessment",
+      "itemId": "B-E9-01",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "0665d153",
+      "file": "0665d153.mp3",
+      "text": "catastrophe. The failed launch became a public catastrophe.",
+      "kind": "assessment",
+      "itemId": "B-E9-02",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "c3a3fef4",
+      "file": "c3a3fef4.mp3",
+      "text": "catastrophe. The failed launch became a public catastrophe.",
+      "kind": "assessment",
+      "itemId": "B-E9-02",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "70d84a42",
+      "file": "70d84a42.mp3",
+      "text": "aloud. Please read the final paragraph aloud.",
+      "kind": "assessment",
+      "itemId": "B-E10-01",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "af916cd1",
+      "file": "af916cd1.mp3",
+      "text": "aloud. Please read the final paragraph aloud.",
+      "kind": "assessment",
+      "itemId": "B-E10-01",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "46ede04d",
+      "file": "46ede04d.mp3",
+      "text": "dessert. We shared chocolate cake for dessert.",
+      "kind": "assessment",
+      "itemId": "B-E10-02",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "5e820ecc",
+      "file": "5e820ecc.mp3",
+      "text": "dessert. We shared chocolate cake for dessert.",
+      "kind": "assessment",
+      "itemId": "B-E10-02",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "7aa2df96",
+      "file": "7aa2df96.mp3",
+      "text": "foreign. The museum displayed coins from a foreign country.",
+      "kind": "assessment",
+      "itemId": "B-E11-01",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "7b4e214d",
+      "file": "7b4e214d.mp3",
+      "text": "foreign. The museum displayed coins from a foreign country.",
+      "kind": "assessment",
+      "itemId": "B-E11-01",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "f71dc95b",
+      "file": "f71dc95b.mp3",
+      "text": "acquaintance. An old acquaintance recognized him at the station.",
+      "kind": "assessment",
+      "itemId": "B-E11-02",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "ce9942c6",
+      "file": "ce9942c6.mp3",
+      "text": "acquaintance. An old acquaintance recognized him at the station.",
+      "kind": "assessment",
+      "itemId": "B-E11-02",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "41eefada",
+      "file": "41eefada.mp3",
+      "text": "silhouette. The mountain formed a dark silhouette against the sky.",
+      "kind": "assessment",
+      "itemId": "B-E11-03",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "27962733",
+      "file": "27962733.mp3",
+      "text": "silhouette. The mountain formed a dark silhouette against the sky.",
+      "kind": "assessment",
+      "itemId": "B-E11-03",
+      "speed": 0.7,
+      "speedTag": "s"
+    },
+    {
+      "key": "632ab2b1",
+      "file": "632ab2b1.mp3",
+      "text": "business. The family business opened a second location.",
+      "kind": "assessment",
+      "itemId": "B-E11-04",
+      "speed": 1,
+      "speedTag": "n"
+    },
+    {
+      "key": "50008f22",
+      "file": "50008f22.mp3",
+      "text": "business. The family business opened a second location.",
+      "kind": "assessment",
+      "itemId": "B-E11-04",
+      "speed": 0.7,
+      "speedTag": "s"
     }
   ]
 }
