@@ -22,7 +22,7 @@
 ## Docs to read
 
 - `docs/skills/plan-workflow-skills-guide.md`
-- `docs/skills/plans-template.md`
+- `assets/Plans-template.md` (canonical; docs/skills/plans-template.md is a symlink)
 - `docs/plans/README.md`
 - Relevant product docs and notes for the task domain
 - Neighboring plans for local style
