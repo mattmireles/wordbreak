@@ -49,6 +49,9 @@ it.
 
 - Do not edit files.
 - Do not silently fix instead of reporting.
+- Return the audit to the caller or chat. Do not create a routine evidence
+  artifact, append an execution summary to the plan, or write audit output
+  under `README/`.
 
 ## Handoff Rules
 
