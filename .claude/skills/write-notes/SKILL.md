@@ -37,3 +37,10 @@ Capture useful institutional memory in `docs/notes/` without note sprawl.
 
 - `markdown` for markdown cleanup
 - `create-plan` when a real plan is needed
+
+Never write a plan execution log here. Phase progress belongs only in the
+plan's task checkboxes; the plan header states only its overall lifecycle
+(`Planned`, `In-Progress`, or `Complete`). Routine test and review output is
+transient; Git and CI are the evidence. Create a separate artifact only for an
+important external fact that cannot be reproduced from the commit. Store it
+under `README/notes/receipts/plan-NNN/`.
