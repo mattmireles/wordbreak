@@ -262,8 +262,14 @@ P.docs=P.docs||{}; P.cleared=P.cleared||{}; P.log=P.log||[];
 /* session compiler state (plan 003) — additive; deleting these three keys resets the
    session layer only, leaving progress/schedule/profile untouched. cfg is observer-owned
    (budget in minutes); session is the current frozen queue+cursor or null; sessions is the
-   observer history ring (per-session scalars, never block arrays — keeps each saveP small). */
-P.cfg=P.cfg||{budgetMin:30}; P.session=P.session||null; P.sessions=P.sessions||[];
+   observer history ring (per-session scalars, never block arrays — keeps each saveP small).
+   v1 used a 30-minute default; v3 resets every pre-v3 30-minute setting because
+   the old storage has no provenance to distinguish a default from a deliberate choice. */
+const DEFAULT_SESSION_MIN=10;
+const CFG_VERSION=3;
+P.cfg=P.cfg||{budgetMin:DEFAULT_SESSION_MIN,v:CFG_VERSION};
+if((P.cfg.v||0)<CFG_VERSION){ if(P.cfg.budgetMin===30) P.cfg.budgetMin=DEFAULT_SESSION_MIN; P.cfg.v=CFG_VERSION; }
+P.session=P.session||null; P.sessions=P.sessions||[];
 P.reporting=P.reporting||{version:1,sourceRevision:0,days:{},acked:{},gaps:[],deadLetters:[],legacy:null};
 function freshAssessment(completed){return {version:ASSESSMENT_VERSION,assignment:null,runs:[],nonbonusCompletedTotal:completed||0};}
 const completedSessions=P.sessions.filter(x=>!x.bonus&&x.status==="completed").length;
@@ -1031,6 +1037,8 @@ const REVIEW_CAP=12;                                    /* legacy per-batch cap 
    crude on purpose (calibration targets, not promises), and nothing kid-facing shows a clock.
    SESSION_ON is the full-path kill switch: false → the entire pre-plan home + flows return. */
 const SEC_REV=60, SEC_PANEL=30, SEC_WORD=90;
+const REVIEW_BLOCKS_PER_SESSION=4;                       /* enough spacing practice to matter, never a review wall */
+const SESSION_QUEUE_VERSION=2;                            /* old frozen queues predate the short-session contract */
 const SESSION_ON=true;
 /* weight = how hard the code is to automate → how eagerly the queue resurfaces it.
    memory (E11) and schwa (E1/E2) sit at the top; foundation (E0/E3) at the bottom. */
@@ -1164,24 +1172,34 @@ function compileSession(budgetMin,opts){
     const cand=frontierUnits({blocks});
     if(cand.length){ const u=cand[0]; blocks.push({k:"mod",id:u.id,cells:modCells(u),pc:modPanelCells(u)}); }
   } else {
-    /* tier 1 — due reviews, budget-bounded (no fixed count cap). the crossing item is
-       included: fill while est < budget, the item that reaches budget is the last one. */
+    /* Lead with one frontier module whenever one exists: completing it moves the visible
+       map forward. Reviews still matter, but a backlog must not turn the only start button
+       into a long, scoreless-looking wall of old work. */
+    const frontier=frontierUnits({blocks});
+    if(frontier.length){
+      const u=frontier.shift();
+      blocks.push({k:"mod",id:u.id,cells:modCells(u),pc:modPanelCells(u)});
+      est+=estMod(u);
+    }
+    /* A small review dose follows. The budget remains a time guard; the hard cap makes a
+       long absence resumable instead of assigning the entire backlog at once. */
+    let reviews=0;
     for(const d of dueList()){
-      if(est>=budgetSec) break;
+      if(est>=budgetSec||reviews>=REVIEW_BLOCKS_PER_SESSION) break;
       blocks.push({k:"rev",key:schedKey(d.u,d.w),cells:1});
       est+=SEC_REV;
+      reviews++;
     }
-    /* tier 2 — frontier modules (atomic). if tier 1 already met budget (est>=budgetSec),
-       the first iteration breaks → none compile; otherwise the guard passes once before the
-       next check, so ≥1 module always compiles when a frontier exists. */
-    for(const u of frontierUnits({blocks})){
-      if(est>=budgetSec) break;
+    /* A longer observer-selected budget can include more modules, but the first is always
+       the visible win and the review dose above never grows into the session itself. */
+    for(const u of frontier){
+      if(est+estMod(u)>budgetSec) break;                 /* only the first module may cross the budget line */
       blocks.push({k:"mod",id:u.id,cells:modCells(u),pc:modPanelCells(u)});
       est+=estMod(u);
     }
   }
   blocks.push(...synthBlocks());       /* tier 3 — empty in v1 */
-  return {id:crypto.randomUUID(),day:localDay(),startReportDay:reportDay(),startedAt:Date.now(),
+  return {v:SESSION_QUEUE_VERSION,id:crypto.randomUUID(),day:localDay(),startReportDay:reportDay(),startedAt:Date.now(),
     status:"in_progress",revision:1,activeMs:0,budgetMin,blocks,idx:0,done:false,bonus,
     baseDone:bonus,stats:{words:0,clean:0}};
 }
@@ -1199,7 +1217,7 @@ function blockStale(b){
   return true;
 }
 function nextLiveIdx(s){ let i=s.idx; while(i<s.blocks.length&&blockStale(s.blocks[i])) i++; return i; }
-function sessionValid(s){ return !!(s&&s.day===localDay()&&!s.done&&nextLiveIdx(s)<s.blocks.length); }
+function sessionValid(s){ return !!(s&&s.v===SESSION_QUEUE_VERSION&&s.day===localDay()&&!s.done&&nextLiveIdx(s)<s.blocks.length); }
 /* ===================== ENGINE ===================== */
 const STAGES=[
 {n:1,t:"anglo-saxon foundation",d:"base layer — for other players (or speed-run it)"},
@@ -1226,15 +1244,15 @@ function titlebar(path){ return `<div class="titlebar"><div class="dots"><div cl
 function clearedCount(){ return UNITS.filter(u=>isEnabledUnit(u)&&P.cleared[u.id]).length; }
 function enabledUnitCount(){ return UNITS.filter(isEnabledUnit).length; }
 /* ---------- HOME ---------- */
-/* one-line factual preview of a block list, e.g. "7 bytes due, then 4.2 · duc.family (+2 more)".
+/* one-line factual preview of a block list, e.g. "4.2 · duc.family, then 4 bytes due".
    describes what the compiler assembled — no clock, no promise (README §7). */
 function describeBlocks(blocks){
   const revs=blocks.filter(b=>b.k==="rev").length;
   const mods=blocks.filter(b=>b.k==="mod");
   const parts=[];
-  if(revs) parts.push(`${revs} ${revs===1?"byte":"bytes"} due`);
   if(mods.length){ const u=UNITS.find(x=>x.id===mods[0].id), extra=mods.length-1;
     parts.push(`${esc(mods[0].id)}${u?" · "+esc(u.nm):""}${extra>0?` (+${extra} more)`:""}`); }
+  if(revs) parts.push(`${revs} ${revs===1?"byte":"bytes"} due`);
   return parts.length?parts.join(", then "):"nothing queued";
 }
 /* the map, read-only: id · name · description, CLEARED status, and a ghost "docs" link that
@@ -1269,7 +1287,7 @@ function mapRows(){
 /* the single TODAY card — the only startable surface (decision 1). four states: resume an
    in-progress session, a completed day (with the bonus valve), a fresh start, or all-clear. */
 function todayCard(){
-  const s=P.session, completedToday=s&&s.day===localDay()&&(s.done||s.baseDone), resumable=sessionValid(s);
+  const s=P.session, completedToday=s&&s.v===SESSION_QUEUE_VERSION&&s.day===localDay()&&(s.done||s.baseDone), resumable=sessionValid(s);
   const wrap=(eyebrow,body,btn)=>`<div class="card" style="border-color:var(--amber);background:#1a1712">
     <div class="eyebrow"><span class="n">›</span> ${eyebrow}</div>
     <div class="cluetext">${body}</div>
@@ -1289,7 +1307,7 @@ function todayCard(){
   }
   const pv=compileSession(P.cfg.budgetMin);   /* pure dry-run for the preview (Phase 1 purity) */
   if(!pv.blocks.length) return wrap("TODAY — ALL CLEAR", `nothing due, every module cleared. ${nd!==null?`next bytes return in <b>${nd} ${nd===1?"day":"days"}</b>`:`come back when the queue refills`}.`, ``);
-  return wrap("TODAY", `${describeBlocks(pv.blocks)}. review first, then the frontier — one press runs the lot.`, `<button class="primary" onclick="startSession()">▶ start</button>`);
+  return wrap("TODAY", `${describeBlocks(pv.blocks)}. clear a new module, then make a few old bytes stick.`, `<button class="primary" onclick="startSession()">▶ start</button>`);
 }
 function renderHome(){
   if(!SESSION_ON) return renderHomeLegacy();
@@ -1498,7 +1516,7 @@ function renderSessionDone(){
   /* honesty about the queue (decision 2): if the budget capped reviews, bytes are still due NOW —
      say so rather than naming a future return that skips over today's remaining backlog. */
   const leftNow=dueList().length, nd=nextDueInDays();
-  const ret = leftNow ? `<b style="color:var(--amber)">${leftNow} ${leftNow===1?"byte":"bytes"}</b> still due now — start again to keep clearing them`
+  const ret = leftNow ? `<b style="color:var(--amber)">${leftNow} ${leftNow===1?"byte":"bytes"}</b> still due — they lead the next day's session`
     : nd!==null ? `next bytes return in <b>${nd} ${nd===1?"day":"days"}</b>`
     : `nothing queued to return — the frontier is the work`;
   html(`${titlebar("session/done")}
@@ -2005,7 +2023,7 @@ function renderDebrief(){
     <li><b>which fork lands harder — the rule verdicts or the source pulls?</b> watch his face at the stress reveal vs. the arithmetic. that tells us where to build.</li>
     <li><b>does the «handed flat» outcome bother him?</b> it should feel like a door closing. if he doesn't care, the aim reward is too weak.</li>
     <li><b>after a faulted build, does he re-run the questions himself on the patch?</b> that's the win condition — the checklist migrating into his head.</li>
-    <li><b>does he press start unprompted — or does it take nagging?</b> the queue now lives INSIDE the session (review comes first, automatically), so there is no due-card to clear anymore. the whole game reduces to one question: does he come back and press start on his own? the SESSIONS card above tracks starts-per-week — if that number falls, the session is too expensive and the budget should come down. that's the judge that matters.</li>
+    <li><b>does he press start unprompted — or does it take nagging?</b> the queue now lives INSIDE the session: one new module first, then a small review dose, so there is no due-card to clear anymore. the whole game reduces to one question: does he come back and press start on his own? the SESSIONS card above tracks starts-per-week — if that number falls, the session is too expensive and the budget should come down. that's the judge that matters.</li>
   </ol></div>
   <div class="navrow"><button class="ghost" onclick="goHome()">← back to the stage map</button></div>`);
 }

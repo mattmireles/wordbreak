@@ -7,10 +7,11 @@ four pressable surfaces (DUE card, Continue card, per-module `learn`, per-module
 `practice`); a kid who skips everything optional treats "finished the lesson" as
 "done." This plan replaces all of it with **one session**: press `▶ start`, and a
 compiler assembles a **time-budgeted, frozen queue** of the highest-value work —
-due reviews first (budget-bounded, no fixed count cap), then frontier modules with
+one frontier module first, then a small budget-bounded review dose, then any additional
+frontier modules that fit, with
 the lesson stitched seamlessly into the run, then a named-but-empty synthesis slot
 — ending in the **only** screen in the product that says *done*. The budget
-(default 30 min) is set by the observer and never shown to the kid as a clock.
+(default 10 min) is set by the observer and never shown to the kid as a clock.
 
 ## Context
 
@@ -26,9 +27,9 @@ the lesson stitched seamlessly into the run, then a named-but-empty synthesis sl
   [docs/plans/002-measured-placement-engine-plan.md](002-measured-placement-engine-plan.md)
 - Design conversation (this plan's origin): the two-CTA row (`learn`/`practice`)
   fails because it presents a sequence as a choice, and the target kid treats
-  lesson-complete as done. The parent explicitly wants **~30 min/day** and a
+  lesson-complete as done. The parent explicitly wants a short daily session and a
   **one-way-in** system. Requirements settled there: one entry point, budget as a
-  parent-side parameter, review-before-new, module lessons flowing into runs with
+  parent-side parameter, module-before-review, module lessons flowing into runs with
   no boundary, session completion as the single "done," no padding when real work
   runs out (a short session is honest; theater is not).
 - `curriculum.md` does not exist as a separate file — methodology.md Part II *is*
@@ -104,26 +105,20 @@ the lesson stitched seamlessly into the run, then a named-but-empty synthesis sl
    primary action. Review, lessons, and runs are not startable on their own
    (kill-switch aside). "Complete" exists only at session scope.
 
-2. **Compiler tiers, strict order — and the Tier-1 contract, stated exactly.**
+2. **Compiler order — a visible win first.**
    `compileSession()` assembles blocks:
-   - **Tier 1 — due reviews: no fixed count cap; the budget is the only bound.**
-     Entries from `dueList()` in its existing order (most-overdue-first, then
-     error weight) are appended until the accumulated estimate first reaches the
-     budget; **the item that crosses the budget line is included** (fill to ≥
-     budget, then stop). `REVIEW_CAP` is retired on the session path — this
-     *replaces* the fixed cap of 12 with a budget-derived one; it does not
-     promise the whole backlog in one sitting. A backlog exceeding the whole
-     budget carries: it stays due and leads tomorrow's compile
-     (most-overdue-first already does this). The observer panel shows backlog
-     size (Phase 4).
-   - **Tier 2 — frontier modules, plural.** While the accumulated estimate <
-     budget: append the `idKey`-lowest uncleared unlocked unit not already in
-     the session, then the next, and so on (same order `placement()` walks).
-     Locks respected at compile time; fast-pass-eligible units estimated at
-     their short length. If Tier 1 alone met the budget, no module compiles that
-     day (honest: retention is the bottleneck, and tomorrow's queue will be
-     smaller). If due-time < budget and a frontier exists, **at least one module
-     always compiles**.
+   - **First — one frontier module.** Append the `idKey`-lowest uncleared,
+     unlocked unit. It may cross the budget because it is atomic: every session
+     with frontier work visibly advances the map.
+   - **Second — due reviews, maximum four.** Entries from `dueList()` keep their
+     existing order (most-overdue-first, then error weight), but stop at either
+     the budget or four blocks. A long absence is therefore resumable instead of
+     becoming an assignment made entirely of old work; remaining entries carry
+     to the next session.
+   - **Third — additional frontier modules.** Append later units in
+     `cmpUnits` order only when each fits the remaining observer-selected
+     budget. Locks are respected at compile time; fast-pass-eligible units are
+     estimated at their short length.
    - **Tier 3 — synthesis: a named, empty slot.** The compiler has the tier
      (`synthBlocks()` returns `[]` in v1) so the shape is real, but v1 ships no
      synthesis content — inventing transfer drills is its own design problem
@@ -213,7 +208,7 @@ the lesson stitched seamlessly into the run, then a named-but-empty synthesis sl
    current session.
 
 8. **Budget is observer-owned config — tamper-visible, not gated.** `P.cfg =
-   {budgetMin: 30}` (default 30 per the parent's explicit call), set from the
+   {budgetMin: 10, v:3}` (default 10), set from the
    observer debrief (10 / 20 / 30 / 45 presets), never rendered on any kid-facing
    screen. Named honestly: the debrief is reachable from the kid's home (the
    existing ghost link), and this plan adds no lock — in a localStorage app any
@@ -332,21 +327,20 @@ to pin down in comments. No UI skills; nothing kid-visible ships here.
   same string, one construction site).
 - [x] `estMod(u)`: `(P.docs[u.id]?0:u.docs.length*SEC_PANEL) +
   (fastPass(u)?1:u.words.length)*SEC_WORD`; cells snapshot per decision 5.
-- [x] `compileSession(budgetMin, opts)`: Tier 1 from `dueList()` per decision 2
-  (crossing item included); Tier 2 appending uncleared unlocked units in
-  `cmpUnits` order while est < budget (≥1 module guaranteed when tier-1 est <
-  budget and a frontier exists; modules atomic); Tier 3 `synthBlocks()` → `[]`.
-  Returns `{day:localDay(), budgetMin, blocks, idx:0, done:false, bonus:false,
+- [x] `compileSession(budgetMin, opts)`: one frontier module first; up to four
+  due reviews while within budget; then later unlocked units in `cmpUnits` order
+  only when they fit; Tier 3 `synthBlocks()` → `[]`. Returns
+  `{v:2, day:localDay(), budgetMin, blocks, idx:0, done:false, bonus:false,
   baseDone:false, stats:{words:0,clean:0}}`. `opts={bonus:true}` → one frontier
   module, `bonus:true, baseDone:true` (decision 7).
-- [x] `sessionValid(s)`: `s && s.day===localDay() && !s.done` and blocks
+- [x] `sessionValid(s)`: `s && s.v===2 && s.day===localDay() && !s.done` and blocks
   non-empty after the decision-4 stale-skip.
 
 **Verification (console, seeded workloads):** seed `P.sched` with 20 due entries
-→ `compileSession(30).blocks` leads with rev blocks in `dueList()` order, total
-estimate ≥ 30 min, and the first block past the budget line is the last rev
-block; re-seed with 5 due → 5 rev + ≥1 mod; empty sched + open frontier →
-modules only; all-cleared + nothing due → empty blocks. On the 20-due seed,
+→ `compileSession(30).blocks` starts with a module and contains at most four
+reviews; re-seed with 5 due → module + up to four reviews; empty sched + open
+frontier → one module at the 10-minute default; all-cleared + nothing due →
+empty blocks. On the 20-due seed,
 assert `compileSession(10).blocks.length ≤ compileSession(45).blocks.length`
 and that the 45-min compile's estimate is ≥ the 10-min compile's (monotone
 non-decreasing under a fixed workload — not universal strict inequality, which
@@ -407,8 +401,8 @@ lines).
   only at their named owners).
 
 **Verification (manual):** fresh profile → start → lesson panels flow into the
-run with no "practice is open" moment; full session runs review-first then
-modules; strip advances across block boundaries without returning home and
+run with no "practice is open" moment; full session runs a module followed by
+reviews; strip advances across block boundaries without returning home and
 never changes length; **pause** appears on the run screen, quits to home, home
 offers `▶ resume`, resume re-enters that module at word 0 with prior blocks
 still ticked; **reload from a review word's done screen → resume lands on the
@@ -561,10 +555,10 @@ is flagged and excluded from starts/completion; backlog count matches
 
 1. **Time-model calibration (do first after ship).** `SEC_REV/SEC_PANEL/SEC_WORD`
    are guesses. `P.sessions` rows carry real start/end times; after a week of
-   real play, fit the constants so a "30-minute" compile lands near 30 real
-   minutes. Until then bias the constants high (compile slightly short) — an
+   real play, fit the constants so each observer-selected budget lands near its
+   target. Until then bias the constants high (compile slightly short) — an
    honest under-fill beats an overshooting session that teaches dread.
-2. **Backlog policy after long gaps.** Budget-bounded Tier 1 means a two-week
+2. **Backlog policy after long gaps.** The four-review dose means a two-week
    backlog drains over several days (most-overdue-first). Acceptable v1
    behavior; the open question is whether the observer should get a "vacation
    catch-up" control (temporary budget bump) or whether silence is better.
