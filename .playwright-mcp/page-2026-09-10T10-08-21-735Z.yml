@@ -1,0 +1,323 @@
+- generic [ref=f1e2]:
+  - banner [ref=f1e3]:
+    - link [ref=f1e4] [cursor=pointer]:
+      - /url: /
+      - img "MissingManual" [ref=f1e5]
+      - text: MissingManual
+    - navigation [ref=f1e11]:
+      - link "Library" [ref=f1e12] [cursor=pointer]:
+        - /url: /examples
+      - link "Install" [ref=f1e13] [cursor=pointer]:
+        - /url: /install
+      - link "Pricing" [ref=f1e14] [cursor=pointer]:
+        - /url: /pricing
+      - link "llms.txt" [ref=f1e15] [cursor=pointer]:
+        - /url: /llms.txt
+  - main [ref=f1e16]:
+    - heading "Install MissingManual" [level=1] [ref=f1e17]
+    - paragraph [ref=f1e18]: Install one skill, save a card once, and ask your agent to research. No signup, password, dashboard, or API key.
+    - heading "Give this to your agent" [level=2] [ref=f1e19]
+    - blockquote [ref=f1e20]:
+      - paragraph [ref=f1e21]:
+        - text: Set up MissingManual in this repo — a deep-research service I use. Run
+        - code [ref=f1e22]: npx -y missingmanual setup --client claude-code
+        - text: (or
+        - code [ref=f1e23]: codex
+        - text: /
+        - code [ref=f1e24]: cursor
+        - text: "for those agents). It adds an MCP server and one skill to this project. Docs:"
+        - link "https://missingmanual.ai/install.md" [ref=f1e25] [cursor=pointer]:
+          - /url: https://missingmanual.ai/install.md
+    - heading "Two ways to install" [level=2] [ref=f1e26]
+    - list [ref=f1e27]:
+      - listitem [ref=f1e28]:
+        - link [ref=f1e29] [cursor=pointer]:
+          - /url: "#the-missingmanual-package"
+          - text: The
+          - code [ref=f1e30]: missingmanual
+          - text: package
+        - text: — the default for Codex CLI, Claude Code, and Cursor. Save a card once; later requests run without another website visit and results land in your repository.
+      - listitem [ref=f1e31]:
+        - link "The remote MCP server" [ref=f1e32] [cursor=pointer]:
+          - /url: "#remote-mcp-endpoint"
+        - text: — for any Streamable HTTP MCP client that prefers a separate Stripe checkout for every run.
+    - paragraph [ref=f1e33]: Both paths reach the same service at the same price. Enrollment is opt-in and is never a prerequisite for anonymous checkout.
+    - heading "The missingmanual package" [level=2] [ref=f1e34]
+    - paragraph [ref=f1e35]: "Run one command from the repository you want your agent to research:"
+    - code [ref=f1e37]: npx -y missingmanual setup --client codex --email you@example.com
+    - paragraph [ref=f1e38]:
+      - text: Replace
+      - code [ref=f1e39]: codex
+      - text: with
+      - code [ref=f1e40]: claude-code
+      - text: or
+      - code [ref=f1e41]: cursor
+      - text: . The email is optional, but it lets MissingManual contact you immediately if a future payment needs attention.
+    - paragraph [ref=f1e42]:
+      - text: The command installs the local MCP server and the single
+      - code [ref=f1e43]: missingmanual
+      - text: "skill, then prints a private Stripe link. Your agent hands you the link; you open it and save your card yourself. Then run the same setup command again; it finishes enrollment without creating a second account or charge. Restart your coding agent, then say:"
+    - blockquote [ref=f1e44]:
+      - paragraph [ref=f1e45]: Use missingmanual to research [your question].
+    - paragraph [ref=f1e46]:
+      - text: That is the entire routine. Your agent chooses papers or a guide, waits for the checked result, and saves it into your repository. Tell it
+      - code [ref=f1e47]: links only
+      - text: or
+      - code [ref=f1e48]: no file changes
+      - text: when you do not want local files.
+    - paragraph [ref=f1e49]:
+      - text: Installation is project-scoped and preserves existing configuration. It writes
+      - code [ref=f1e50]: .codex/config.toml
+      - text: and
+      - code [ref=f1e51]: .agents/skills/missingmanual/SKILL.md
+      - text: for Codex,
+      - code [ref=f1e52]: .mcp.json
+      - text: and
+      - code [ref=f1e53]: .claude/skills/missingmanual/SKILL.md
+      - text: for Claude Code, or
+      - code [ref=f1e54]: .cursor/mcp.json
+      - text: and
+      - code [ref=f1e55]: .cursor/skills/missingmanual/SKILL.md
+      - text: for Cursor. It backs up an existing configuration before changing it; repeated setup does not duplicate entries.
+    - heading "Package commands" [level=2] [ref=f1e56]
+    - list [ref=f1e57]:
+      - listitem [ref=f1e58]:
+        - code [ref=f1e59]: missingmanual setup --client codex|claude-code|cursor --email you@example.com
+        - text: — install the server and skill, then start or finish one-time card enrollment.
+      - listitem [ref=f1e60]:
+        - code [ref=f1e61]: missingmanual install --client codex|claude-code|cursor
+        - text: — add the server and skill without enrolling a card.
+      - listitem [ref=f1e62]:
+        - code [ref=f1e63]: missingmanual uninstall --client codex|claude-code|cursor
+        - text: — remove that entry, and the installed skill if you have not edited it. It deletes no local research and no saved credential.
+      - listitem [ref=f1e64]:
+        - code [ref=f1e65]: missingmanual revoke
+        - text: — end this installation's authority to bill and forget its credential. Your saved card stays at Stripe;
+        - code [ref=f1e66]: missingmanual enroll
+        - text: starts again.
+      - listitem [ref=f1e67]:
+        - code [ref=f1e68]: missingmanual doctor
+        - text: — report, per client, whether the server and skill are installed, and whether this machine holds an active enrollment.
+        - code [ref=f1e69]: "--client"
+        - text: narrows it to one.
+      - listitem [ref=f1e70]:
+        - code [ref=f1e71]: missingmanual enroll
+        - text: — start card enrollment.
+        - code [ref=f1e72]: "--email <address>"
+        - text: and
+        - code [ref=f1e73]: "--label <name>"
+        - text: are optional.
+      - listitem [ref=f1e74]:
+        - code [ref=f1e75]: missingmanual enroll-poll
+        - text: — finish enrollment after the card is saved.
+      - listitem [ref=f1e76]:
+        - code [ref=f1e77]: missingmanual serve
+        - text: — run the local stdio MCP server. Your client runs this for you; you do not run it by hand.
+    - heading "Enroll a card once" [level=2] [ref=f1e78]
+    - paragraph [ref=f1e79]: "Enrollment is optional. It is not a signup: no password, no dashboard, nothing to log into. It saves a card with Stripe and issues a credential scoped to that one installation, so later research requests you ask for bill without a checkout page each time."
+    - code [ref=f1e81]: "missingmanual enroll --email you@example.com # open the printed link, save a card, then: missingmanual enroll-poll"
+    - paragraph [ref=f1e82]:
+      - text: The
+      - code [ref=f1e83]: "--email"
+      - text: address is optional and used only to reach you when a charge needs your action. Consent at enrollment covers future research
+      - emphasis [ref=f1e84]: you request
+      - text: ", at the same"
+      - strong [ref=f1e85]: $25
+      - text: per-job ceiling. It does not authorize autonomous or scheduled research. Revoke at any time with
+      - code [ref=f1e86]: missingmanual revoke
+      - text: ": it ends this installation's authority to bill and forgets the credential locally. Your saved card is untouched at Stripe."
+      - code [ref=f1e87]: missingmanual uninstall
+      - text: only removes the MCP entry from one project's config; it deliberately does not revoke, and it tells you so if you are still enrolled.
+    - heading "When a charge needs you" [level=2] [ref=f1e88]
+    - paragraph [ref=f1e89]: If an automatic charge needs a human — the bank asks for authentication, or the card is declined — the tool call that hit the problem fails with a reason and an actionable URL. Open that URL to resolve it. No research runs on that job until it is resolved, and nothing is captured.
+    - paragraph [ref=f1e90]:
+      - text: If you supplied an address with
+      - code [ref=f1e91]: missingmanual enroll --email
+      - text: ", an email is sent as well. Email is best-effort. It is never guaranteed to be received, so treat the URL returned to the tool call as the reliable channel."
+    - heading "What the package saves" [level=2] [ref=f1e92]
+    - paragraph [ref=f1e93]:
+      - text: The local server adds
+      - code [ref=f1e94]: save_guide
+      - text: and
+      - code [ref=f1e95]: save_papers
+      - text: alongside the forwarded research tools. They detect the guides and papers convention your repo already uses, falling back to
+      - code [ref=f1e96]: "docs/research/{guides,papers}"
+      - text: when there is none. Writes are atomic, never silently overwrite different content at the same path, and add provenance and an index entry.
+      - code [ref=f1e97]: save_papers
+      - text: downloads full text and converts ordinary text PDFs to Markdown. A source is reported as
+      - code [ref=f1e98]: blocked
+      - text: only when it cannot be downloaded, safely converted, or contains no extractable text. If you ask for links only, or for no file changes, nothing is written.
+    - paragraph [ref=f1e99]: The package never returns a raw job id or capability to your agent. It hands back an opaque local handle, and the same handle always resumes the same paid job.
+    - heading "Remote MCP endpoint" [level=2] [ref=f1e100]
+    - paragraph [ref=f1e101]: Available today, with no package and no enrollment. Anonymous, one Stripe checkout per run.
+    - code [ref=f1e103]: https://missingmanual.ai/mcp
+    - paragraph [ref=f1e104]:
+      - text: Use a remote MCP connection with
+      - strong [ref=f1e105]: Streamable HTTP
+      - text: transport. No authorization header is needed for discovery. In other compatible clients, add this URL using their remote MCP server settings; configuration formats differ. Do not fetch
+      - code [ref=f1e106]: /mcp
+      - text: as a document.
+    - heading "Claude Code (remote MCP)" [level=2] [ref=f1e107]
+    - code [ref=f1e109]: claude mcp add --transport http missing-manual https://missingmanual.ai/mcp
+    - paragraph [ref=f1e110]:
+      - text: See the
+      - link "Claude Code MCP documentation" [ref=f1e111] [cursor=pointer]:
+        - /url: https://code.claude.com/docs/en/mcp
+      - text: .
+    - heading "Codex CLI (remote MCP)" [level=2] [ref=f1e112]
+    - code [ref=f1e114]: codex mcp add missing-manual --url https://missingmanual.ai/mcp
+    - heading "Cursor (remote MCP)" [level=2] [ref=f1e115]
+    - paragraph [ref=f1e116]:
+      - text: Merge this entry into
+      - code [ref=f1e117]: mcpServers
+      - text: in
+      - code [ref=f1e118]: ~/.cursor/mcp.json
+      - text: for all projects, or
+      - code [ref=f1e119]: .cursor/mcp.json
+      - text: for this project. Preserve your existing servers.
+    - code [ref=f1e121]: "{ \"mcpServers\": { \"missing-manual\": { \"url\": \"https://missingmanual.ai/mcp\" } } }"
+    - paragraph [ref=f1e122]:
+      - text: See the
+      - link "Cursor MCP guide" [ref=f1e123] [cursor=pointer]:
+        - /url: https://cursor.com/guides/coding-agent-mcp
+      - text: . Reconnect or restart your client if needed, then confirm it offers
+      - code [ref=f1e124]: find_papers
+      - text: ","
+      - code [ref=f1e125]: create_guide
+      - text: ", and"
+      - code [ref=f1e126]: get_result
+      - text: .
+      - code [ref=f1e127]: get_guide
+      - text: remains compatible.
+    - heading "Choose an action" [level=2] [ref=f1e128]
+    - list [ref=f1e129]:
+      - listitem [ref=f1e130]:
+        - code [ref=f1e131]: find_papers
+        - text: — Discover a candidate paper list in markdown, with abstracts and source links only.
+        - code [ref=f1e132]: maxPapers
+        - text: is an integer from 1–30, default 10.
+      - listitem [ref=f1e133]:
+        - code [ref=f1e134]: create_guide
+        - text: — Request a research guide in markdown.
+    - paragraph [ref=f1e135]:
+      - text: Both use the same checkout and receipt flow. Poll
+      - code [ref=f1e136]: get_result
+      - text: for either action;
+      - code [ref=f1e137]: get_guide
+      - text: remains compatible. Paper discovery on this path does not ingest full papers into a local repository or perform local QA.
+    - heading "Request papers or a guide" [level=2] [ref=f1e138]
+    - paragraph [ref=f1e139]:
+      - text: Generate the idempotency key with a cryptographic random generator (for example,
+      - code [ref=f1e140]: crypto.randomUUID()
+      - text: ), not a topic, timestamp, or guessable sequence. Keep it stable for this request.
+    - paragraph [ref=f1e141]:
+      - text: Call your chosen action without payment metadata. Use a focused
+      - code [ref=f1e142]: topic
+      - text: ", a cryptographically random, stable"
+      - code [ref=f1e143]: idempotencyKey
+      - text: ", and"
+      - code [ref=f1e144]: "maxTotalChargeUsdMicros: 25000000"
+      - text: ($25, including the fee). Follow the connected tool schema for optional context and source constraints.
+    - code [ref=f1e146]: "{ \"topic\": \"Research the technical question and constraints agreed with the customer\", \"idempotencyKey\": \"REPLACE_WITH_A_CRYPTOGRAPHICALLY_RANDOM_KEY\", \"maxTotalChargeUsdMicros\": 25000000 }"
+    - paragraph [ref=f1e147]:
+      - text: For
+      - code [ref=f1e148]: find_papers
+      - text: ", use the same common fields shown above and optionally add"
+      - code [ref=f1e149]: "\"maxPapers\": 10"
+      - text: . Keep the same action and identical input on retries.
+    - paragraph [ref=f1e150]:
+      - text: The response contains
+      - code [ref=f1e151]: jobId
+      - text: ","
+      - code [ref=f1e152]: capability
+      - text: ","
+      - code [ref=f1e153]: "status: \"payment_required\""
+      - text: ", a Stripe-hosted"
+      - code [ref=f1e154]: paymentUrl
+      - text: ","
+      - code [ref=f1e155]: "maximumAuthorizationUsdMicros: 25000000"
+      - text: ", and"
+      - code [ref=f1e156]: pollAfterSeconds
+      - text: . Keep the entire initial response privately, including the payment URL and capability; share the checkout link only with the customer. Do not substitute example values.
+      - code [ref=f1e157]: maximumAuthorizationUsdMicros
+      - text: is the requested maximum, not evidence of a hold.
+      - code [ref=f1e158]: authorizedUsdMicros
+      - text: describes only an actually authorized amount.
+    - heading "Approve the hold" [level=2] [ref=f1e159]
+    - paragraph [ref=f1e160]:
+      - text: Show the customer the returned
+      - code [ref=f1e161]: paymentUrl
+      - text: and explain the
+      - strong [ref=f1e162]: $25 card authorization hold
+      - text: . The customer opens Stripe checkout and approves it. The agent must never enter payment details, collect card information, or approve payment on the customer's behalf.
+    - paragraph [ref=f1e163]:
+      - text: Use the returned checkout expiry when provided; otherwise the payment link lasts
+      - strong [ref=f1e164]: 24 hours
+      - text: . Research starts automatically once the server verifies authorization. Returning from Stripe is not proof of authorization;
+      - code [ref=f1e165]: get_result
+      - text: is the source of status. Leaving checkout does not cancel the backend job. No research starts before verified authorization.
+    - heading "Return to the agent" [level=2] [ref=f1e166]
+    - paragraph [ref=f1e167]:
+      - text: Poll
+      - code [ref=f1e168]: get_result
+      - text: with the same
+      - code [ref=f1e169]: jobId
+      - text: and
+      - code [ref=f1e170]: capability
+      - text: ", respecting"
+      - code [ref=f1e171]: pollAfterSeconds
+      - text: . Polling has no per-call fee. It can verify human payment and automatically start or resume the previously requested, approved research job; it never creates an additional paid job. Do not create another job because checkout is pending or research is still running. If an identical
+      - code [ref=f1e172]: find_papers
+      - text: or
+      - code [ref=f1e173]: create_guide
+      - text: retry is necessary, include the original
+      - code [ref=f1e174]: idempotencyKey
+      - text: and the returned
+      - code [ref=f1e175]: capability
+      - text: in the tool arguments. The optional
+      - code [ref=f1e176]: capability
+      - text: field is required to replay an existing job; a replay without it returns a conflict. Do not include it on the initial request. If the initial response was lost and no payment URL was delivered, a new cryptographically random key may be used to retry; do not use this exception after receiving a checkout link.
+    - paragraph [ref=f1e177]:
+      - text: Research can take
+      - strong [ref=f1e178]: up to 90 minutes
+      - text: . After successful settlement,
+      - code [ref=f1e179]: get_result
+      - text: returns markdown and an itemized receipt. Save both. A completed guide ends with a
+      - strong [ref=f1e180]: Verification
+      - text: "section: corrections against current primary documentation with their source URLs, claims that could not be verified, and the limits of the check. Report those limits rather than presenting the guide as unconditionally verified, and treat a correction as more current than the body text above it. Capabilities expire after"
+      - strong [ref=f1e181]: 30 days
+      - text: ; keep them private and retrieve your result before expiry. There is no account-based recovery.
+    - paragraph [ref=f1e182]:
+      - text: If checkout expires or status reports an error, explain the returned status and stop automatic retries; do not create a new paid request without the customer's direction. A failed or cancelled run charges $0 and fully releases or refunds the hold.
+      - code [ref=f1e183]: pricing_gap
+      - text: also charges $0 and fully releases or refunds; a result stays withheld unless an operator records an auditable decision to release it free of charge. See
+      - link "Pricing" [ref=f1e184] [cursor=pointer]:
+        - /url: /pricing.md
+      - text: .
+    - heading "Optional advanced payment path" [level=2] [ref=f1e185]
+    - paragraph [ref=f1e186]: Clients with existing Stripe Shared Payment Token (SPT) support can still supply payment credentials in MCP protocol metadata under their caller's spending authority. SPT is optional; ordinary clients use hosted checkout. Never put credentials in tool arguments, prompts, files, logs, or output.
+    - heading "Optional agent skill" [level=2] [ref=f1e187]
+    - paragraph [ref=f1e188]:
+      - text: The
+      - link "MissingManual client skill" [ref=f1e189] [cursor=pointer]:
+        - /url: /skills/missingmanual/SKILL.md
+      - text: describes safe creation, human payment approval, capability handling, polling, and receipts. The connected MCP tool schema remains authoritative.
+    - heading "Check availability" [level=2] [ref=f1e190]
+    - code [ref=f1e192]: curl -s https://missingmanual.ai/healthz
+    - paragraph [ref=f1e193]: This reports service health and whether paid starts are enabled. It starts nothing and costs nothing.
+  - contentinfo [ref=f1e194]:
+    - link "Home" [ref=f1e195] [cursor=pointer]:
+      - /url: /
+    - text: ·
+    - link "Library" [ref=f1e196] [cursor=pointer]:
+      - /url: /examples
+    - text: ·
+    - link "Pricing" [ref=f1e197] [cursor=pointer]:
+      - /url: /pricing
+    - text: ·
+    - link "install.md" [ref=f1e198] [cursor=pointer]:
+      - /url: /install.md
+    - text: ·
+    - link "llms.txt" [ref=f1e199] [cursor=pointer]:
+      - /url: /llms.txt
+    - text: MissingManual · missingmanual.ai

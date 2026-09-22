@@ -1,0 +1,29 @@
+- generic [active] [ref=f6e1]:
+  - generic [ref=f6e2]:
+    - banner [ref=f6e3]:
+      - link [ref=f6e4] [cursor=pointer]:
+        - /url: /
+        - img "MissingManual" [ref=f6e5]
+        - text: MissingManual
+      - navigation [ref=f6e11]:
+        - link "Install" [ref=f6e12] [cursor=pointer]:
+          - /url: /install
+        - link "Pricing" [ref=f6e13] [cursor=pointer]:
+          - /url: /pricing
+    - main [ref=f6e14]:
+      - heading "Return to your agent." [level=1] [ref=f6e15]
+      - paragraph [ref=f6e16]: Your agent will check the payment status and retrieve your research result.
+      - paragraph [ref=f6e17]: Once your $25 card authorization is verified, research starts automatically. This page does not confirm authorization or a completed charge.
+      - paragraph [ref=f6e18]: "Return to the conversation where you requested the research and say:"
+      - generic [ref=f6e19]:
+        - blockquote [ref=f6e20]:
+          - paragraph [ref=f6e21]: I’ve returned from Stripe. Check my existing MissingManual job and keep polling for the result and receipt.
+        - button "Copy prompt to clipboard" [ref=f6e22] [cursor=pointer]
+      - paragraph [ref=f6e26]: Research can take up to 90 minutes. Your agent uses the same job ID and private capability; there is no need to submit another research request. Save the markdown and receipt before the capability expires after 30 days.
+    - contentinfo [ref=f6e27]:
+      - link "Home" [ref=f6e28] [cursor=pointer]:
+        - /url: /
+      - text: ·
+      - link "Pricing" [ref=f6e29] [cursor=pointer]:
+        - /url: /pricing
+  - status [ref=f6e30]

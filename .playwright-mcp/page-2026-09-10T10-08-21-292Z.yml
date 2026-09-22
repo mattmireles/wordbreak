@@ -1,0 +1,160 @@
+- generic [ref=e2]:
+  - banner [ref=e3]:
+    - link [ref=e4] [cursor=pointer]:
+      - /url: /
+      - img "MissingManual" [ref=e5]
+      - text: MissingManual
+    - navigation [ref=e11]:
+      - link "Library" [ref=e12] [cursor=pointer]:
+        - /url: /examples
+      - link "Install" [ref=e13] [cursor=pointer]:
+        - /url: /install
+      - link "Pricing" [ref=e14] [cursor=pointer]:
+        - /url: /pricing
+      - link "llms.txt" [ref=e15] [cursor=pointer]:
+        - /url: /llms.txt
+  - main [ref=e16]:
+    - paragraph [ref=e17]: Deep research for AI coding agents
+    - heading "The answer is out there. Your model just doesn’t know it." [level=1] [ref=e18]: The answer is out there.Your model just doesn’t know it.
+    - paragraph [ref=e19]: MissingManual.ai searches the far corners of technical knowledge—from obscure forums and arXiv papers to source code, benchmarks, and forgotten documentation—checks the evidence, and turns it into actionable guides your coding agent can use inside your repository.
+    - paragraph [ref=e20]: Built for AI researchers, reverse engineers, and systems builders working on problems ordinary search and everyday coding agents cannot solve.
+    - figure [ref=e21]:
+      - 'img "MissingManual connects scattered technical sources to the answer: The answer is out there. Your model just doesn’t know it." [ref=e22]'
+    - heading "The problems that created MissingManual" [level=2] [ref=e23]
+    - list [ref=e24]:
+      - listitem [ref=e25]: Why did an Apple Silicon Whisper fine-tuning run keep producing plausible WER after an asynchronous Metal command-buffer fault corrupted its decoder output?
+      - listitem [ref=e26]: Can a frozen RNNT decoder batch active hypotheses and hoist predictor and joint projections without changing blank handling, duplicate recombination, or beam-search WER?
+      - listitem [ref=e27]: Which Core ML tensor-axis constraint prevents an autoregressive generator from compiling for the Neural Engine on an older iPhone, even when conversion succeeds on a Mac?
+    - paragraph [ref=e28]: "The output is an implementation artifact: cited constraints, failure modes, concrete patches, and the smallest experiment that can falsify the recommendation."
+    - generic [ref=e29]:
+      - paragraph [ref=e30]: The Collective Library
+      - heading "Read the work, not a teaser" [level=2] [ref=e31]
+      - paragraph [ref=e32]: Complete technical reports with code, failure signatures, measured constraints, evidence labels, citations, corrections, and falsification gates. Private paths and internal campaign controls are removed; the engineering is intact.
+      - generic [ref=e33]:
+        - article [ref=e34]:
+          - paragraph [ref=e35]: Metal / data integrity
+          - heading "Command-buffer fault → corrupted token stream → false WER" [level=3] [ref=e36]
+          - paragraph [ref=e37]: Synchronize before decode. Validate dtype, rank, vocabulary bounds, and sentinel distributions. Invalidate every result after the first device fault.
+          - link "Read the full report" [ref=e38] [cursor=pointer]:
+            - /url: /reports/metal-gpu-fault-detection-pytorch
+        - article [ref=e39]:
+          - paragraph [ref=e40]: RNNT / decoder hot loop
+          - heading "Hoist joint projections without changing beam semantics" [level=3] [ref=e41]
+          - paragraph [ref=e42]: Batch active hypotheses into fixed-shape predictor and joint calls while preserving blank handling, prune order, recombination, tokens, and scores.
+          - link "Read the full report" [ref=e43] [cursor=pointer]:
+            - /url: /reports/rnnt-beam-search-apple-silicon
+        - article [ref=e44]:
+          - paragraph [ref=e45]: Core ML / ANE compiler
+          - heading "Conversion succeeds. The Neural Engine plan does not compile." [level=3] [ref=e46]
+          - paragraph [ref=e47]: Separate conversion, plan compilation, graph placement, first load, and warmed inference. Probe the minimum fixed-shape generator on the target SoC.
+          - link "Read the full report" [ref=e48] [cursor=pointer]:
+            - /url: /reports/a14-coreml-generator-execution
+        - article [ref=e49]:
+          - paragraph [ref=e50]: Core ML / graph surgery
+          - heading "Fused SDPA is not proof of ANE execution" [level=3] [ref=e51]
+          - paragraph [ref=e52]: Separate MIL graph spelling, residual-path correctness, compute-plan placement, and physical execution on a base M1.
+          - link "Read the full report" [ref=e53] [cursor=pointer]:
+            - /url: /reports/coreml-fused-sdpa-base-m1
+      - paragraph [ref=e54]:
+        - link "Browse all 15 full reports →" [ref=e55] [cursor=pointer]:
+          - /url: /examples
+    - heading "Start with your agent" [level=2] [ref=e56]
+    - generic [ref=e57]:
+      - blockquote [ref=e58]:
+        - paragraph [ref=e59]:
+          - text: Set up MissingManual in this repo — a deep-research service I use. Run
+          - code [ref=e60]: npx -y missingmanual setup --client claude-code
+          - text: (or
+          - code [ref=e61]: codex
+          - text: /
+          - code [ref=e62]: cursor
+          - text: "for those agents). It adds an MCP server and one skill to this project. Docs:"
+          - link "https://missingmanual.ai/install.md" [ref=e63] [cursor=pointer]:
+            - /url: https://missingmanual.ai/install.md
+      - button "Copy prompt to clipboard" [ref=e64] [cursor=pointer]
+    - status [ref=e68]
+    - paragraph [ref=e69]: After setup, restart your agent and ask it to use missingmanual to research your question.
+    - paragraph [ref=e70]:
+      - link "Install for Claude Code, Cursor, Codex, or another Streamable HTTP MCP client" [ref=e71] [cursor=pointer]:
+        - /url: /install.md
+      - text: .
+    - heading "One skill to remember" [level=2] [ref=e72]
+    - list [ref=e73]:
+      - listitem [ref=e74]:
+        - strong [ref=e75]: Ask naturally.
+        - text: MissingManual decides whether the question needs a research guide, a paper search, or existing material already in the repository.
+      - listitem [ref=e76]:
+        - strong [ref=e77]: Get evidence, not a search dump.
+        - text: It checks consequential claims, preserves uncertainty, and returns the shortest credible path forward.
+      - listitem [ref=e78]:
+        - strong [ref=e79]: Keep the answer.
+        - text: Guides and paper sources become cross-referenced Markdown in the repository, ready for the agent’s next step.
+    - heading "Papers or a guide" [level=2] [ref=e80]
+    - paragraph [ref=e81]: Ask your agent to find a candidate paper list with abstracts and source links, or commission a research guide. Paper discovery returns up to 30 candidates (10 by default).
+    - heading "Every guide ends with its own verification" [level=2] [ref=e82]
+    - paragraph [ref=e83]:
+      - text: A completed guide carries a verification pass. Claims are extracted from the draft and checked against current primary documentation. The delivered guide ends with a
+      - strong [ref=e84]: Verification
+      - text: section listing corrections with their source URLs, claims that could not be verified, and the limits of the check.
+    - paragraph [ref=e85]: This is not a proof of correctness. It covers the highest-consequence claims, and a claim it could not confirm is labeled unverified rather than quietly dropped. Where the Verification section corrects the body text above it, the correction is the more current statement.
+    - heading "Ask. Research. Build." [level=2] [ref=e86]
+    - list [ref=e87]:
+      - listitem [ref=e88]: Ask your coding agent the hard question in the context of your project.
+      - listitem [ref=e89]: MissingManual searches papers, source code, benchmarks, documentation, and the obscure parts of the internet where the answer may be hiding.
+      - listitem [ref=e90]: Your agent receives checked research, saves it in the repository, and uses it to continue the work.
+    - paragraph [ref=e91]: Set it up once and add a card once. After that, MissingManual runs when you ask. If a bank ever needs your attention, your agent gives you the link to resolve it.
+    - heading "Simple pricing" [level=2] [ref=e92]
+    - paragraph [ref=e93]:
+      - text: A successful research run charges measured provider cost, rounded up to the next USD cent, plus exactly
+      - strong [ref=e94]: $2.00
+      - text: ", capped by your authorization. A failed or cancelled run charges"
+      - strong [ref=e95]: $0
+      - text: and fully releases or refunds the hold. If the final cost cannot be verified, you are not charged and the hold is released or refunded. The result is withheld until the issue is resolved.
+      - link "See the arithmetic" [ref=e96] [cursor=pointer]:
+        - /url: /pricing.md
+      - text: .
+    - heading "Results land in your repository" [level=2] [ref=e97]
+    - paragraph [ref=e98]:
+      - text: With the
+      - code [ref=e99]: missingmanual
+      - text: "package, your coding agent saves the result into your own repo instead of leaving it in a chat log: the guide, paper sources converted to Markdown, provenance for each file, and reciprocal index links. Tell your agent \"links only\" or \"no file changes\" and nothing is written."
+    - heading "When the docs do not answer the question" [level=2] [ref=e100]
+    - paragraph [ref=e101]: MissingManual is for technical subjects that are new, poorly documented, or contradicted by their release notes. If official documentation already answers your question, start there.
+    - heading "Your results stay private" [level=2] [ref=e102]
+    - paragraph [ref=e103]:
+      - text: Results are not published or searchable here. Your agent retrieves yours using its private retrieval details, which expire after
+      - strong [ref=e104]: 30 days
+      - text: ". Save the result and receipt before expiry. There is no account-based recovery. Enrolling a card does not change this: enrollment saves a payment method, not your research."
+    - heading "Agent documentation" [level=2] [ref=e105]
+    - list [ref=e106]:
+      - listitem [ref=e107]:
+        - link "Install and tool flow" [ref=e108] [cursor=pointer]:
+          - /url: /install.md
+      - listitem [ref=e109]:
+        - link "Collective Library" [ref=e110] [cursor=pointer]:
+          - /url: /examples.md
+      - listitem [ref=e111]:
+        - link "Pricing" [ref=e112] [cursor=pointer]:
+          - /url: /pricing.md
+      - listitem [ref=e113]:
+        - link "llms.txt" [ref=e114] [cursor=pointer]:
+          - /url: /llms.txt
+      - listitem [ref=e115]:
+        - link "One missingmanual skill" [ref=e116] [cursor=pointer]:
+          - /url: /skills/missingmanual/SKILL.md
+  - contentinfo [ref=e117]:
+    - link "index.md" [ref=e118] [cursor=pointer]:
+      - /url: /index.md
+    - text: ·
+    - link "examples.md" [ref=e119] [cursor=pointer]:
+      - /url: /examples.md
+    - text: ·
+    - link "install.md" [ref=e120] [cursor=pointer]:
+      - /url: /install.md
+    - text: ·
+    - link "pricing.md" [ref=e121] [cursor=pointer]:
+      - /url: /pricing.md
+    - text: ·
+    - link "llms.txt" [ref=e122] [cursor=pointer]:
+      - /url: /llms.txt
+    - text: MissingManual · missingmanual.ai

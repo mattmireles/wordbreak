@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "missingmanual": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "missingmanual",
+        "serve"
+      ]
+    }
+  }
+}

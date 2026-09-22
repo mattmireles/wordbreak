@@ -1,0 +1,1071 @@
+- generic [active] [ref=f8e1]:
+  - generic [ref=f8e2]:
+    - banner [ref=f8e3]:
+      - link [ref=f8e4] [cursor=pointer]:
+        - /url: /
+        - img "MissingManual" [ref=f8e5]
+        - text: MissingManual
+      - navigation [ref=f8e11]:
+        - link "Library" [ref=f8e12] [cursor=pointer]:
+          - /url: /examples
+        - link "Install" [ref=f8e13] [cursor=pointer]:
+          - /url: /install
+        - link "Pricing" [ref=f8e14] [cursor=pointer]:
+          - /url: /pricing
+        - link "llms.txt" [ref=f8e15] [cursor=pointer]:
+          - /url: /llms.txt
+    - main [ref=f8e16]:
+      - paragraph [ref=f8e17]: iPhone / devicectl · Collective Library
+      - article [ref=f8e18]:
+        - heading [level=1] [ref=f8e19]:
+          - text: iOS Device Benchmarking with
+          - code [ref=f8e20]: devicectl
+        - blockquote [ref=f8e21]:
+          - paragraph [ref=f8e22]:
+            - strong [ref=f8e23]: Collective Library edition.
+            - text: This is the complete technical report. Private filesystem paths, internal run identifiers, campaign-control notes, and repository navigation were removed. Technical claims, code, measurements, evidence labels, citations, corrections, and falsification criteria are preserved.
+        - paragraph [ref=f8e24]: September 6, 2026
+        - paragraph [ref=f8e25]: "This field guide covers the shell-operated tooling layer for running a Core ML measurement app on a physical iPhone: build and install, stage model data, launch and monitor, collect durable results, inspect compute plans, and recover crash evidence. It is reusable operating guidance, not a verdict on any the reference implementation model or certification campaign."
+        - heading "Executive Summary" [level=2] [ref=f8e26]
+        - list [ref=f8e27]:
+          - listitem [ref=f8e28]:
+            - code [ref=f8e29]: devicectl device copy to
+            - text: is not
+            - code [ref=f8e30]: cp
+            - text: .
+            - strong [ref=f8e31]: "Firsthand implementation evidence:"
+            - text: copying a file to a missing parent inside
+            - code [ref=f8e32]: appDataContainer
+            - text: can exit without creating anything; copying the containing directory works. Verify every transfer.
+          - listitem [ref=f8e33]:
+            - text: Never use
+            - code [ref=f8e34]: "--remove-existing-content true"
+            - text: casually. Current command help describes destination-directory cleanup, but
+            - strong [ref=f8e35]: firsthand implementation evidence
+            - text: shows it emptied the entire app data container.
+          - listitem [ref=f8e36]:
+            - text: In
+            - code [ref=f8e37]: device process launch
+            - text: ", every token after the positional bundle identifier is application"
+            - code [ref=f8e38]: argv
+            - text: . Put every
+            - code [ref=f8e39]: devicectl
+            - text: option before that positional argument.
+          - listitem [ref=f8e40]:
+            - code [ref=f8e41]: "--console"
+            - text: connects standard streams and waits for exit, but
+            - strong [ref=f8e42]: firsthand implementation evidence
+            - text: shows ordinary Swift
+            - code [ref=f8e43]: print
+            - text: output can remain invisible because stdout is block-buffered. Emit critical progress to stderr and write final receipts to
+            - code [ref=f8e44]: Documents
+            - text: .
+          - listitem [ref=f8e45]:
+            - text: Crash evidence is separate from app data.
+            - code [ref=f8e46]: systemCrashLogs
+            - text: is a supported file-service domain and can contain both app and Core ML or ANE service failures.
+          - listitem [ref=f8e47]:
+            - text: An on-device
+            - code [ref=f8e48]: MLComputePlan
+            - text: is target-specific anticipated placement, not a trace of a completed prediction. Read
+            - code [ref=f8e49]: deviceUsage(for:)
+            - text: and
+            - code [ref=f8e50]: estimatedCost(of:)
+            - text: ", then use runtime telemetry for an execution claim."
+          - listitem [ref=f8e51]: A shell with no Xcode account signed in needs a manually managed development profile and matching development identity. This is firsthand the reference implementation behavior, not a claim that every CI signing setup must be manual.
+          - listitem [ref=f8e52]: Community reports about fixed iPhone memory ceilings, JIT compilation spikes, AOT paging, background suspension, and re-signing are useful hypotheses. They remain labeled until reproduced on the target tuple.
+        - heading "Evidence Labels" [level=2] [ref=f8e53]
+        - list [ref=f8e54]:
+          - listitem [ref=f8e55]:
+            - strong [ref=f8e56]: "Current command help:"
+            - text: reproduced with Xcode 26.6 and
+            - code [ref=f8e57]: devicectl
+            - text: 518.33. Re-run
+            - code [ref=f8e58]: xcrun devicectl help ...
+            - text: after changing Xcode.
+          - listitem [ref=f8e59]:
+            - strong [ref=f8e60]: "Documented API:"
+            - text: current Apple Core ML documentation retrieved through Context7 library
+            - code [ref=f8e61]: /websites/developer_apple_coreml
+            - text: .
+          - listitem [ref=f8e62]:
+            - strong [ref=f8e63]: "Firsthand implementation evidence:"
+            - text: reproduced by the local iOS harness workflow and recorded in the linked harness README or research brief.
+          - listitem [ref=f8e64]:
+            - strong [ref=f8e65]: "Community / unverified:"
+            - text: synthesized from the raw report's public sources. Keep the recipe, but test it on the exact hardware, OS, Xcode, app, and model before relying on it.
+        - heading "1. Operating Model" [level=2] [ref=f8e66]
+        - paragraph [ref=f8e67]: "A robust run has five explicit boundaries:"
+        - generic [ref=f8e68]:
+          - code [ref=f8e70]: signed .app -> install -> stage one immutable input directory -> launch one configuration -> pull one result receipt and all relevant crash evidence
+          - button "Copy to clipboard" [ref=f8e71] [cursor=pointer]
+        - paragraph [ref=f8e75]: Treat the host, the app container, and system diagnostics as separate stores. A successful command invocation is not proof that a file arrived, an app completed, a model used the requested device, or no system daemon crashed.
+        - paragraph [ref=f8e76]:
+          - text: For automation, prefer
+          - code [ref=f8e77]: "--json-output <path>"
+          - text: where
+          - code [ref=f8e78]: devicectl
+          - text: supports it. Current command help states that a user-provided JSON file is the only supported interface for programs consuming command output. Human-readable stdout is not a stable parser contract.
+        - paragraph [ref=f8e79]: Use privacy-safe run identifiers in paths and receipts. Do not record device identifiers, device names, signing credentials, private audio paths, or transcript content.
+        - heading "2. Build and Install a Signed App" [level=2] [ref=f8e80]
+        - paragraph [ref=f8e81]:
+          - code [ref=f8e82]: devicectl device install app
+          - text: installs an already signed
+          - code [ref=f8e83]: .app
+          - text: "; it does not solve signing or provisioning:"
+        - generic [ref=f8e84]:
+          - code [ref=f8e86]: xcrun devicectl device install app \ --device "<device-id>" \ --json-output install.json \ "/path/to/Benchmark.app"
+          - button "Copy to clipboard" [ref=f8e87] [cursor=pointer]
+        - paragraph [ref=f8e91]: The placeholder device ID is operational input only. Do not persist it in a public receipt.
+        - heading "2.1. Manual signing when no Xcode account is signed in" [level=3] [ref=f8e92]
+        - paragraph [ref=f8e93]:
+          - strong [ref=f8e94]: "Firsthand implementation evidence:"
+          - text: automatic signing with
+          - code [ref=f8e95]: "-allowProvisioningUpdates"
+          - text: "failed with a \"No Accounts\" error when the build host had no account signed into Xcode. An Xcode-managed development profile was then rejected under manual signing. A non-Xcode-managed development profile that included the registered target device worked with manual signing:"
+        - generic [ref=f8e96]:
+          - code [ref=f8e98]: xcodebuild \ -project Benchmark.xcodeproj \ -scheme Benchmark \ -configuration Release \ -destination "generic/platform=iOS" \ -derivedDataPath .build/xcode \ CODE_SIGN_STYLE=Manual \ CODE_SIGN_IDENTITY="Apple Development" \ PROVISIONING_PROFILE_SPECIFIER="<manual-profile-name>" \ build
+          - button "Copy to clipboard" [ref=f8e99] [cursor=pointer]
+        - paragraph [ref=f8e103]: The signing identity's private key and the provisioning profile must be available to the shell. The profile must authorize the app identifier, entitlements, team, and target device. Unlocking a keychain can fix private-key access errors, but it does not invent a missing Xcode account or repair a mismatched profile.
+        - generic [ref=f8e104]:
+          - code [ref=f8e106]: security find-identity -v -p codesigning security cms -D -i "/path/to/profile.mobileprovision" codesign -d --entitlements :- "/path/to/Benchmark.app" codesign --verify --deep --strict --verbose=2 "/path/to/Benchmark.app"
+          - button "Copy to clipboard" [ref=f8e107] [cursor=pointer]
+        - paragraph [ref=f8e111]: Do not print keychain passwords, private keys, or full provisioning payloads into CI logs.
+        - heading "2.2. Archive and export" [level=3] [ref=f8e112]
+        - paragraph [ref=f8e113]:
+          - text: The raw report's archive/export route is worth keeping for CI systems that produce an archive. Xcode 26.6 marks export method
+          - code [ref=f8e114]: development
+          - text: deprecated; use
+          - code [ref=f8e115]: debugging
+          - text: .
+        - generic [ref=f8e116]:
+          - code [ref=f8e118]: xcodebuild archive \ -workspace Benchmark.xcworkspace \ -scheme Benchmark \ -destination "generic/platform=iOS" \ -archivePath .build/Benchmark.xcarchive \ CODE_SIGN_STYLE=Manual \ CODE_SIGN_IDENTITY="Apple Development" \ PROVISIONING_PROFILE_SPECIFIER="<manual-profile-name>" xcodebuild -exportArchive \ -archivePath .build/Benchmark.xcarchive \ -exportPath .build/export \ -exportOptionsPlist ExportOptions.plist
+          - button "Copy to clipboard" [ref=f8e119] [cursor=pointer]
+        - paragraph [ref=f8e123]: "A minimal current export configuration can name the profile rather than embedding private identifiers:"
+        - generic [ref=f8e124]:
+          - code [ref=f8e126]: <?xml version="1.0" encoding="UTF-8"?> <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"> <plist version="1.0"> <dict> <key>method</key> <string>debugging</string> <key>signingStyle</key> <string>manual</string> <key>signingCertificate</key> <string>Apple Development</string> <key>provisioningProfiles</key> <dict> <key>com.example.benchmark</key> <string>Benchmark Development</string> </dict> </dict> </plist>
+          - button "Copy to clipboard" [ref=f8e127] [cursor=pointer]
+        - paragraph [ref=f8e131]:
+          - strong [ref=f8e132]: "Community / unverified:"
+          - text: some headless setups require provisioning profiles to be installed under
+          - code [ref=f8e133]: ~/Library/MobileDevice/Provisioning Profiles/
+          - text: using the profile's internal identifier as the filename. Other tooling accepts a profile name or identifier in
+          - code [ref=f8e134]: provisioningProfiles
+          - text: . Inspect the active Xcode version's
+          - code [ref=f8e135]: xcodebuild -help
+          - text: ; do not assume one naming convention is universal.
+        - heading "2.3. Re-signing and signing automation" [level=3] [ref=f8e136]
+        - paragraph [ref=f8e137]:
+          - strong [ref=f8e138]: "Community / worth trying:"
+          - text: "re-signing a prebuilt app or IPA can work when the executable, embedded frameworks, entitlements, app identifier, and profile all agree. Sign nested code before the containing app:"
+        - generic [ref=f8e139]:
+          - code [ref=f8e141]: for framework in Payload/Benchmark.app/Frameworks/*.framework; do codesign --force --sign "<development-identity>" "$framework" done codesign --force \ --sign "<development-identity>" \ --entitlements Entitlements.plist \ Payload/Benchmark.app
+          - button "Copy to clipboard" [ref=f8e142] [cursor=pointer]
+        - paragraph [ref=f8e146]:
+          - text: This recipe is incomplete for bundles containing extensions, app clips, nested apps, or other signed code. Enumerate and verify the actual bundle graph; do not apply
+          - code [ref=f8e147]: "--deep"
+          - text: as a substitute for understanding it.
+        - paragraph [ref=f8e148]:
+          - strong [ref=f8e149]: "Community:"
+          - text: fastlane
+          - code [ref=f8e150]: match
+          - text: ","
+          - code [ref=f8e151]: sigh
+          - text: ", and"
+          - code [ref=f8e152]: cert
+          - text: can synchronize the same profile-and-identity inputs. They reduce distribution friction but do not change Apple's signing contract.
+          - code [ref=f8e153]: altool
+          - text: and
+          - code [ref=f8e154]: notarytool
+          - text: are not the mechanism for installing a development build on a registered iOS device.
+        - 'heading "Signing: do this / avoid this" [level=3] [ref=f8e155]'
+        - table [ref=f8e156]:
+          - rowgroup [ref=f8e157]:
+            - row [ref=f8e158]:
+              - columnheader "Do this" [ref=f8e159]
+              - columnheader "Avoid this" [ref=f8e160]
+          - rowgroup [ref=f8e161]:
+            - row [ref=f8e162]:
+              - cell "Verify the identity, profile, entitlements, and final app before install." [ref=f8e163]
+              - cell "Treat a keychain unlock as a fix for missing account or profile authorization." [ref=f8e164]
+            - row [ref=f8e165]:
+              - cell "Use a manually managed development profile when the shell has no usable Xcode account." [ref=f8e166]
+              - cell "Feed an Xcode-managed profile to a build explicitly configured for manual signing." [ref=f8e167]
+            - row [ref=f8e168]:
+              - cell [ref=f8e169]:
+                - text: Re-run
+                - code [ref=f8e170]: xcodebuild -help
+                - text: for the installed Xcode's export keys.
+              - cell [ref=f8e171]:
+                - text: Keep using deprecated export method
+                - code [ref=f8e172]: development
+                - text: ; current Xcode calls it
+                - code [ref=f8e173]: debugging
+                - text: .
+            - row [ref=f8e174]:
+              - cell "Keep credentials and device identifiers out of receipts." [ref=f8e175]
+              - cell "Dump profile contents or signing secrets into logs." [ref=f8e176]
+        - heading "3. Stage and Verify App-Container Data" [level=2] [ref=f8e177]
+        - heading "3.1. Copy a directory, not a file into a missing parent" [level=3] [ref=f8e178]
+        - paragraph [ref=f8e179]: "The basic app-container copy syntax is:"
+        - generic [ref=f8e180]:
+          - code [ref=f8e182]: xcrun devicectl device copy to \ --device "<device-id>" \ --domain-type appDataContainer \ --domain-identifier com.example.benchmark \ --source ./run-input \ --destination Documents/run-input \ --json-output copy.json
+          - button "Copy to clipboard" [ref=f8e183] [cursor=pointer]
+        - paragraph [ref=f8e187]:
+          - strong [ref=f8e188]: "Firsthand implementation evidence:"
+          - text: "a file-to-file copy whose destination parent did not already exist completed without producing the target file. Copying the whole local directory created the destination directory and transferred its contents. Therefore:"
+        - list [ref=f8e189]:
+          - listitem [ref=f8e190]: Build one local staging directory for each logical payload.
+          - listitem [ref=f8e191]: Copy that directory as a unit.
+          - listitem [ref=f8e192]: List the remote destination after every copy.
+          - listitem [ref=f8e193]: Verify expected names, sizes, and, when practical, content hashes in the app before loading a model.
+        - paragraph [ref=f8e194]:
+          - text: Current command help says
+          - code [ref=f8e195]: copy to
+          - text: skips files that have not been modified and supports repeated
+          - code [ref=f8e196]: "--source"
+          - text: flags. It documents an overall
+          - code [ref=f8e197]: "--timeout"
+          - text: ", but it does not promise resumable transfer."
+          - strong [ref=f8e198]: "Unverified hypothesis:"
+          - text: interrupted multi-gigabyte transfers must be restarted. Design staging to be idempotent and independently verifiable.
+        - heading "3.2. List the domain directly" [level=3] [ref=f8e199]
+        - paragraph [ref=f8e200]: "The raw report correctly identified a direct file-listing command:"
+        - generic [ref=f8e201]:
+          - code [ref=f8e203]: xcrun devicectl device info files \ --device "<device-id>" \ --domain-type appDataContainer \ --domain-identifier com.example.benchmark \ --subdirectory Documents/run-input \ --recurse \ --json-output files.json
+          - button "Copy to clipboard" [ref=f8e204] [cursor=pointer]
+        - paragraph [ref=f8e208]:
+          - text: Current help confirms
+          - code [ref=f8e209]: "--subdirectory"
+          - text: ", recursive listing, filtering, sorting, and JSON output. Use this rather than treating a zero exit status from"
+          - code [ref=f8e210]: copy to
+          - text: as proof.
+        - heading [level=3] [ref=f8e211]:
+          - text: 3.3.
+          - code [ref=f8e212]: "--remove-existing-content"
+          - text: can wipe the container
+        - paragraph [ref=f8e213]:
+          - text: Current
+          - code [ref=f8e214]: copy to
+          - text: help describes
+          - code [ref=f8e215]: "--remove-existing-content"
+          - text: as removing files from the destination directory and says it applies only to directory transfers.
+        - paragraph [ref=f8e216]:
+          - strong [ref=f8e217]: "Firsthand the reference implementation contradiction:"
+          - code [ref=f8e218]: "--remove-existing-content true"
+          - text: emptied the entire app data container, not only the named subtree. The observed behavior is more destructive than the help text implies. Do not use this flag in a qualifying workflow.
+        - paragraph [ref=f8e219]: "The safer pattern is in-app, allow-listed cleanup:"
+        - generic [ref=f8e220]:
+          - code [ref=f8e222]: "let fileManager = FileManager.default let staleDirectory = documentsURL.appendingPathComponent(\"bundles/stale\", isDirectory: true) if fileManager.fileExists(atPath: staleDirectory.path) { try fileManager.removeItem(at: staleDirectory) }"
+          - button "Copy to clipboard" [ref=f8e223] [cursor=pointer]
+        - paragraph [ref=f8e227]:
+          - text: Constrain deletion to a known child beneath a known app-owned root. Refuse absolute paths,
+          - code [ref=f8e228]: ..
+          - text: ", symlinks that escape the root, or an empty run identifier."
+        - heading "3.4. Other domains" [level=3] [ref=f8e229]
+        - paragraph [ref=f8e230]:
+          - text: Current command help lists
+          - code [ref=f8e231]: temporary
+          - text: ","
+          - code [ref=f8e232]: appDataContainer
+          - text: ","
+          - code [ref=f8e233]: appGroupDataContainer
+          - text: ", and"
+          - code [ref=f8e234]: systemCrashLogs
+          - text: .
+        - paragraph [ref=f8e235]:
+          - text: For an App Group, use
+          - code [ref=f8e236]: appGroupDataContainer
+          - text: "and the App Group identifier, not the application bundle identifier:"
+        - generic [ref=f8e237]:
+          - code [ref=f8e239]: xcrun devicectl device info files \ --device "<device-id>" \ --domain-type appGroupDataContainer \ --domain-identifier group.com.example.benchmark \ --json-output group-files.json
+          - button "Copy to clipboard" [ref=f8e240] [cursor=pointer]
+        - paragraph [ref=f8e244]:
+          - strong [ref=f8e245]: "Documented platform constraint, externally synthesized:"
+          - text: the app and extensions must carry matching App Group entitlements. Treat App Group staging as a separate security boundary, not an alias for the app container.
+        - 'heading "File transfer: do this / avoid this" [level=3] [ref=f8e246]'
+        - table [ref=f8e247]:
+          - rowgroup [ref=f8e248]:
+            - row [ref=f8e249]:
+              - columnheader "Do this" [ref=f8e250]
+              - columnheader "Avoid this" [ref=f8e251]
+          - rowgroup [ref=f8e252]:
+            - row [ref=f8e253]:
+              - cell "Copy a prepared directory when the destination parent may not exist." [ref=f8e254]
+              - cell "Assume file-to-file copy creates intermediate directories." [ref=f8e255]
+            - row [ref=f8e256]:
+              - cell "List and verify the remote subtree after every transfer." [ref=f8e257]
+              - cell "Treat a quiet or zero-exit copy as proof of arrival." [ref=f8e258]
+            - row [ref=f8e259]:
+              - cell "Make app-side cleanup narrow and allow-listed." [ref=f8e260]
+              - cell [ref=f8e261]:
+                - text: Use
+                - code [ref=f8e262]: "--remove-existing-content true"
+                - text: in a qualifying run.
+            - row [ref=f8e263]:
+              - cell "Restart and re-verify an interrupted transfer." [ref=f8e264]
+              - cell "Assume undocumented resume semantics." [ref=f8e265]
+        - heading "4. Launch and Monitor One Configuration" [level=2] [ref=f8e266]
+        - heading "4.1. Argument ordering is a hard boundary" [level=3] [ref=f8e267]
+        - paragraph [ref=f8e268]:
+          - text: Current command help defines the grammar as
+          - code [ref=f8e269]: <bundle-identifier-or-path> [<command-line-arguments> ...]
+          - text: .
+          - strong [ref=f8e270]: "Firsthand implementation evidence:"
+          - text: every token after the positional bundle identifier was forwarded to the launched app.
+        - generic [ref=f8e271]:
+          - code [ref=f8e273]: "xcrun devicectl device process launch \\ --device \"<device-id>\" \\ --terminate-existing \\ --console \\ --environment-variables '{\"BENCHMARK_MODE\":\"latency\"}' \\ com.example.benchmark \\ --model-path Documents/run-input/encoder.mlmodelc \\ --iterations 100"
+          - button "Copy to clipboard" [ref=f8e274] [cursor=pointer]
+        - paragraph [ref=f8e278]:
+          - text: Here
+          - code [ref=f8e279]: "--model-path"
+          - text: and
+          - code [ref=f8e280]: "--iterations"
+          - text: belong to the app. Every
+          - code [ref=f8e281]: devicectl
+          - text: option, including
+          - code [ref=f8e282]: "--device"
+          - text: ","
+          - code [ref=f8e283]: "--console"
+          - text: ","
+          - code [ref=f8e284]: "--environment-variables"
+          - text: ", and"
+          - code [ref=f8e285]: "--terminate-existing"
+          - text: ", appears before the bundle identifier."
+        - paragraph [ref=f8e286]:
+          - text: "No"
+          - code [ref=f8e287]: "--"
+          - text: separator is required by the documented grammar. Do not introduce one without checking the installed tool's help and the app's observed
+          - code [ref=f8e288]: argv
+          - text: .
+        - heading "4.2. Environment variables have two supported routes" [level=3] [ref=f8e289]
+        - paragraph [ref=f8e290]:
+          - text: The raw report said environment variables must be passed with
+          - code [ref=f8e291]: "--environment-variables"
+          - text: ". Current command help documents two routes:"
+        - list [ref=f8e292]:
+          - listitem [ref=f8e293]: Pass a JSON dictionary before the bundle identifier.
+          - listitem [ref=f8e294]:
+            - text: Export host variables with a
+            - code [ref=f8e295]: DEVICECTL_CHILD_
+            - text: prefix.
+        - generic [ref=f8e296]:
+          - code [ref=f8e298]: export DEVICECTL_CHILD_BENCHMARK_MODE=latency xcrun devicectl device process launch \ --device "<device-id>" \ com.example.benchmark
+          - button "Copy to clipboard" [ref=f8e299] [cursor=pointer]
+        - paragraph [ref=f8e303]:
+          - text: An explicit
+          - code [ref=f8e304]: "--environment-variables"
+          - text: dictionary overrides prefixed caller variables. Do not put secrets into either route; process environments and logs are not a credential vault.
+        - heading "4.3. Lifecycle options" [level=3] [ref=f8e305]
+        - list [ref=f8e306]:
+          - listitem [ref=f8e307]:
+            - code [ref=f8e308]: "--activate"
+            - text: is the default where supported and requests foreground activation.
+          - listitem [ref=f8e309]:
+            - code [ref=f8e310]: "--terminate-existing"
+            - text: kills an existing app instance before launch where supported. Use it when a clean process is part of the measurement contract, not as an unconditional default.
+          - listitem [ref=f8e311]:
+            - code [ref=f8e312]: "--start-stopped"
+            - text: launches suspended for debugger attachment.
+          - listitem [ref=f8e313]:
+            - code [ref=f8e314]: "--console"
+            - text: connects standard streams, waits for termination, and forwards catchable signals.
+          - listitem [ref=f8e315]:
+            - code [ref=f8e316]: "--timeout"
+            - text: limits the
+            - code [ref=f8e317]: devicectl
+            - text: command. It is not proof that the app persisted or completed after the host command exits.
+        - paragraph [ref=f8e318]: "Inspect running processes separately:"
+        - generic [ref=f8e319]:
+          - code [ref=f8e321]: xcrun devicectl device info processes \ --device "<device-id>" \ --filter "name CONTAINS[c] 'Benchmark'" \ --json-output processes.json
+          - button "Copy to clipboard" [ref=f8e322] [cursor=pointer]
+        - paragraph [ref=f8e326]:
+          - strong [ref=f8e327]: "Community / unverified:"
+          - text: launching through
+          - code [ref=f8e328]: devicectl
+          - text: may avoid some launch-time behavior seen with icon launches. Do not convert that anecdote into a watchdog guarantee. Measure startup, foreground state, suspension, and termination on the target OS.
+        - 'heading "Process launch: do this / avoid this" [level=3] [ref=f8e329]'
+        - table [ref=f8e330]:
+          - rowgroup [ref=f8e331]:
+            - row [ref=f8e332]:
+              - columnheader "Do this" [ref=f8e333]
+              - columnheader "Avoid this" [ref=f8e334]
+          - rowgroup [ref=f8e335]:
+            - row [ref=f8e336]:
+              - cell [ref=f8e337]:
+                - text: Put all
+                - code [ref=f8e338]: devicectl
+                - text: options before the bundle identifier.
+              - cell [ref=f8e339]:
+                - text: Append
+                - code [ref=f8e340]: "--device"
+                - text: ","
+                - code [ref=f8e341]: "--console"
+                - text: ", or environment configuration after the bundle identifier."
+            - row [ref=f8e342]:
+              - cell "Make one launch represent one immutable configuration." [ref=f8e343]
+              - cell "Reuse an unknown running process and infer which inputs it loaded." [ref=f8e344]
+            - row [ref=f8e345]:
+              - cell "Use JSON process listings and an app-owned done marker." [ref=f8e346]
+              - cell [ref=f8e347]:
+                - text: Infer successful completion from "process exists" or
+                - code [ref=f8e348]: devicectl
+                - text: exit alone.
+            - row [ref=f8e349]:
+              - cell [ref=f8e350]:
+                - text: Use
+                - code [ref=f8e351]: "--terminate-existing"
+                - text: only when clean launch semantics are intended.
+              - cell "Treat termination as harmless when the prior process may own an incomplete receipt." [ref=f8e352]
+        - heading "5. Capture Progress and Durable Results" [level=2] [ref=f8e353]
+        - heading [level=3] [ref=f8e354]:
+          - text: 5.1.
+          - code [ref=f8e355]: "--console"
+          - text: does not make Swift
+          - code [ref=f8e356]: print
+          - text: durable
+        - paragraph [ref=f8e357]:
+          - strong [ref=f8e358]: "Firsthand implementation evidence:"
+          - text: plain Swift
+          - code [ref=f8e359]: print(...)
+          - text: produced no visible output under
+          - code [ref=f8e360]: "--console"
+          - text: ; stdout was block-buffered because it was not attached to an interactive terminal. Stderr worked, and a file written under
+          - code [ref=f8e361]: Documents
+          - text: could be pulled reliably.
+        - paragraph [ref=f8e362]: "Use stderr for progress:"
+        - generic [ref=f8e363]:
+          - code [ref=f8e365]: "import Foundation func emitProgress(_ message: String) { FileHandle.standardError.write(Data((message + \"\\n\").utf8)) }"
+          - button "Copy to clipboard" [ref=f8e366] [cursor=pointer]
+        - paragraph [ref=f8e370]: "Use a file plus an atomic done marker for the final machine-readable result:"
+        - generic [ref=f8e371]:
+          - code [ref=f8e373]: "let payload = try JSONEncoder().encode(result) let temporaryURL = resultsURL.appendingPathComponent(\"\\(runID).json.tmp\") let finalURL = resultsURL.appendingPathComponent(\"\\(runID).json\") try payload.write(to: temporaryURL, options: .atomic) try FileManager.default.moveItem(at: temporaryURL, to: finalURL) try Data().write(to: resultsURL.appendingPathComponent(\"\\(runID).done\"))"
+          - button "Copy to clipboard" [ref=f8e374] [cursor=pointer]
+        - paragraph [ref=f8e378]: "Pull it after the done marker appears:"
+        - generic [ref=f8e379]:
+          - code [ref=f8e381]: xcrun devicectl device copy from \ --device "<device-id>" \ --domain-type appDataContainer \ --domain-identifier com.example.benchmark \ --source "Documents/results/<run-id>.json" \ --destination "./results/<run-id>.json" \ --json-output pull-result.json
+          - button "Copy to clipboard" [ref=f8e382] [cursor=pointer]
+        - paragraph [ref=f8e386]: Validate the receipt schema, run ID, configuration identity, model signature, and completion status after transfer.
+        - heading "5.2. Unified logging" [level=3] [ref=f8e387]
+        - paragraph [ref=f8e388]: "The raw report's OSLog advice remains useful: unified logging survives beyond one stdout pipe, but dynamic fields may be private unless marked public. Never mark private audio, transcripts, credentials, or device identifiers public merely to simplify debugging."
+        - paragraph [ref=f8e389]:
+          - text: Historical device collection is supported by the host
+          - code [ref=f8e390]: /usr/bin/log collect
+          - text: ":"
+        - generic [ref=f8e391]:
+          - code [ref=f8e393]: sudo /usr/bin/log collect \ --device-udid "<device-id>" \ --last 15m \ --output benchmark.logarchive /usr/bin/log show \ --archive benchmark.logarchive \ --predicate 'process == "Benchmark"' \ --style ndjson
+          - button "Copy to clipboard" [ref=f8e394] [cursor=pointer]
+        - paragraph [ref=f8e398]:
+          - strong [ref=f8e399]: "Correction to the raw report:"
+          - text: on the verified host,
+          - code [ref=f8e400]: /usr/bin/log stream --help
+          - text: has no
+          - code [ref=f8e401]: "--device"
+          - text: ","
+          - code [ref=f8e402]: "--device-name"
+          - text: ", or"
+          - code [ref=f8e403]: "--device-udid"
+          - text: option. The raw
+          - code [ref=f8e404]: log stream --device-udid ...
+          - text: recipe is not valid there. For live output, use
+          - code [ref=f8e405]: devicectl ... --console
+          - text: with stderr, an app-owned progress file, or a separately verified device-log tool. Re-check the installed OS before using a remote
+          - code [ref=f8e406]: log stream
+          - text: recipe.
+        - 'heading "Console and log capture: do this / avoid this" [level=3] [ref=f8e407]'
+        - table [ref=f8e408]:
+          - rowgroup [ref=f8e409]:
+            - row [ref=f8e410]:
+              - columnheader "Do this" [ref=f8e411]
+              - columnheader "Avoid this" [ref=f8e412]
+          - rowgroup [ref=f8e413]:
+            - row [ref=f8e414]:
+              - cell "Send short progress messages to stderr." [ref=f8e415]
+              - cell [ref=f8e416]:
+                - text: Use Swift
+                - code [ref=f8e417]: print
+                - text: as the only receipt channel under
+                - code [ref=f8e418]: "--console"
+                - text: .
+            - row [ref=f8e419]:
+              - cell [ref=f8e420]:
+                - text: Write final JSON to
+                - code [ref=f8e421]: Documents
+                - text: and pull it after an atomic done marker.
+              - cell "Parse transient console prose as the result of record." [ref=f8e422]
+            - row [ref=f8e423]:
+              - cell "Mark only non-sensitive OSLog fields public." [ref=f8e424]
+              - cell [ref=f8e425]:
+                - text: Expose private content to defeat
+                - code [ref=f8e426]: <private>
+                - text: redaction.
+            - row [ref=f8e427]:
+              - cell [ref=f8e428]:
+                - text: Use
+                - code [ref=f8e429]: log collect --device-udid
+                - text: for historical archives.
+              - cell [ref=f8e430]:
+                - text: Publish the unsupported
+                - code [ref=f8e431]: log stream --device-udid
+                - text: command.
+        - heading "6. Recover Crash Evidence" [level=2] [ref=f8e432]
+        - paragraph [ref=f8e433]:
+          - code [ref=f8e434]: systemCrashLogs
+          - text: is a current
+          - code [ref=f8e435]: devicectl
+          - text: "file-service domain:"
+        - generic [ref=f8e436]:
+          - code [ref=f8e438]: xcrun devicectl device copy from \ --device "<device-id>" \ --domain-type systemCrashLogs \ --source . \ --destination ./crashes \ --json-output pull-crashes.json
+          - button "Copy to clipboard" [ref=f8e439] [cursor=pointer]
+        - paragraph [ref=f8e443]: "List before pulling when a focused selection is useful:"
+        - generic [ref=f8e444]:
+          - code [ref=f8e446]: xcrun devicectl device info files \ --device "<device-id>" \ --domain-type systemCrashLogs \ --json-output crash-files.json
+          - button "Copy to clipboard" [ref=f8e447] [cursor=pointer]
+        - paragraph [ref=f8e451]:
+          - text: Apple crash reports commonly use
+          - code [ref=f8e452]: .ips
+          - text: ". Correlate by process, timestamp, run window, and launch metadata rather than filename alone:"
+        - generic [ref=f8e453]:
+          - code [ref=f8e455]: jq -r '(.procName // .process // "unknown") + " - " + (.timestamp // "unknown")' \ crash.ips
+          - button "Copy to clipboard" [ref=f8e456] [cursor=pointer]
+        - paragraph [ref=f8e460]:
+          - text: Some
+          - code [ref=f8e461]: .ips
+          - text: files use a JSON metadata line followed by another JSON object; others vary by OS. Inspect the format before hard-coding
+          - code [ref=f8e462]: head -n 1
+          - text: .
+        - paragraph [ref=f8e463]:
+          - strong [ref=f8e464]: "Community / worth checking:"
+          - text: Core ML workloads can fail in out-of-process services such as E5 runtime or ANE compiler processes, so an app-name-only scan may miss the root cause. Pull the domain around a bounded run window and inspect all new reports. The exact service names and report schemas are OS-version dependent.
+        - paragraph [ref=f8e465]: Jetsam termination is not necessarily a catchable Swift error. Treat a missing done marker, vanished process, and fresh resource-limit report as a correlated failure requiring the crash artifact, not as a timeout to retry blindly.
+        - heading "7. Keep Long Measurements Alive" [level=2] [ref=f8e466]
+        - paragraph [ref=f8e467]: "For a foreground UIKit harness, disable automatic screen idle while a run is active:"
+        - generic [ref=f8e468]:
+          - code [ref=f8e470]: "await MainActor.run { UIApplication.shared.isIdleTimerDisabled = true }"
+          - button "Copy to clipboard" [ref=f8e471] [cursor=pointer]
+        - paragraph [ref=f8e475]: Restore the prior setting after completion.
+        - paragraph [ref=f8e476]:
+          - strong [ref=f8e477]: "Community / platform hypothesis:"
+          - text: a standard app can still be suspended after it is backgrounded or the device locks. A
+          - code [ref=f8e478]: devicectl
+          - text: launch does not grant indefinite background execution. Keep the measurement app foreground, keep the device in a controlled powered state, and make suspension observable through timestamps and done markers.
+        - paragraph [ref=f8e479]: Do not claim an audio, location, or other background mode solely to keep a benchmark alive. Use only a mode that the app genuinely performs and Apple's policy permits. If foreground operation is impossible, design the run into resumable bounded units rather than hiding it behind an unrelated entitlement.
+        - paragraph [ref=f8e480]: Thermal state, battery state, charging, screen state, and other active Core ML clients can change latency. Bind those conditions into the experiment protocol when they matter, but keep device identifiers out of public receipts.
+        - heading "8. Memory, JIT, AOT, and Jetsam" [level=2] [ref=f8e481]
+        - paragraph [ref=f8e482]: "The raw report preserves a useful failure model but overstates it as universal:"
+        - list [ref=f8e483]:
+          - listitem [ref=f8e484]:
+            - strong [ref=f8e485]: "Community reports:"
+            - text: some iPhones exhibit a per-process memory ceiling near 6 GB even when total physical memory is larger.
+          - listitem [ref=f8e486]:
+            - strong [ref=f8e487]: "Community reports:"
+            - text: on-device compilation of large Core ML or MPSGraph packages can create transient resident-memory spikes and trigger jetsam or compiler-service failure.
+          - listitem [ref=f8e488]:
+            - strong [ref=f8e489]: "Community hypothesis:"
+            - text: ahead-of-time compiled
+            - code [ref=f8e490]: .mlmodelc
+            - text: assets can reduce compilation work and permit more file-backed paging than loading an uncompiled package.
+          - listitem [ref=f8e491]:
+            - strong [ref=f8e492]: "Community reports:"
+            - text: the increased-memory-limit entitlement may provide limited or device-dependent relief, with different behavior on iPad.
+        - paragraph [ref=f8e493]:
+          - text: None of those numbers is portable across devices, OS builds, entitlements, model formats, or Core ML revisions. Measure peak physical footprint in the app, record cold-load and warm-run separately, and pair every unexplained termination with
+          - code [ref=f8e494]: systemCrashLogs
+          - text: .
+        - paragraph [ref=f8e495]: "Prefer a compiled model for device deployment:"
+        - generic [ref=f8e496]:
+          - code [ref=f8e498]: xcrun coremlcompiler compile \ "/path/to/Model.mlpackage" \ .build/compiled
+          - button "Copy to clipboard" [ref=f8e499] [cursor=pointer]
+        - paragraph [ref=f8e503]:
+          - strong [ref=f8e504]: "Unverified mechanism:"
+          - text: memory mapping can move some model storage from dirty resident memory to file-backed pages, but
+          - code [ref=f8e505]: .mlmodelc
+          - text: is not a promise of zero runtime compilation or safe peak memory. The proof is a target-device cold-load receipt plus crash scan.
+        - heading [level=2] [ref=f8e506]:
+          - text: 9. Inspect
+          - code [ref=f8e507]: MLComputePlan
+          - text: Correctly
+        - heading "9.1. Current documented Swift surface" [level=3] [ref=f8e508]
+        - paragraph [ref=f8e509]: "Context7 verification against Apple Core ML documentation gives these signatures:"
+        - generic [ref=f8e510]:
+          - code [ref=f8e512]: "static func load( contentsOf url: URL, configuration: MLModelConfiguration ) async throws -> MLComputePlan func deviceUsage( for operation: MLModelStructure.Program.Operation ) -> MLComputePlan.DeviceUsage? func estimatedCost( of operation: MLModelStructure.Program.Operation ) -> MLComputePlan.Cost?"
+          - button "Copy to clipboard" [ref=f8e513] [cursor=pointer]
+        - paragraph [ref=f8e517]:
+          - code [ref=f8e518]: deviceUsage(for:)
+          - text: returns
+          - code [ref=f8e519]: nil
+          - text: when usage cannot be determined. Swift
+          - code [ref=f8e520]: DeviceUsage
+          - text: exposes
+          - code [ref=f8e521]: preferred
+          - text: and
+          - code [ref=f8e522]: supported
+          - text: compute devices.
+          - code [ref=f8e523]: estimatedCost(of:)
+          - text: exists for ML Program operations and returns an optional cost.
+          - code [ref=f8e524]: Cost.weight
+          - text: is documented as an estimated workload fraction from
+          - code [ref=f8e525]: "0.0"
+          - text: to
+          - code [ref=f8e526]: "1.0"
+          - text: over the total model evaluation.
+        - heading "9.2. Minimal on-device walk" [level=3] [ref=f8e527]
+        - paragraph [ref=f8e528]:
+          - text: Pass the compiled
+          - code [ref=f8e529]: .mlmodelc
+          - text: "URL and the same configuration used for the model run:"
+        - generic [ref=f8e530]:
+          - code [ref=f8e532]: "import CoreML import Foundation @available(iOS 17.4, *) func writeComputePlan( compiledModelURL: URL, configuration: MLModelConfiguration ) async throws { let plan = try await MLComputePlan.load( contentsOf: compiledModelURL, configuration: configuration ) guard case let .program(program) = plan.modelStructure, let main = program.functions[\"main\"] else { throw BenchmarkError.expectedMLProgram } for operation in main.block.operations { let usage = plan.deviceUsage(for: operation) let cost = plan.estimatedCost(of: operation) let line = [ operation.operatorName, String(describing: usage?.preferred), String(describing: cost?.weight), ].joined(separator: \"\\t\") FileHandle.standardError.write(Data((line + \"\\n\").utf8)) } }"
+          - button "Copy to clipboard" [ref=f8e533] [cursor=pointer]
+        - paragraph [ref=f8e537]:
+          - text: The
+          - code [ref=f8e538]: BenchmarkError
+          - text: case is app-owned and must be defined by the harness.
+        - heading "9.3. What the values prove" [level=3] [ref=f8e539]
+        - list [ref=f8e540]:
+          - listitem [ref=f8e541]:
+            - code [ref=f8e542]: usage?.preferred
+            - text: is anticipated preferred placement for that operation under the supplied configuration. It is not a trace proving where a completed prediction executed.
+          - listitem [ref=f8e543]:
+            - code [ref=f8e544]: usage?.supported
+            - text: can describe available devices where exposed, but support is not selection.
+          - listitem [ref=f8e545]:
+            - code [ref=f8e546]: cost?.weight
+            - text: is an estimate, not milliseconds. Aggregate it within one plan; do not treat it as absolute latency.
+          - listitem [ref=f8e547]:
+            - strong [ref=f8e548]: "Firsthand implementation evidence:"
+            - code [ref=f8e549]: const
+            - text: operations returned
+            - code [ref=f8e550]: nil
+            - text: for both usage and cost in the tested compiled program. Apple documents the optional return and undetermined-usage meaning, not a universal "all const operations are nil" rule. Keep the unwrap for every operation.
+          - listitem [ref=f8e551]: The plan is model-, shape-, configuration-, device-, and OS-specific. A simulator or Mac plan does not certify a physical iPhone.
+        - paragraph [ref=f8e552]: The raw report called on-device Swift output "irrefutable ground truth." That is too strong. It is more target-specific than an off-device estimate, but it remains a compute plan. Pair it with latency, runtime telemetry, or a trace before claiming actual ANE, GPU, or CPU execution. See the Neural Engine residency guide for that distinction.
+        - heading "10. What Not to Do" [level=2] [ref=f8e553]
+        - table [ref=f8e554]:
+          - rowgroup [ref=f8e555]:
+            - row [ref=f8e556]:
+              - columnheader "Anti-pattern" [ref=f8e557]
+              - columnheader "Why it fails" [ref=f8e558]
+              - columnheader "Do this instead" [ref=f8e559]
+          - rowgroup [ref=f8e560]:
+            - row [ref=f8e561]:
+              - cell "Stage a bare file into a missing remote parent." [ref=f8e562]
+              - cell "Firsthand runs silently produced no target file." [ref=f8e563]
+              - cell "Copy one directory and list it afterward." [ref=f8e564]
+            - row [ref=f8e565]:
+              - cell [ref=f8e566]:
+                - text: Add
+                - code [ref=f8e567]: "--remove-existing-content true"
+                - text: for cleanliness.
+              - cell "Firsthand runs emptied the whole app container." [ref=f8e568]
+              - cell "Delete an allow-listed subtree inside the app." [ref=f8e569]
+            - row [ref=f8e570]:
+              - cell [ref=f8e571]:
+                - text: Put a
+                - code [ref=f8e572]: devicectl
+                - text: flag after the bundle identifier.
+              - cell [ref=f8e573]:
+                - text: It becomes app
+                - code [ref=f8e574]: argv
+                - text: .
+              - cell "Put every tool option before the positional bundle identifier." [ref=f8e575]
+            - row [ref=f8e576]:
+              - cell [ref=f8e577]:
+                - text: Depend on Swift
+                - code [ref=f8e578]: print
+                - text: under
+                - code [ref=f8e579]: "--console"
+                - text: .
+              - cell "Buffered stdout can remain silent." [ref=f8e580]
+              - cell "Use stderr for progress and a result file for record." [ref=f8e581]
+            - row [ref=f8e582]:
+              - cell [ref=f8e583]:
+                - text: Use
+                - code [ref=f8e584]: log stream --device-udid
+                - text: .
+              - cell "That option is absent on the verified host." [ref=f8e585]
+              - cell [ref=f8e586]:
+                - text: Use historical
+                - code [ref=f8e587]: log collect
+                - text: or a separately verified live route.
+            - row [ref=f8e588]:
+              - cell "Scan only app-named crash files." [ref=f8e589]
+              - cell "Core ML or ANE services may fail independently." [ref=f8e590]
+              - cell [ref=f8e591]:
+                - text: Pull and time-filter the complete
+                - code [ref=f8e592]: systemCrashLogs
+                - text: domain.
+            - row [ref=f8e593]:
+              - cell "Read preferred compute-plan device as executed device." [ref=f8e594]
+              - cell "The API reports anticipated use." [ref=f8e595]
+              - cell "Pair the plan with runtime evidence." [ref=f8e596]
+            - row [ref=f8e597]:
+              - cell "Hard-code a 6 GB jetsam ceiling." [ref=f8e598]
+              - cell "Memory policy varies by target and workload." [ref=f8e599]
+              - cell "Measure peak footprint and collect termination evidence." [ref=f8e600]
+            - row [ref=f8e601]:
+              - cell "Assume automatic signing works without an Xcode account." [ref=f8e602]
+              - cell "It failed firsthand with \"No Accounts.\"" [ref=f8e603]
+              - cell "Use a matching manually managed development profile." [ref=f8e604]
+            - row [ref=f8e605]:
+              - cell "Re-sign only the outer app." [ref=f8e606]
+              - cell "Nested signed code can retain a mismatched identity or entitlement set." [ref=f8e607]
+              - cell "Enumerate, sign inside-out, and verify the final bundle." [ref=f8e608]
+        - heading "11. Debugging Playbook" [level=2] [ref=f8e609]
+        - heading "Copy reports success but the file is absent" [level=3] [ref=f8e610]
+        - list [ref=f8e611]:
+          - listitem [ref=f8e612]:
+            - text: List the intended parent with
+            - code [ref=f8e613]: device info files
+            - text: .
+          - listitem [ref=f8e614]: If the parent is absent, copy the containing local directory instead of the file.
+          - listitem [ref=f8e615]: Pull or app-hash the staged payload before loading it.
+          - listitem [ref=f8e616]: Preserve the copy JSON and file-list JSON as operational evidence.
+        - heading "Previous app state disappeared" [level=3] [ref=f8e617]
+        - list [ref=f8e618]:
+          - listitem [ref=f8e619]:
+            - text: Search the driver command for
+            - code [ref=f8e620]: "--remove-existing-content"
+            - text: .
+          - listitem [ref=f8e621]: Treat the entire container as potentially wiped.
+          - listitem [ref=f8e622]: Restore only known public inputs.
+          - listitem [ref=f8e623]: Remove the flag permanently and move cleanup into bounded app logic.
+        - heading [level=3] [ref=f8e624]:
+          - text: The app receives
+          - code [ref=f8e625]: "--device"
+          - text: or other unexpected arguments
+        - list [ref=f8e626]:
+          - listitem [ref=f8e627]:
+            - text: Capture the app's
+            - code [ref=f8e628]: CommandLine.arguments
+            - text: to stderr or a result file.
+          - listitem [ref=f8e629]:
+            - text: Move every
+            - code [ref=f8e630]: devicectl
+            - text: option before the bundle identifier.
+          - listitem [ref=f8e631]: Keep only app arguments after the bundle identifier.
+        - heading [level=3] [ref=f8e632]:
+          - code [ref=f8e633]: "--console"
+          - text: is blank
+        - list [ref=f8e634]:
+          - listitem [ref=f8e635]:
+            - text: Confirm the process exists with
+            - code [ref=f8e636]: device info processes
+            - text: .
+          - listitem [ref=f8e637]: Emit one flushed stderr line.
+          - listitem [ref=f8e638]: Poll for an app-owned progress or done file.
+          - listitem [ref=f8e639]: Pull a historical log archive if OSLog was enabled.
+        - heading "Signing reports \"No Accounts\"" [level=3] [ref=f8e640]
+        - list [ref=f8e641]:
+          - listitem [ref=f8e642]: Decide whether the runner is supposed to use an interactive Xcode account. Do not assume.
+          - listitem [ref=f8e643]: If no account is available, select a manually managed development profile that authorizes the target.
+          - listitem [ref=f8e644]: Verify that the development identity and private key are visible to the shell.
+          - listitem [ref=f8e645]: Build with manual signing and inspect the final entitlements before install.
+        - heading "Signing says the profile is Xcode-managed but manual signing is required" [level=3] [ref=f8e646]
+        - list [ref=f8e647]:
+          - listitem [ref=f8e648]: Stop mixing an Xcode-managed profile with manual signing.
+          - listitem [ref=f8e649]: Create or obtain a non-Xcode-managed development profile for the app and registered target.
+          - listitem [ref=f8e650]: Install it without logging its private payload.
+          - listitem [ref=f8e651]:
+            - text: Rebuild with
+            - code [ref=f8e652]: PROVISIONING_PROFILE_SPECIFIER
+            - text: naming that profile.
+        - heading "The process vanishes during model load" [level=3] [ref=f8e653]
+        - list [ref=f8e654]:
+          - listitem [ref=f8e655]: Do not retry immediately.
+          - listitem [ref=f8e656]:
+            - text: Pull
+            - code [ref=f8e657]: systemCrashLogs
+            - text: for the bounded launch window.
+          - listitem [ref=f8e658]: Check app resource-limit reports and Core ML, E5, or ANE service reports.
+          - listitem [ref=f8e659]: Separate cold compilation from warm inference.
+          - listitem [ref=f8e660]:
+            - text: Try an AOT-compiled
+            - code [ref=f8e661]: .mlmodelc
+            - text: as a diagnostic, then remeasure peak footprint.
+        - heading "Compute plan reports no device or no cost" [level=3] [ref=f8e662]
+        - list [ref=f8e663]:
+          - listitem [ref=f8e664]: Confirm the model is an ML Program and the walked operation belongs to the loaded plan's structure.
+          - listitem [ref=f8e665]:
+            - text: Keep optional handling;
+            - code [ref=f8e666]: nil
+            - text: means the value could not be determined.
+          - listitem [ref=f8e667]: Record operation name, model signature, compute units, OS, and device class without a unique identifier.
+          - listitem [ref=f8e668]: Do not replace missing plan data with guessed placement.
+        - heading "12. Ingest Decision Log" [level=2] [ref=f8e669]
+        - heading "Corrected against current Core ML documentation" [level=3] [ref=f8e670]
+        - table [ref=f8e671]:
+          - rowgroup [ref=f8e672]:
+            - row [ref=f8e673]:
+              - columnheader "Raw-report framing" [ref=f8e674]
+              - columnheader "Correction" [ref=f8e675]
+              - columnheader "Evidence" [ref=f8e676]
+          - rowgroup [ref=f8e677]:
+            - row [ref=f8e678]:
+              - cell [ref=f8e679]:
+                - text: On-device
+                - code [ref=f8e680]: MLComputePlan
+                - text: is execution ground truth.
+              - cell [ref=f8e681]:
+                - code [ref=f8e682]: deviceUsage(for:)
+                - text: reports anticipated usage and returns optional
+                - code [ref=f8e683]: DeviceUsage
+                - text: ; runtime execution needs separate evidence.
+              - cell "Apple Core ML via Context7" [ref=f8e684]
+            - row [ref=f8e685]:
+              - cell [ref=f8e686]:
+                - code [ref=f8e687]: const
+                - text: operations return
+                - code [ref=f8e688]: nil
+                - text: for usage and cost as an API rule.
+              - cell [ref=f8e689]:
+                - text: The APIs are optional;
+                - code [ref=f8e690]: deviceUsage
+                - text: is
+                - code [ref=f8e691]: nil
+                - text: when usage cannot be determined. Const-nil is retained as a firsthand observation, not a universal contract.
+              - cell "Apple Core ML via Context7; the reference implementation harness" [ref=f8e692]
+            - row [ref=f8e693]:
+              - cell "Compute-plan loading was shown without an exact contract." [ref=f8e694]
+              - cell [ref=f8e695]:
+                - text: The exact API is
+                - code [ref=f8e696]: static func load(contentsOf:configuration:) async throws -> MLComputePlan
+                - text: .
+              - cell "Apple Core ML via Context7" [ref=f8e697]
+            - row [ref=f8e698]:
+              - cell "Cost was treated as available on every operation." [ref=f8e699]
+              - cell [ref=f8e700]:
+                - code [ref=f8e701]: estimatedCost(of:)
+                - text: exists but returns
+                - code [ref=f8e702]: MLComputePlan.Cost?
+                - text: ;
+                - code [ref=f8e703]: weight
+                - text: is a
+                - code [ref=f8e704]: 0.0...1.0
+                - text: estimated workload fraction.
+              - cell "Apple Core ML via Context7" [ref=f8e705]
+        - heading "Corrected against current command help" [level=3] [ref=f8e706]
+        - table [ref=f8e707]:
+          - rowgroup [ref=f8e708]:
+            - row [ref=f8e709]:
+              - columnheader "Raw-report framing" [ref=f8e710]
+              - columnheader "Correction" [ref=f8e711]
+              - columnheader "Evidence" [ref=f8e712]
+          - rowgroup [ref=f8e713]:
+            - row [ref=f8e714]:
+              - cell [ref=f8e715]:
+                - text: Environment variables must use
+                - code [ref=f8e716]: "--environment-variables"
+                - text: .
+              - cell [ref=f8e717]:
+                - text: Current
+                - code [ref=f8e718]: process launch
+                - text: also accepts caller variables prefixed with
+                - code [ref=f8e719]: DEVICECTL_CHILD_
+                - text: ; explicit JSON overrides them.
+              - cell [ref=f8e720]:
+                - text: Xcode 26.6
+                - code [ref=f8e721]: devicectl
+                - text: 518.33 help
+            - row [ref=f8e722]:
+              - cell [ref=f8e723]:
+                - code [ref=f8e724]: log stream --device-udid
+                - text: streams a physical device.
+              - cell [ref=f8e725]:
+                - text: The verified
+                - code [ref=f8e726]: /usr/bin/log stream
+                - text: has no device-selector option;
+                - code [ref=f8e727]: /usr/bin/log collect
+                - text: does.
+              - cell "macOS 26.6 command help" [ref=f8e728]
+            - row [ref=f8e729]:
+              - cell [ref=f8e730]:
+                - text: Export method
+                - code [ref=f8e731]: development
+                - text: is current.
+              - cell [ref=f8e732]:
+                - text: Xcode 26.6 deprecates it in favor of
+                - code [ref=f8e733]: debugging
+                - text: .
+              - cell [ref=f8e734]:
+                - code [ref=f8e735]: xcodebuild -help
+            - row [ref=f8e736]:
+              - cell [ref=f8e737]:
+                - code [ref=f8e738]: "--terminate-existing"
+                - text: should always be used in CI.
+              - cell "It is appropriate only when terminating prior work is part of the run contract." [ref=f8e739]
+              - cell "Current option semantics" [ref=f8e740]
+        - heading "Firsthand the reference implementation annotations retained" [level=3] [ref=f8e741]
+        - list [ref=f8e742]:
+          - listitem [ref=f8e743]:
+            - text: Missing destination parents can make file-to-file
+            - code [ref=f8e744]: copy to
+            - text: silently produce nothing; directory copy works.
+          - listitem [ref=f8e745]:
+            - code [ref=f8e746]: "--remove-existing-content true"
+            - text: emptied the entire app data container, contradicting the narrower current help wording.
+          - listitem [ref=f8e747]: Tokens after the process-launch bundle identifier are app arguments.
+          - listitem [ref=f8e748]:
+            - text: Swift
+            - code [ref=f8e749]: print
+            - text: was silent under
+            - code [ref=f8e750]: "--console"
+            - text: ; stderr and a
+            - code [ref=f8e751]: Documents
+            - text: result file worked.
+          - listitem [ref=f8e752]: With no Xcode account signed in, a manually managed development profile authorizing the target worked and an Xcode-managed profile did not.
+          - listitem [ref=f8e753]:
+            - code [ref=f8e754]: systemCrashLogs
+            - text: is available for crash retrieval.
+        - heading "Preserved as community or unverified" [level=3] [ref=f8e755]
+        - list [ref=f8e756]:
+          - listitem [ref=f8e757]: Multi-gigabyte transfers lack resume and must restart after interruption.
+          - listitem [ref=f8e758]:
+            - code [ref=f8e759]: devicectl
+            - text: launch changes launch-watchdog behavior.
+          - listitem [ref=f8e760]: Foreground activation plus idle-timer suppression is sufficient for a long unattended run.
+          - listitem [ref=f8e761]: A roughly 6 GB per-process ceiling applies to modern iPhones.
+          - listitem [ref=f8e762]: JIT compilation drives transient jetsam failures, while AOT compilation and file-backed mapping reduce the peak.
+          - listitem [ref=f8e763]: Increased-memory-limit entitlements add little headroom on iPhone and more on iPad.
+          - listitem [ref=f8e764]: Core ML, E5 runtime, and ANE compiler services can crash independently of the app.
+          - listitem [ref=f8e765]:
+            - text: Profile filename conventions under
+            - code [ref=f8e766]: ~/Library/MobileDevice/Provisioning Profiles/
+            - text: .
+          - listitem [ref=f8e767]:
+            - text: Inside-out
+            - code [ref=f8e768]: codesign
+            - text: re-signing and fastlane-based credential synchronization.
+        - paragraph [ref=f8e769]: Each remains concrete enough to test. None is promoted to a target-device fact without a bounded receipt.
+        - heading "Removed with evidence" [level=3] [ref=f8e770]
+        - list [ref=f8e771]:
+          - listitem [ref=f8e772]:
+            - text: The executable
+            - code [ref=f8e773]: log stream --device-udid ...
+            - text: recipe was removed because the verified host rejects that option. The underlying need for live device logging is retained with supported and explicitly unverified alternatives.
+          - listitem [ref=f8e774]: No other substantive mechanism, workaround, deployment route, or failure mode was removed.
+        - heading "Claim-Coverage Audit" [level=3] [ref=f8e775]
+        - table [ref=f8e776]:
+          - rowgroup [ref=f8e777]:
+            - row [ref=f8e778]:
+              - columnheader "Raw report section" [ref=f8e779]
+              - columnheader "Substantive items" [ref=f8e780]
+              - columnheader "Disposition" [ref=f8e781]
+          - rowgroup [ref=f8e782]:
+            - row [ref=f8e783]:
+              - cell "Executive summary" [ref=f8e784]
+              - cell "Container wipe, argv boundary, silent stdout, crash domain, long execution, memory, compute plan, signing" [ref=f8e785]
+              - cell "All kept; absolutes corrected or relabeled" [ref=f8e786]
+            - row [ref=f8e787]:
+              - cell "App-container transfer" [ref=f8e788]
+              - cell "Copy to/from, missing parents, file listing, no resume, App Groups, destructive cleanup" [ref=f8e789]
+              - cell "All kept; first three verified by command help or firsthand evidence" [ref=f8e790]
+            - row [ref=f8e791]:
+              - cell "Process launch" [ref=f8e792]
+              - cell "Argument order, environment, start-stopped, terminate-existing, process listing" [ref=f8e793]
+              - cell "All kept; environment route and unconditional termination corrected" [ref=f8e794]
+            - row [ref=f8e795]:
+              - cell "Console and unified logging" [ref=f8e796]
+              - cell "stderr, result files, OSLog privacy, stream and collect" [ref=f8e797]
+              - cell [ref=f8e798]:
+                - text: Kept; unsupported remote
+                - code [ref=f8e799]: log stream
+                - text: command removed with evidence
+            - row [ref=f8e800]:
+              - cell "Crash retrieval" [ref=f8e801]
+              - cell [ref=f8e802]:
+                - code [ref=f8e803]: systemCrashLogs
+                - text: ","
+                - code [ref=f8e804]: .ips
+                - text: ", daemon failures, correlation"
+              - cell "All kept; schema and daemon names labeled version-dependent" [ref=f8e805]
+            - row [ref=f8e806]:
+              - cell "Unattended execution" [ref=f8e807]
+              - cell "Foreground activation, idle timer, suspension, background modes" [ref=f8e808]
+              - cell "All kept as platform or community guidance" [ref=f8e809]
+            - row [ref=f8e810]:
+              - cell "Memory and jetsam" [ref=f8e811]
+              - cell "Approximate ceiling, resource termination, JIT spike, AOT and paging, entitlement" [ref=f8e812]
+              - cell "All kept and relabeled unverified" [ref=f8e813]
+            - row [ref=f8e814]:
+              - cell [ref=f8e815]:
+                - code [ref=f8e816]: MLComputePlan
+              - cell "Load, device usage, cost, const nil, on-device versus off-device" [ref=f8e817]
+              - cell "All kept; API optionality and proof strength corrected" [ref=f8e818]
+            - row [ref=f8e819]:
+              - cell "Signing" [ref=f8e820]
+              - cell "No Accounts, manual profile, archive/export, profile installation, re-signing, fastlane, unrelated tools" [ref=f8e821]
+              - cell "All kept; local requirement separated from universal claims" [ref=f8e822]
+            - row [ref=f8e823]:
+              - cell "Failure matrix" [ref=f8e824]
+              - cell "Silent copy, wipe, argv, signing, jetsam, blank console" [ref=f8e825]
+              - cell "All retained in the debugging playbook" [ref=f8e826]
+        - heading "Works Cited" [level=2] [ref=f8e827]
+        - list [ref=f8e828]:
+          - listitem [ref=f8e829]:
+            - link [ref=f8e830] [cursor=pointer]:
+              - /url: https://developer.apple.com/documentation/coreml/mlcomputeplan-1w21n/load%28contentsof%3Aconfiguration%3A%29
+              - text: "Apple Core ML:"
+              - code [ref=f8e831]: MLComputePlan.load(contentsOf:configuration:)
+            - text: — exact asynchronous Swift load signature.
+          - listitem [ref=f8e832]:
+            - link [ref=f8e833] [cursor=pointer]:
+              - /url: https://developer.apple.com/documentation/coreml/mlcomputeplan-1w21n/deviceusage%28for%3A%29-9em1q
+              - text: "Apple Core ML:"
+              - code [ref=f8e834]: deviceUsage(for:)
+            - text: — optional anticipated device usage for an ML Program operation.
+          - listitem [ref=f8e835]:
+            - link [ref=f8e836] [cursor=pointer]:
+              - /url: https://developer.apple.com/documentation/coreml/mlcomputeplan-1w21n/estimatedcost%28of%3A%29
+              - text: "Apple Core ML:"
+              - code [ref=f8e837]: estimatedCost(of:)
+            - text: — optional operation cost.
+          - listitem [ref=f8e838]:
+            - link [ref=f8e839] [cursor=pointer]:
+              - /url: https://developer.apple.com/documentation/coreml/mlcomputeplan-1w21n/cost/weight
+              - text: "Apple Core ML:"
+              - code [ref=f8e840]: Cost.weight
+            - text: — estimated workload fraction from zero to one.
+          - listitem [ref=f8e841]:
+            - text: "Current Xcode 26.6 command help:"
+            - code [ref=f8e842]: xcrun devicectl help device copy to
+            - text: ","
+            - code [ref=f8e843]: copy from
+            - text: ","
+            - code [ref=f8e844]: info files
+            - text: ","
+            - code [ref=f8e845]: info processes
+            - text: ","
+            - code [ref=f8e846]: process launch
+            - text: ", and"
+            - code [ref=f8e847]: install app
+            - text: .
+          - listitem [ref=f8e848]:
+            - text: "Current macOS command help:"
+            - code [ref=f8e849]: /usr/bin/log stream --help
+            - text: and
+            - code [ref=f8e850]: /usr/bin/log collect --help
+            - text: .
+          - listitem [ref=f8e851]:
+            - text: "Current Xcode export help:"
+            - code [ref=f8e852]: xcodebuild -help
+            - text: .
+      - navigation "Report navigation" [ref=f8e853]:
+        - link "← All reports" [ref=f8e854] [cursor=pointer]:
+          - /url: /examples
+        - link "Markdown source" [ref=f8e855] [cursor=pointer]:
+          - /url: /reports/ios-device-benchmarking-devicectl.md
+    - contentinfo [ref=f8e856]:
+      - link "index.md" [ref=f8e857] [cursor=pointer]:
+        - /url: /index.md
+      - text: ·
+      - link "library.md" [ref=f8e858] [cursor=pointer]:
+        - /url: /examples.md
+      - text: ·
+      - link "install.md" [ref=f8e859] [cursor=pointer]:
+        - /url: /install.md
+      - text: ·
+      - link "llms.txt" [ref=f8e860] [cursor=pointer]:
+        - /url: /llms.txt
+      - text: MissingManual · missingmanual.ai
+  - status [ref=f8e861]
