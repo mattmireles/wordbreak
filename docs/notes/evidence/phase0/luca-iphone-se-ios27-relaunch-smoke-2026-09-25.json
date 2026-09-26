@@ -1,0 +1,85 @@
+{
+  "buildNumber" : "1",
+  "bundleIdentifier" : "com.mattmireles.wordbreak.capture-lab",
+  "coverage" : {
+    "appAudio" : 1,
+    "frontCamera" : 1,
+    "microphone" : 1,
+    "screen" : 1
+  },
+  "device" : "iPhone12,8",
+  "droppedFrameRatio" : {
+    "frontCamera" : 0,
+    "screen" : 0
+  },
+  "durationSeconds" : 10.697272062301636,
+  "endedAt" : "2026-09-26T02:47:49Z",
+  "maximumGapMs" : {
+    "appAudio" : 23.220375000164495,
+    "frontCamera" : 41.65608400012388,
+    "microphone" : 22.99319727899274,
+    "screen" : 67.28266699997221
+  },
+  "maximumPairwiseDriftMs" : 98.69787499992988,
+  "passesCaptureErrors" : true,
+  "passesContinuity" : true,
+  "passesCoverage" : true,
+  "passesDrift" : true,
+  "passesDroppedFrames" : true,
+  "schemaVersion" : 3,
+  "snapshot" : {
+    "appAudio" : {
+      "droppedBuffers" : 0,
+      "firstHostNs" : 1701338967125,
+      "firstPTS" : 1701.234822291,
+      "invalidSamples" : 0,
+      "lastHostNs" : 1712044746750,
+      "lastPTS" : 1712.054652166,
+      "maximumGapMs" : 23.220375000164495,
+      "samples" : 467
+    },
+    "errors" : [
+
+    ],
+    "events" : [
+      "2026-09-26T02:47:36Z thermal state: 1",
+      "2026-09-26T02:47:38Z thermal state at start: 1",
+      "2026-09-26T02:47:38Z audio route at start: <AVAudioSessionRouteDescription: 0x1035c3110, \ninputs = (\n    \"<AVAudioSessionPortDescription: 0x1035c3290, type = MicrophoneBuiltIn; name = iPhone Microphone; UID = Built-In Microphone; selectedDataSource = Bottom>\"\n); \noutputs = (\n    \"<AVAudioSessionPortDescription: 0x1035c3310, type = Receiver; name = Receiver; UID = Built-In Receiver; selectedDataSource = (null)>\"\n)>",
+      "2026-09-26T02:47:38Z capture started",
+      "2026-09-26T02:47:49Z audio route changed: [AnyHashable(\"AVAudioSessionRouteChangeReasonKey\"): 3, AnyHashable(\"AVAudioSessionRouteChangePreviousRouteKey\"): <AVAudioSessionRouteDescription: 0x1035c32c0, \ninputs = (\n    \"<AVAudioSessionPortDescription: 0x1035c3310, type = MicrophoneBuiltIn; name = iPhone Microphone; UID = Built-In Microphone; selectedDataSource = Bottom>\"\n); \noutputs = (\n    \"<AVAudioSessionPortDescription: 0x1035c34c0, type = Receiver; name = Receiver; UID = Built-In Receiver; selectedDataSource = (null)>\"\n)>]",
+      "2026-09-26T02:47:49Z capture stopped"
+    ],
+    "frontCamera" : {
+      "droppedBuffers" : 0,
+      "firstHostNs" : 1693253897208,
+      "firstPTS" : 1693.194093833,
+      "invalidSamples" : 0,
+      "lastHostNs" : 1712518486291,
+      "lastPTS" : 1712.474035291,
+      "maximumGapMs" : 41.65608400012388,
+      "samples" : 552
+    },
+    "microphone" : {
+      "droppedBuffers" : 0,
+      "firstHostNs" : 1701360029625,
+      "firstPTS" : 1701.2637188208616,
+      "invalidSamples" : 0,
+      "lastHostNs" : 1712069706458,
+      "lastPTS" : 1712.07052154195,
+      "maximumGapMs" : 22.99319727899274,
+      "samples" : 471
+    },
+    "screen" : {
+      "droppedBuffers" : 0,
+      "firstHostNs" : 1701315044250,
+      "firstPTS" : 1701.264864791,
+      "invalidSamples" : 0,
+      "lastHostNs" : 1712067867250,
+      "lastPTS" : 1712.063025,
+      "maximumGapMs" : 67.28266699997221,
+      "samples" : 332
+    }
+  },
+  "startedAt" : "2026-09-26T02:47:38Z",
+  "systemVersion" : "27.0"
+}

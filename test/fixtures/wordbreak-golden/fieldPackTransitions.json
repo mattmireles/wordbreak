@@ -1,0 +1,88 @@
+{
+  "label": "unknown field pack is losslessly quarantined",
+  "sourceSha256": "44dadae13dd80203c60babde8c27af1fd201115b71ebc9b1f6eed98132592b78",
+  "result": {
+    "ok": true,
+    "state": {
+      "docs": {},
+      "cleared": {},
+      "log": [],
+      "cfg": {
+        "budgetMin": 10,
+        "v": 3
+      },
+      "session": null,
+      "sessions": [],
+      "reporting": {
+        "version": 1,
+        "sourceRevision": 1,
+        "days": {
+          "2026-09-22": {
+            "day": "2026-09-22",
+            "revision": 1,
+            "activeMs": 0,
+            "practiceEvents": 0,
+            "clean": 0,
+            "liveAim": 0,
+            "reviewEvents": 0,
+            "reviewClean": 0,
+            "reviewLiveAim": 0,
+            "sessionsStarted": 0,
+            "sessionsCompleted": 0,
+            "sessionsAbandoned": 0,
+            "bonusStarted": 0,
+            "bonusCompleted": 0,
+            "modulesCleared": [],
+            "codes": {}
+          }
+        },
+        "acked": {},
+        "gaps": [],
+        "deadLetters": [],
+        "legacy": null
+      },
+      "assessment": {
+        "version": 2,
+        "assignment": null,
+        "runs": [],
+        "nonbonusCompletedTotal": 0
+      },
+      "sched": {},
+      "codes": {},
+      "codesV": 1,
+      "quarantine": {
+        "fieldPacks": [
+          {
+            "version": 99,
+            "unitIds": [
+              "10.1"
+            ],
+            "quarantinedAt": 1790118000000,
+            "docs": {
+              "10.1": true
+            },
+            "cleared": {
+              "10.1": true
+            },
+            "sched": {
+              "10.1|future": {
+                "unit": "10.1",
+                "word": "future",
+                "due": 1
+              }
+            },
+            "session": null,
+            "reportingModules": {}
+          }
+        ]
+      }
+    },
+    "quarantined": true
+  },
+  "enabledPackIds": [
+    "9.1",
+    "9.2",
+    "9.3",
+    "9.4"
+  ]
+}

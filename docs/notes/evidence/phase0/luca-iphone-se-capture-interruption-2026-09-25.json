@@ -1,0 +1,95 @@
+{
+  "buildNumber": "1",
+  "bundleIdentifier": "com.mattmireles.wordbreak.capture-lab",
+  "coverage": {
+    "appAudio": 0.9999917387000252,
+    "frontCamera": 1,
+    "microphone": 0.9999975219163065,
+    "screen": 0.9989228197859777
+  },
+  "device": "iPhone12,8",
+  "droppedFrameRatio": {
+    "frontCamera": 0,
+    "screen": 0
+  },
+  "durationSeconds": 979.7485049962997,
+  "endedAt": "2026-09-26T01:36:47Z",
+  "maximumGapMs": {
+    "appAudio": 23709.626791999995,
+    "frontCamera": 22690.831374999958,
+    "microphone": 23696.825396825432,
+    "screen": 24084.936916000002
+  },
+  "maximumPairwiseDriftMs": 74.01938850591705,
+  "passesCaptureErrors": true,
+  "passesContinuity": false,
+  "passesCoverage": true,
+  "passesDrift": true,
+  "passesDroppedFrames": true,
+  "schemaVersion": 2,
+  "snapshot": {
+    "appAudio": {
+      "droppedBuffers": 0,
+      "firstHostNs": 198915965333,
+      "firstPTS": 198.865275625,
+      "invalidSamples": 0,
+      "lastHostNs": 1178586335666,
+      "lastPTS": 1178.605686625,
+      "maximumGapMs": 23709.626791999995,
+      "samples": 39684
+    },
+    "errors": [],
+    "events": [
+      "2026-09-26T01:20:27Z thermal state at start: 1",
+      "2026-09-26T01:20:27Z audio route at start: <AVAudioSessionRouteDescription: 0x1261c2c10, \ninputs = (\n    \"<AVAudioSessionPortDescription: 0x1261c2c80, type = MicrophoneBuiltIn; name = iPhone Microphone; UID = Built-In Microphone; selectedDataSource = Bottom>\"\n); \noutputs = (\n    \"<AVAudioSessionPortDescription: 0x1261c2d60, type = Receiver; name = Receiver; UID = Built-In Receiver; selectedDataSource = (null)>\"\n)>",
+      "2026-09-26T01:20:27Z capture started",
+      "2026-09-26T01:21:28Z app entered background",
+      "2026-09-26T01:21:28Z audio route changed: [AnyHashable(\"AVAudioSessionRouteChangePreviousRouteKey\"): <AVAudioSessionRouteDescription: 0x1261c0d90, \ninputs = (\n    \"<AVAudioSessionPortDescription: 0x1261c0dc0, type = MicrophoneBuiltIn; name = iPhone Microphone; UID = Built-In Microphone; selectedDataSource = Bottom>\"\n); \noutputs = (\n    \"<AVAudioSessionPortDescription: 0x1261c2e70, type = Receiver; name = Receiver; UID = Built-In Receiver; selectedDataSource = (null)>\"\n)>, AnyHashable(\"AVAudioSessionRouteChangeReasonKey\"): 3]",
+      "2026-09-26T01:21:43Z app entered foreground",
+      "2026-09-26T01:21:44Z audio route changed: [AnyHashable(\"AVAudioSessionRouteChangePreviousRouteKey\"): <AVAudioSessionRouteDescription: 0x1261c0d90, \ninputs = (\n); \noutputs = (\n    \"<AVAudioSessionPortDescription: 0x1261c2f30, type = Speaker; name = Speaker; UID = Speaker; selectedDataSource = (null)>\"\n)>, AnyHashable(\"AVAudioSessionRouteChangeReasonKey\"): 3]",
+      "2026-09-26T01:21:44Z app entered background",
+      "2026-09-26T01:21:44Z audio route changed: [AnyHashable(\"AVAudioSessionRouteChangePreviousRouteKey\"): <AVAudioSessionRouteDescription: 0x1261c3000, \ninputs = (\n    \"<AVAudioSessionPortDescription: 0x1261c27d0, type = MicrophoneBuiltIn; name = iPhone Microphone; UID = Built-In Microphone; selectedDataSource = Bottom>\"\n); \noutputs = (\n    \"<AVAudioSessionPortDescription: 0x1261c2fc0, type = Receiver; name = Receiver; UID = Built-In Receiver; selectedDataSource = (null)>\"\n)>, AnyHashable(\"AVAudioSessionRouteChangeReasonKey\"): 3]",
+      "2026-09-26T01:22:02Z app entered foreground",
+      "2026-09-26T01:22:02Z audio route changed: [AnyHashable(\"AVAudioSessionRouteChangeReasonKey\"): 3, AnyHashable(\"AVAudioSessionRouteChangePreviousRouteKey\"): <AVAudioSessionRouteDescription: 0x1261c2f80, \ninputs = (\n); \noutputs = (\n    \"<AVAudioSessionPortDescription: 0x1261c2fd0, type = Speaker; name = Speaker; UID = Speaker; selectedDataSource = (null)>\"\n)>]",
+      "2026-09-26T01:23:02Z thermal state: 0",
+      "2026-09-26T01:25:06Z app entered background",
+      "2026-09-26T01:25:07Z audio route changed: [AnyHashable(\"AVAudioSessionRouteChangePreviousRouteKey\"): <AVAudioSessionRouteDescription: 0x1261c30d0, \ninputs = (\n    \"<AVAudioSessionPortDescription: 0x1261c2ca0, type = MicrophoneBuiltIn; name = iPhone Microphone; UID = Built-In Microphone; selectedDataSource = Bottom>\"\n); \noutputs = (\n    \"<AVAudioSessionPortDescription: 0x1261c3160, type = Receiver; name = Receiver; UID = Built-In Receiver; selectedDataSource = (null)>\"\n)>, AnyHashable(\"AVAudioSessionRouteChangeReasonKey\"): 3]",
+      "2026-09-26T01:25:29Z app entered foreground",
+      "2026-09-26T01:25:30Z audio route changed: [AnyHashable(\"AVAudioSessionRouteChangeReasonKey\"): 3, AnyHashable(\"AVAudioSessionRouteChangePreviousRouteKey\"): <AVAudioSessionRouteDescription: 0x1261c3110, \ninputs = (\n); \noutputs = (\n    \"<AVAudioSessionPortDescription: 0x1261c31c0, type = Speaker; name = Speaker; UID = Speaker; selectedDataSource = (null)>\"\n)>]",
+      "2026-09-26T01:36:47Z audio route changed: [AnyHashable(\"AVAudioSessionRouteChangePreviousRouteKey\"): <AVAudioSessionRouteDescription: 0x1261c30f0, \ninputs = (\n    \"<AVAudioSessionPortDescription: 0x1261c31a0, type = MicrophoneBuiltIn; name = iPhone Microphone; UID = Built-In Microphone; selectedDataSource = Bottom>\"\n); \noutputs = (\n    \"<AVAudioSessionPortDescription: 0x1261c30e0, type = Receiver; name = Receiver; UID = Built-In Receiver; selectedDataSource = (null)>\"\n)>, AnyHashable(\"AVAudioSessionRouteChangeReasonKey\"): 3]",
+      "2026-09-26T01:36:47Z capture stopped"
+    ],
+    "frontCamera": {
+      "droppedBuffers": 0,
+      "firstHostNs": 176687994208,
+      "firstPTS": 176.578965791,
+      "invalidSamples": 0,
+      "lastHostNs": 1178874954750,
+      "lastPTS": 1178.830984708,
+      "maximumGapMs": 22690.831374999958,
+      "samples": 28355
+    },
+    "microphone": {
+      "droppedBuffers": 0,
+      "firstHostNs": 198915984833,
+      "firstPTS": 198.8348299319728,
+      "invalidSamples": 0,
+      "lastHostNs": 1178585989416,
+      "lastPTS": 1178.5809070294786,
+      "maximumGapMs": 23696.825396825432,
+      "samples": 40073
+    },
+    "screen": {
+      "droppedBuffers": 0,
+      "firstHostNs": 198912593750,
+      "firstPTS": 198.903390958,
+      "invalidSamples": 0,
+      "lastHostNs": 1177603679916,
+      "lastPTS": 1177.59653025,
+      "maximumGapMs": 24084.936916000002,
+      "samples": 2073
+    }
+  },
+  "startedAt": "2026-09-26T01:20:27Z",
+  "systemVersion": "26.7"
+}

@@ -1,0 +1,219 @@
+name: Wordbreak
+options:
+  bundleIdPrefix: com.mattmireles
+  deploymentTarget:
+    iOS: "26.0"
+  groupSortPosition: top
+settings:
+  base:
+    DEVELOPMENT_TEAM: 6ETYBAJKY8
+    CODE_SIGN_STYLE: Automatic
+    SWIFT_VERSION: "5.0"
+    IPHONEOS_DEPLOYMENT_TARGET: "26.0"
+    TARGETED_DEVICE_FAMILY: "1"
+    ENABLE_USER_SCRIPT_SANDBOXING: YES
+targets:
+  Wordbreak:
+    type: application
+    platform: iOS
+    sources:
+      - path: Wordbreak
+      - path: WordbreakCaptureSpike
+    postBuildScripts:
+      - name: Bundle shared Wordbreak engine
+        script: |
+          /bin/cp "${SRCROOT}/../src/game/wordbreak-core.js" "${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/wordbreak-core.js"
+          /bin/cp "${SRCROOT}/../src/game/wordbreak-content.js" "${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/wordbreak-content.js"
+          /bin/cp "${SRCROOT}/../src/game/mathbreak-core.js" "${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/mathbreak-core.js"
+          /bin/cp "${SRCROOT}/../src/game/mathbreak-content.json" "${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/mathbreak-content.json"
+          /bin/cp "${SRCROOT}/../experiment/config/experiment.v1.json" "${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/experiment.v1.json"
+        inputFiles:
+          - $(SRCROOT)/../src/game/wordbreak-core.js
+          - $(SRCROOT)/../src/game/wordbreak-content.js
+          - $(SRCROOT)/../src/game/mathbreak-core.js
+          - $(SRCROOT)/../src/game/mathbreak-content.json
+          - $(SRCROOT)/../experiment/config/experiment.v1.json
+        outputFiles:
+          - $(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/wordbreak-core.js
+          - $(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/wordbreak-content.js
+          - $(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/mathbreak-core.js
+          - $(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/mathbreak-content.json
+          - $(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/experiment.v1.json
+    entitlements:
+      path: Wordbreak/Wordbreak.entitlements
+      properties:
+        com.apple.developer.family-controls: true
+        com.apple.security.application-groups:
+          - group.com.mattmireles.wordbreak
+    info:
+      path: Wordbreak/Info.plist
+      properties:
+        CFBundleDisplayName: Wordbreak
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+        NSCameraUsageDescription: Wordbreak records your expression during an explicitly started practice session so the parent can improve the experience.
+        NSMicrophoneUsageDescription: Wordbreak records speech during an explicitly started practice session so the parent can understand where instructions are unclear.
+        NSPhotoLibraryAddUsageDescription: Wordbreak can save a parent-requested diagnostic recording to the photo library for review.
+        WordbreakGitSHA: e8f1bfca80a607def322f0c88de7cf330ce0c457-dirty
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.mattmireles.wordbreak
+        PRODUCT_NAME: Wordbreak
+        CURRENT_PROJECT_VERSION: 1
+        MARKETING_VERSION: 0.1.0
+        GENERATE_INFOPLIST_FILE: NO
+    dependencies:
+      - target: WordbreakScreenTimeMonitor
+        embed: true
+  WordbreakCaptureLab:
+    type: application
+    platform: iOS
+    sources:
+      - path: Wordbreak
+        excludes:
+          - Info.plist
+          - Wordbreak.entitlements
+      - path: WordbreakCaptureSpike
+    postBuildScripts:
+      - name: Bundle shared Wordbreak engine
+        script: |
+          /bin/cp "${SRCROOT}/../src/game/wordbreak-core.js" "${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/wordbreak-core.js"
+          /bin/cp "${SRCROOT}/../src/game/wordbreak-content.js" "${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/wordbreak-content.js"
+          /bin/cp "${SRCROOT}/../src/game/mathbreak-core.js" "${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/mathbreak-core.js"
+          /bin/cp "${SRCROOT}/../src/game/mathbreak-content.json" "${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/mathbreak-content.json"
+          /bin/cp "${SRCROOT}/../experiment/config/experiment.v1.json" "${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/experiment.v1.json"
+        inputFiles:
+          - $(SRCROOT)/../src/game/wordbreak-core.js
+          - $(SRCROOT)/../src/game/wordbreak-content.js
+          - $(SRCROOT)/../src/game/mathbreak-core.js
+          - $(SRCROOT)/../src/game/mathbreak-content.json
+          - $(SRCROOT)/../experiment/config/experiment.v1.json
+        outputFiles:
+          - $(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/wordbreak-core.js
+          - $(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/wordbreak-content.js
+          - $(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/mathbreak-core.js
+          - $(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/mathbreak-content.json
+          - $(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/experiment.v1.json
+    info:
+      path: WordbreakCaptureLab/Info.plist
+      properties:
+        CFBundleDisplayName: Wordbreak Lab
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+        NSCameraUsageDescription: Wordbreak Lab uses the front camera during an explicitly started capture feasibility check.
+        NSMicrophoneUsageDescription: Wordbreak Lab uses the microphone during an explicitly started capture feasibility check.
+        NSPhotoLibraryAddUsageDescription: Wordbreak Lab can save a parent-requested diagnostic recording to the photo library for review.
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.mattmireles.wordbreak.capture-lab
+        PRODUCT_NAME: WordbreakCaptureLab
+        CURRENT_PROJECT_VERSION: 1
+        MARKETING_VERSION: 0.1.0
+        GENERATE_INFOPLIST_FILE: NO
+        SWIFT_ACTIVE_COMPILATION_CONDITIONS: $(inherited) CAPTURE_LAB
+  WordbreakScreenTimeMonitor:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: WordbreakScreenTimeMonitor
+      - path: Wordbreak/ScreenTime/DailyOpportunityPolicy.swift
+    entitlements:
+      path: WordbreakScreenTimeMonitor/WordbreakScreenTimeMonitor.entitlements
+      properties:
+        com.apple.developer.family-controls: true
+        com.apple.security.application-groups:
+          - group.com.mattmireles.wordbreak
+    info:
+      path: WordbreakScreenTimeMonitor/Info.plist
+      properties:
+        CFBundleDisplayName: Wordbreak Monitor
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.deviceactivity.monitor-extension
+          NSExtensionPrincipalClass: $(PRODUCT_MODULE_NAME).WordbreakDeviceActivityMonitor
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.mattmireles.wordbreak.screentime-monitor
+        PRODUCT_NAME: WordbreakScreenTimeMonitor
+        SKIP_INSTALL: YES
+        GENERATE_INFOPLIST_FILE: NO
+  WordbreakTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: WordbreakTests
+    dependencies:
+      - target: Wordbreak
+    postBuildScripts:
+      - name: Bundle frozen parity fixtures
+        script: |
+          /usr/bin/ditto "${SRCROOT}/../test/fixtures/wordbreak-golden" "${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/wordbreak-golden"
+        inputFiles:
+          - $(SRCROOT)/../test/fixtures/wordbreak-golden
+        outputFiles:
+          - $(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/wordbreak-golden
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.mattmireles.wordbreak.tests
+        GENERATE_INFOPLIST_FILE: YES
+  WordbreakCaptureLabUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - path: WordbreakCaptureLabUITests
+    dependencies:
+      - target: WordbreakCaptureLab
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.mattmireles.wordbreak.capture-lab-ui-tests
+        GENERATE_INFOPLIST_FILE: YES
+  WordbreakUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - path: WordbreakUITests
+    dependencies:
+      - target: Wordbreak
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.mattmireles.wordbreak.ui-tests
+        GENERATE_INFOPLIST_FILE: YES
+  WordbreakCaptureLabTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: WordbreakTests
+    dependencies:
+      - target: WordbreakCaptureLab
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.mattmireles.wordbreak.capture-lab-tests
+        GENERATE_INFOPLIST_FILE: YES
+        SWIFT_ACTIVE_COMPILATION_CONDITIONS: $(inherited) CAPTURE_LAB_TESTS
+schemes:
+  Wordbreak:
+    build:
+      targets:
+        Wordbreak: all
+        WordbreakScreenTimeMonitor: all
+    run:
+      config: Debug
+    test:
+      config: Debug
+      targets:
+        - WordbreakTests
+        - WordbreakUITests
+    archive:
+      config: Release
+  WordbreakCaptureLab:
+    build:
+      targets:
+        WordbreakCaptureLab: all
+    run:
+      config: Debug
+    test:
+      config: Debug
+      targets:
+        - WordbreakCaptureLabTests
+        - WordbreakCaptureLabUITests

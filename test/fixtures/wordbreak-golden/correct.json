@@ -1,0 +1,271 @@
+{
+  "label": "correct attempt with live aim",
+  "sourceSha256": "44dadae13dd80203c60babde8c27af1fd201115b71ebc9b1f6eed98132592b78",
+  "clock": {
+    "nowMs": 1790118000000,
+    "timezoneOffsetMinutes": 420
+  },
+  "screen": {
+    "screen": "run",
+    "openStage": null,
+    "unit": {
+      "id": "1.1",
+      "st": 1,
+      "err": "E7",
+      "nm": "parts.intro",
+      "ti": "Words are built of parts",
+      "ds": "the reframe everything else stands on",
+      "docs": [
+        {
+          "s": "01 / INTRO",
+          "t": "the oldest fossils",
+          "b": "<p><span class='k'>house · water · friend · would</span> — the oldest, most-used English words are Anglo-Saxon fossils. and every bigger word? <b>built from parts like these.</b></p>"
+        },
+        {
+          "s": "02 / DEVELOP",
+          "t": "sun + set",
+          "b": "<p>a word is an <span class='g'>assembly of meaning-parts</span>, not a string of sounds. sun + set = <span class='g'>sunset</span>. every letter of both survives the glue.</p>"
+        },
+        {
+          "s": "03 / THE TWIST",
+          "t": "anthill",
+          "b": "<p>ant + hill. the middle looks like the sound <span class='r'>‹th›</span> — it isn't. it's a <b>t</b> and an <b>h</b> from two different words, touching at a seam.</p><p class='cluetext'>seams can lie to your eye. read the parts, not the blur.</p>"
+        },
+        {
+          "s": "04 / YOU RUN IT",
+          "t": "cat + fish → ?",
+          "b": "",
+          "q": {
+            "p": "how many letters survive the glue?",
+            "o": [
+              "all of them",
+              "some merge"
+            ],
+            "c": 0,
+            "fb": "all. always. parts keep every letter."
+          },
+          "cue": "cat + fish — glue them, keep every letter",
+          "ty": "catfish"
+        }
+      ],
+      "words": [
+        {
+          "a": "sunset",
+          "p": {
+            "k": "build",
+            "s": "sun + set"
+          },
+          "hot": {
+            "c": "ns",
+            "m": 2
+          },
+          "fork": {
+            "k": "cond",
+            "qs": [
+              {
+                "q": "how many whole words inside?",
+                "o": [
+                  "one",
+                  "two"
+                ],
+                "c": 1,
+                "why": "sun · set — two fossils, glued."
+              }
+            ],
+            "vd": "two whole words, glued — keep every letter of both: <b>sun·set</b>.",
+            "vc": "good"
+          },
+          "err": "E7"
+        },
+        {
+          "a": "backpack",
+          "p": {
+            "k": "build",
+            "s": "back + pack"
+          },
+          "hot": {
+            "c": "kp",
+            "m": 3
+          },
+          "fork": {
+            "k": "cond",
+            "qs": [],
+            "vd": "back + pack — nothing merges at the seam: <b>back·pack</b>.",
+            "vc": "good"
+          },
+          "err": "E7"
+        },
+        {
+          "a": "catfish",
+          "p": {
+            "k": "build",
+            "s": "cat + fish"
+          },
+          "hot": {
+            "c": "tf",
+            "m": 2
+          },
+          "fork": {
+            "k": "cond",
+            "qs": [],
+            "vd": "cat + fish → <b>cat·fish</b>. two parts, all letters.",
+            "vc": "good"
+          },
+          "err": "E7"
+        },
+        {
+          "a": "anthill",
+          "p": {
+            "k": "build",
+            "s": "ant + hill"
+          },
+          "hot": {
+            "c": "th",
+            "m": 2
+          },
+          "fork": {
+            "k": "cond",
+            "qs": [
+              {
+                "q": "the ‹t·h› in the middle is…",
+                "o": [
+                  "one sound: th",
+                  "two words touching"
+                ],
+                "c": 1,
+                "why": "ant + hill — the t and h belong to different words."
+              }
+            ],
+            "vd": "the seam only looks like ‹th›: <b>ant·hill</b>.",
+            "vc": "good"
+          },
+          "err": "E7"
+        }
+      ]
+    },
+    "docsIdx": 0,
+    "ketsuPick": null,
+    "ketsuTyped": false,
+    "mode": "module",
+    "queue": [],
+    "qIdx": 0,
+    "wordIdx": 0,
+    "phase": "done",
+    "typed": "sunset",
+    "flagIdx": 2,
+    "aimGood": true,
+    "firstClean": true,
+    "walkAnyway": false,
+    "condQ": 0,
+    "condPicks": {},
+    "lineupSpent": {},
+    "witnessFound": false,
+    "memPhase": "study",
+    "patchTries": 0,
+    "reveal": false,
+    "log": [
+      {
+        "module": "parts.intro",
+        "word": "sunset",
+        "clean": true,
+        "aim": true,
+        "solve": "earned",
+        "err": "E7"
+      }
+    ],
+    "runGen": 1,
+    "tShown": 1790118000000,
+    "latency": 0,
+    "fastPass": false,
+    "fastCleared": false,
+    "session": false,
+    "docsReadOnly": false,
+    "assessmentAudioBusy": false,
+    "assessmentPagehideRecorded": false
+  },
+  "state": {
+    "docs": {
+      "1.1": true
+    },
+    "cleared": {},
+    "log": [
+      {
+        "t": 1790118000000,
+        "unit": "1.1",
+        "word": "sunset",
+        "clean": true,
+        "aim": true,
+        "solve": "earned",
+        "err": "E7",
+        "latency": 0,
+        "tries": 0,
+        "revealed": false
+      }
+    ],
+    "cfg": {
+      "budgetMin": 10,
+      "v": 3
+    },
+    "session": null,
+    "sessions": [],
+    "reporting": {
+      "version": 1,
+      "sourceRevision": 2,
+      "days": {
+        "2026-09-22": {
+          "day": "2026-09-22",
+          "revision": 2,
+          "activeMs": 0,
+          "practiceEvents": 1,
+          "clean": 1,
+          "liveAim": 1,
+          "reviewEvents": 0,
+          "reviewClean": 0,
+          "reviewLiveAim": 0,
+          "sessionsStarted": 0,
+          "sessionsCompleted": 0,
+          "sessionsAbandoned": 0,
+          "bonusStarted": 0,
+          "bonusCompleted": 0,
+          "modulesCleared": [],
+          "codes": {
+            "E7": {
+              "seen": 1,
+              "clean": 1,
+              "aim": 1
+            }
+          }
+        }
+      },
+      "acked": {},
+      "gaps": [],
+      "deadLetters": [],
+      "legacy": null
+    },
+    "assessment": {
+      "version": 2,
+      "assignment": null,
+      "runs": [],
+      "nonbonusCompletedTotal": 0
+    },
+    "sched": {
+      "1.1|sunset": {
+        "box": 1,
+        "lapses": 0,
+        "seen": 1,
+        "unit": "1.1",
+        "word": "sunset",
+        "last": 20718,
+        "due": 20721
+      }
+    },
+    "codes": {
+      "E7": {
+        "a": 1.84,
+        "b": 1,
+        "seen": 1
+      }
+    },
+    "codesV": 1
+  }
+}

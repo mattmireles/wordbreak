@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wordbreak.fun/schemas/event.v1.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "sessionId", "sequence", "hostMonotonicNs", "captureSegmentId", "segmentMediaTimeMs", "subject", "screen", "engineVersion", "contentHash", "eventType", "payload"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "sessionId": { "type": "string", "minLength": 1 },
+    "sequence": { "type": "integer", "minimum": 0 },
+    "hostMonotonicNs": { "type": "integer", "minimum": 0 },
+    "captureSegmentId": { "type": ["string", "null"] },
+    "segmentMediaTimeMs": { "type": ["number", "null"], "minimum": 0 },
+    "subject": { "enum": ["daily", "wordbreak", "mathbreak", "system", "checkIn"] },
+    "screen": { "type": "string", "minLength": 1 },
+    "engineVersion": { "type": "string", "minLength": 1 },
+    "contentHash": { "type": "string", "minLength": 1 },
+    "eventType": { "enum": ["sessionStarted", "screenPresented", "promptPresented", "touch", "inputChanged", "submission", "answerResult", "strategyOpened", "strategyConstructed", "hintOpened", "correctionStarted", "correctionCompleted", "delayedRetrieval", "engineTransition", "navigation", "paused", "resumed", "captureChanged", "subjectCompleted", "checkInSubmitted", "sessionCompleted", "sessionExited"] },
+    "payload": { "type": "object" }
+  },
+  "allOf": [
+    { "if": { "properties": { "captureSegmentId": { "type": "null" } } }, "then": { "properties": { "segmentMediaTimeMs": { "type": "null" } } }, "else": { "properties": { "segmentMediaTimeMs": { "type": "number" } } } }
+  ]
+}
+

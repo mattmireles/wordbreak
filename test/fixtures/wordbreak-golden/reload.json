@@ -1,0 +1,132 @@
+{
+  "label": "reload preserves committed correction",
+  "sourceSha256": "44dadae13dd80203c60babde8c27af1fd201115b71ebc9b1f6eed98132592b78",
+  "clock": {
+    "nowMs": 1790118000000,
+    "timezoneOffsetMinutes": 420
+  },
+  "screen": {
+    "screen": "home",
+    "openStage": null,
+    "unit": null,
+    "docsIdx": 0,
+    "ketsuPick": null,
+    "ketsuTyped": false,
+    "mode": "module",
+    "queue": [],
+    "qIdx": 0,
+    "wordIdx": 0,
+    "phase": "type",
+    "typed": "",
+    "flagIdx": null,
+    "aimGood": false,
+    "firstClean": false,
+    "walkAnyway": false,
+    "condQ": 0,
+    "condPicks": {},
+    "lineupSpent": {},
+    "witnessFound": false,
+    "memPhase": "study",
+    "patchTries": 0,
+    "reveal": false,
+    "log": [],
+    "runGen": 0,
+    "tShown": 0,
+    "latency": null,
+    "fastPass": false,
+    "fastCleared": false,
+    "session": false,
+    "docsReadOnly": false,
+    "assessmentAudioBusy": false,
+    "assessmentPagehideRecorded": false
+  },
+  "state": {
+    "docs": {
+      "1.1": true
+    },
+    "cleared": {},
+    "log": [
+      {
+        "t": 1790118000000,
+        "unit": "1.1",
+        "word": "sunset",
+        "clean": false,
+        "aim": false,
+        "solve": "handed",
+        "err": "E7",
+        "latency": 0,
+        "tries": 0,
+        "revealed": false
+      }
+    ],
+    "cfg": {
+      "budgetMin": 10,
+      "v": 3
+    },
+    "session": null,
+    "sessions": [],
+    "reporting": {
+      "version": 1,
+      "sourceRevision": 2,
+      "days": {
+        "2026-09-22": {
+          "day": "2026-09-22",
+          "revision": 2,
+          "activeMs": 0,
+          "practiceEvents": 1,
+          "clean": 0,
+          "liveAim": 0,
+          "reviewEvents": 0,
+          "reviewClean": 0,
+          "reviewLiveAim": 0,
+          "sessionsStarted": 0,
+          "sessionsCompleted": 0,
+          "sessionsAbandoned": 0,
+          "bonusStarted": 0,
+          "bonusCompleted": 0,
+          "modulesCleared": [],
+          "codes": {
+            "E7": {
+              "seen": 1,
+              "clean": 0,
+              "aim": 0
+            }
+          }
+        }
+      },
+      "acked": {},
+      "gaps": [],
+      "deadLetters": [],
+      "legacy": null
+    },
+    "assessment": {
+      "version": 2,
+      "assignment": null,
+      "runs": [],
+      "nonbonusCompletedTotal": 0
+    },
+    "sched": {
+      "1.1|sunset": {
+        "box": 0,
+        "lapses": 1,
+        "seen": 1,
+        "unit": "1.1",
+        "word": "sunset",
+        "last": 20718,
+        "due": 20719
+      }
+    },
+    "codes": {
+      "E7": {
+        "a": 1.07,
+        "b": 1.77,
+        "seen": 1
+      }
+    },
+    "codesV": 1
+  },
+  "derived": {
+    "dueCount": 0,
+    "resumableSession": false
+  }
+}

@@ -1,0 +1,100 @@
+{
+  "version": 1,
+  "title": "Mathbreak",
+  "timingPolicy": "latency_is_private_observation_never_a_score",
+  "universe": {
+    "addition": { "minimumOperand": 0, "maximumOperand": 20, "maximumResult": 20 },
+    "subtraction": { "minimumOperand": 0, "maximumOperand": 20, "minimumResult": 0 },
+    "multiplication": { "minimumFactor": 0, "maximumFactor": 12 },
+    "division": { "minimumDivisor": 1, "maximumDivisor": 12, "integerQuotientsOnly": true }
+  },
+  "strategies": [
+    { "id": "make-ten", "lanes": ["addition", "subtraction"], "title": "Make ten", "construction": "Move part of one addend to complete ten, then combine what remains." },
+    { "id": "doubles", "lanes": ["addition"], "title": "Use a double", "construction": "Build from a known double and adjust by one or two." },
+    { "id": "inverse-family", "lanes": ["subtraction", "division"], "title": "Use the fact family", "construction": "Turn the unknown operation into its known inverse equation." },
+    { "id": "anchors-2-5-10", "lanes": ["multiplication", "division"], "title": "Use a 2, 5, or 10 anchor", "construction": "Start from a familiar row and add, subtract, double, or halve a group." },
+    { "id": "double-halve", "lanes": ["multiplication", "division"], "title": "Double and halve", "construction": "Keep the product equal by doubling one factor while halving the other." },
+    { "id": "distribute", "lanes": ["multiplication"], "title": "Split a factor", "construction": "Break one factor into friendly parts and add the partial products." },
+    { "id": "commute", "lanes": ["multiplication"], "title": "Turn it around", "construction": "Reverse the factors to use the same product fact." }
+  ],
+  "broadScreener": [
+    { "id": "S-A-01", "lane": "addition", "left": 7, "operator": "+", "right": 6, "answer": 13 },
+    { "id": "S-A-02", "lane": "addition", "left": 8, "operator": "+", "right": 9, "answer": 17 },
+    { "id": "S-A-03", "lane": "addition", "left": 5, "operator": "+", "right": 7, "answer": 12 },
+    { "id": "S-A-04", "lane": "addition", "left": 9, "operator": "+", "right": 4, "answer": 13 },
+    { "id": "S-A-05", "lane": "addition", "left": 6, "operator": "+", "right": 8, "answer": 14 },
+    { "id": "S-A-06", "lane": "addition", "left": 3, "operator": "+", "right": 9, "answer": 12 },
+    { "id": "S-S-01", "lane": "subtraction", "left": 14, "operator": "-", "right": 8, "answer": 6 },
+    { "id": "S-S-02", "lane": "subtraction", "left": 17, "operator": "-", "right": 9, "answer": 8 },
+    { "id": "S-S-03", "lane": "subtraction", "left": 13, "operator": "-", "right": 6, "answer": 7 },
+    { "id": "S-S-04", "lane": "subtraction", "left": 12, "operator": "-", "right": 5, "answer": 7 },
+    { "id": "S-S-05", "lane": "subtraction", "left": 18, "operator": "-", "right": 7, "answer": 11 },
+    { "id": "S-S-06", "lane": "subtraction", "left": 15, "operator": "-", "right": 8, "answer": 7 },
+    { "id": "S-M-01", "lane": "multiplication", "left": 6, "operator": "×", "right": 7, "answer": 42 },
+    { "id": "S-M-02", "lane": "multiplication", "left": 8, "operator": "×", "right": 4, "answer": 32 },
+    { "id": "S-M-03", "lane": "multiplication", "left": 9, "operator": "×", "right": 6, "answer": 54 },
+    { "id": "S-M-04", "lane": "multiplication", "left": 7, "operator": "×", "right": 8, "answer": 56 },
+    { "id": "S-M-05", "lane": "multiplication", "left": 12, "operator": "×", "right": 4, "answer": 48 },
+    { "id": "S-M-06", "lane": "multiplication", "left": 11, "operator": "×", "right": 7, "answer": 77 },
+    { "id": "S-D-01", "lane": "division", "left": 42, "operator": "÷", "right": 6, "answer": 7 },
+    { "id": "S-D-02", "lane": "division", "left": 56, "operator": "÷", "right": 8, "answer": 7 },
+    { "id": "S-D-03", "lane": "division", "left": 54, "operator": "÷", "right": 9, "answer": 6 },
+    { "id": "S-D-04", "lane": "division", "left": 48, "operator": "÷", "right": 12, "answer": 4 },
+    { "id": "S-D-05", "lane": "division", "left": 77, "operator": "÷", "right": 11, "answer": 7 },
+    { "id": "S-D-06", "lane": "division", "left": 36, "operator": "÷", "right": 4, "answer": 9 }
+  ],
+  "laneProbes": {
+    "addition": [
+      { "id": "P-A-01", "left": 8, "operator": "+", "right": 7, "answer": 15, "factFamily": "bridge-ten", "strategyId": "make-ten" },
+      { "id": "P-A-02", "left": 9, "operator": "+", "right": 6, "answer": 15, "factFamily": "bridge-ten", "strategyId": "make-ten" },
+      { "id": "P-A-03", "left": 6, "operator": "+", "right": 7, "answer": 13, "factFamily": "near-double", "strategyId": "doubles" },
+      { "id": "P-A-04", "left": 8, "operator": "+", "right": 9, "answer": 17, "factFamily": "near-double", "strategyId": "doubles" },
+      { "id": "P-A-05", "left": 7, "operator": "+", "right": 7, "answer": 14, "factFamily": "double", "strategyId": "doubles" },
+      { "id": "P-A-06", "left": 6, "operator": "+", "right": 6, "answer": 12, "factFamily": "double", "strategyId": "doubles" }
+    ],
+    "subtraction": [
+      { "id": "P-S-01", "left": 15, "operator": "-", "right": 7, "answer": 8, "factFamily": "bridge-ten", "strategyId": "make-ten" },
+      { "id": "P-S-02", "left": 16, "operator": "-", "right": 9, "answer": 7, "factFamily": "bridge-ten", "strategyId": "make-ten" },
+      { "id": "P-S-03", "left": 13, "operator": "-", "right": 6, "answer": 7, "factFamily": "inverse-addition", "strategyId": "inverse-family" },
+      { "id": "P-S-04", "left": 17, "operator": "-", "right": 8, "answer": 9, "factFamily": "inverse-addition", "strategyId": "inverse-family" },
+      { "id": "P-S-05", "left": 12, "operator": "-", "right": 6, "answer": 6, "factFamily": "half-double", "strategyId": "inverse-family" },
+      { "id": "P-S-06", "left": 18, "operator": "-", "right": 9, "answer": 9, "factFamily": "half-double", "strategyId": "inverse-family" }
+    ],
+    "multiplication": [
+      { "id": "P-M-01", "left": 6, "operator": "×", "right": 8, "answer": 48, "factFamily": "six-eight", "strategyId": "distribute" },
+      { "id": "P-M-02", "left": 7, "operator": "×", "right": 8, "answer": 56, "factFamily": "seven-eight", "strategyId": "double-halve" },
+      { "id": "P-M-03", "left": 9, "operator": "×", "right": 7, "answer": 63, "factFamily": "nine-seven", "strategyId": "anchors-2-5-10" },
+      { "id": "P-M-04", "left": 12, "operator": "×", "right": 7, "answer": 84, "factFamily": "twelve-seven", "strategyId": "distribute" },
+      { "id": "P-M-05", "left": 4, "operator": "×", "right": 8, "answer": 32, "factFamily": "four-eight", "strategyId": "double-halve" },
+      { "id": "P-M-06", "left": 11, "operator": "×", "right": 6, "answer": 66, "factFamily": "eleven-six", "strategyId": "distribute" }
+    ],
+    "division": [
+      { "id": "P-D-01", "left": 48, "operator": "÷", "right": 6, "answer": 8, "factFamily": "six-eight", "strategyId": "inverse-family" },
+      { "id": "P-D-02", "left": 56, "operator": "÷", "right": 7, "answer": 8, "factFamily": "seven-eight", "strategyId": "inverse-family" },
+      { "id": "P-D-03", "left": 63, "operator": "÷", "right": 9, "answer": 7, "factFamily": "nine-seven", "strategyId": "inverse-family" },
+      { "id": "P-D-04", "left": 84, "operator": "÷", "right": 12, "answer": 7, "factFamily": "twelve-seven", "strategyId": "inverse-family" },
+      { "id": "P-D-05", "left": 32, "operator": "÷", "right": 4, "answer": 8, "factFamily": "four-eight", "strategyId": "double-halve" },
+      { "id": "P-D-06", "left": 66, "operator": "÷", "right": 11, "answer": 6, "factFamily": "eleven-six", "strategyId": "inverse-family" }
+    ]
+  },
+  "heldOutProbes": [
+    { "id": "H-A-01", "lane": "addition", "left": 8, "operator": "+", "right": 5, "answer": 13, "factFamily": "bridge-ten" },
+    { "id": "H-A-02", "lane": "addition", "left": 7, "operator": "+", "right": 8, "answer": 15, "factFamily": "near-double" },
+    { "id": "H-S-01", "lane": "subtraction", "left": 14, "operator": "-", "right": 6, "answer": 8, "factFamily": "bridge-ten" },
+    { "id": "H-S-02", "lane": "subtraction", "left": 15, "operator": "-", "right": 8, "answer": 7, "factFamily": "inverse-addition" },
+    { "id": "H-M-01", "lane": "multiplication", "left": 8, "operator": "×", "right": 6, "answer": 48, "factFamily": "six-eight" },
+    { "id": "H-M-02", "lane": "multiplication", "left": 8, "operator": "×", "right": 7, "answer": 56, "factFamily": "seven-eight" },
+    { "id": "H-D-01", "lane": "division", "left": 48, "operator": "÷", "right": 8, "answer": 6, "factFamily": "six-eight" },
+    { "id": "H-D-02", "lane": "division", "left": 56, "operator": "÷", "right": 8, "answer": 7, "factFamily": "seven-eight" }
+  ],
+  "duplicateIdentities": [
+    { "kind": "commutative", "a": "6×8", "b": "8×6" },
+    { "kind": "commutative", "a": "7×8", "b": "8×7" },
+    { "kind": "inverse", "a": "6×8=48", "b": "48÷6=8" },
+    { "kind": "inverse", "a": "7×8=56", "b": "56÷7=8" },
+    { "kind": "inverse", "a": "9×7=63", "b": "63÷9=7" },
+    { "kind": "inverse", "a": "12×7=84", "b": "84÷12=7" }
+  ],
+  "delayedRetrieval": { "minimumInterveningItems": 3, "preferredInterveningItems": 5, "sameSessionMaximumMinutes": 8 }
+}
+

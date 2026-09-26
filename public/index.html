@@ -167,199 +167,9 @@
 <body>
 <div id="app"></div>
 <script>
+const WORDBREAK_RUNTIME=Object.freeze({"contentHash":"912824abc0c919ea1de565e0ca8c9520102a4e1f5be2fe8de65225d52e72aa1f","contentSourceHash":"4dcfcc365cf776617810296e224f1533bf26a6624fb455c31fc0e804b3350eca","engineHash":"1be0330c15814415fc62a4a284b69c182b06d1b8d62bc9fadb3658c20605cec5"});
 "use strict";
-/* Enrollment is a URL fragment so it never reaches an HTTP log. Scrub it before
-   touching the DOM or either localStorage ledger. */
-let REPORT_ENROLL_CODE=null;
-if(location.hash.startsWith("#report-enroll=")){
-  REPORT_ENROLL_CODE=decodeURIComponent(location.hash.slice(15));
-  history.replaceState(null,"",location.pathname+location.search);
-}
-const VOWELS="aeiou";
-const AUDIO_GEN="g1";
-const AUDIO_VOICE="af_heart";
-const AUDIO_BASE="audio/";
-function normalize(text) {
-  return String(text).normalize("NFC").trim().replace(/\s+/g, " ");
-}
-// Keep this byte-for-byte identical to scripts/audio/key.mjs.
-function fnv1a32(input) {
-  const bytes = new TextEncoder().encode(input);
-  let hash = 0x811c9dc5;
-  for (const byte of bytes) {
-    hash ^= byte;
-    hash = Math.imul(hash, 0x01000193) >>> 0;
-  }
-  return hash.toString(16).padStart(8, "0");
-}
-let curAudio=null, curObjectUrl=null, saySeq=0;
-function speakFallback(text,slow){ try{ const u=new SpeechSynthesisUtterance(text);
-  u.rate=slow?0.6:0.85; speechSynthesis.cancel(); speechSynthesis.speak(u); }catch(e){} }
-function say(audioText,slow,fallbackText){
-  reportActivity();
-  const clickSeq=++saySeq;
-  const fallback=()=>speakFallback(fallbackText??audioText,slow);
-  curAudio?.pause(); speechSynthesis.cancel();
-  if(curObjectUrl){ URL.revokeObjectURL(curObjectUrl); curObjectUrl=null; }
-  const speedTag=slow?"s":"n";
-  const key=fnv1a32([AUDIO_GEN,AUDIO_VOICE,speedTag,normalize(audioText)].join("|"));
-  const url=AUDIO_BASE+key+".mp3";
-  let fallbackUsed=false, objectUrl=null;
-  const useFallback=()=>{ if(fallbackUsed||clickSeq!==saySeq)return; fallbackUsed=true; if(objectUrl){URL.revokeObjectURL(objectUrl); if(curObjectUrl===objectUrl)curObjectUrl=null;} fallback(); };
-  const play=async()=>{
-    try{
-      let src=url;
-      if(typeof caches!=="undefined"){
-        const cached=await caches.match(url);
-        if(cached){ objectUrl=URL.createObjectURL(await cached.blob()); src=objectUrl; }
-      }
-      if(clickSeq!==saySeq){ if(objectUrl)URL.revokeObjectURL(objectUrl); return; }
-      const audio=new Audio(src); curAudio=audio;
-      if(objectUrl)curObjectUrl=objectUrl;
-      audio.addEventListener("ended",()=>{ if(objectUrl){URL.revokeObjectURL(objectUrl); if(curObjectUrl===objectUrl)curObjectUrl=null;} });
-      audio.addEventListener("error",useFallback,{once:true});
-      audio.play().catch(useFallback);
-    }catch(e){ useFallback(); }
-  };
-  play();
-}
-function precacheAudio(){
-  if(typeof caches==="undefined"||typeof fetch==="undefined")return;
-  fetch(AUDIO_BASE+"manifest.json").then(r=>r.ok?r.json():Promise.reject()).then(files=>
-    caches.open(`wb-audio-${AUDIO_GEN}`).then(async cache=>{
-      await cache.addAll(files.map(file=>AUDIO_BASE+file));
-      try{ await navigator.storage?.persist?.(); }catch(e){}
-      const names=await caches.keys();
-      await Promise.all(names.filter(name=>name.startsWith("wb-audio-")&&name!==`wb-audio-${AUDIO_GEN}`).map(name=>caches.delete(name)));
-    })
-  ).catch(()=>{});
-}
-function esc(s){ return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
-function fmtPrompt(s){ return esc(s).replace(/([+→·?])/g,'<span class="sfx">$1</span>'); }
-function renderStress(stress){ return (stress||[]).map(sg=>`<span class="seg ${sg[1]?"stress":""}">${esc(sg[0])}</span>`).join(""); }
-function wireSay(){
-  const root=document.getElementById("app"); if(!root) return;
-  root.querySelectorAll("[data-say]").forEach(el=>{
-    el.addEventListener("click",()=>say(el.getAttribute("data-say")||"", el.hasAttribute("data-slow"), el.getAttribute("data-fallback")||undefined));
-  });
-}
-/* persistence */
-const ASSESSMENT_VERSION=2;
-const ASSESSMENT_ON=true;
-const FIELD_PACK_VERSION=1;
-const FIELD_PACK_ON=true;
-const FIELD_PACK_IDS=Object.freeze(["9.1","9.2","9.3","9.4"]);
-const LOG_CAP=500;
-const REPORT_KEY="wb2-report-credential", REPORT_MAX_BYTES=128*1024;
-const REPORT_ZONE="America/Los_Angeles";
-let reportSyncTimer=null, reportSyncing=false, reportSaveFailed=false;
-let reportLastActivity=performance.now(), reportLastSample=performance.now();
-let reportCredential=null;
-try{ reportCredential=JSON.parse(localStorage.getItem(REPORT_KEY)||"null"); }catch(e){}
-let P;
-try{ P=JSON.parse(localStorage.getItem("wb2"))||{}; }catch(e){ P={}; }
-P.docs=P.docs||{}; P.cleared=P.cleared||{}; P.log=P.log||[];
-/* session compiler state (plan 003) — additive; deleting these three keys resets the
-   session layer only, leaving progress/schedule/profile untouched. cfg is observer-owned
-   (budget in minutes); session is the current frozen queue+cursor or null; sessions is the
-   observer history ring (per-session scalars, never block arrays — keeps each saveP small).
-   v1 used a 30-minute default; v3 resets every pre-v3 30-minute setting because
-   the old storage has no provenance to distinguish a default from a deliberate choice. */
-const DEFAULT_SESSION_MIN=10;
-const CFG_VERSION=3;
-P.cfg=P.cfg||{budgetMin:DEFAULT_SESSION_MIN,v:CFG_VERSION};
-if((P.cfg.v||0)<CFG_VERSION){ if(P.cfg.budgetMin===30) P.cfg.budgetMin=DEFAULT_SESSION_MIN; P.cfg.v=CFG_VERSION; }
-P.session=P.session||null; P.sessions=P.sessions||[];
-P.reporting=P.reporting||{version:1,sourceRevision:0,days:{},acked:{},gaps:[],deadLetters:[],legacy:null};
-function freshAssessment(completed){return {version:ASSESSMENT_VERSION,assignment:null,runs:[],nonbonusCompletedTotal:completed||0};}
-const completedSessions=P.sessions.filter(x=>!x.bonus&&x.status==="completed").length;
-if(!P.assessment||P.assessment.version!==ASSESSMENT_VERSION||!Array.isArray(P.assessment.runs)){
-  const hadAssessment=!!P.assessment;
-  P.assessment=freshAssessment(completedSessions);
-  if(hadAssessment)P.assessment.runs.push({id:"quarantined-"+Date.now(),status:"corrupt_noncomparable",role:"unknown",
-    comparable:false,reasons:["invalid persisted assessment shape"],startedAt:Date.now(),completedAt:null,responses:[]});
-}
-P.assessment.nonbonusCompletedTotal=Math.max(Number(P.assessment.nonbonusCompletedTotal)||0,completedSessions);
-if(P.log.length>LOG_CAP) P.log=P.log.slice(-LOG_CAP);
-function reportDay(ts){
-  return new Intl.DateTimeFormat("en-CA",{timeZone:REPORT_ZONE,year:"numeric",month:"2-digit",day:"2-digit"}).format(ts??Date.now());
-}
-function reportEmpty(day){ return {day,revision:0,activeMs:0,practiceEvents:0,clean:0,liveAim:0,
-  reviewEvents:0,reviewClean:0,reviewLiveAim:0,sessionsStarted:0,sessionsCompleted:0,
-  sessionsAbandoned:0,bonusStarted:0,bonusCompleted:0,modulesCleared:[],codes:{}}; }
-function reportTouch(day){
-  const r=P.reporting, d=r.days[day]||(r.days[day]=reportEmpty(day));
-  r.sourceRevision++; d.revision++; return d;
-}
-function reportAdd(day,key,n=1){ const d=reportTouch(day); d[key]=(d[key]||0)+n; }
-function reportGap(day,reason){
-  if(!P.reporting.gaps.some(g=>g.start===day&&g.end===day)) P.reporting.gaps.push({start:day,end:day,reason});
-}
-function reportCompact(){
-  const r=P.reporting, cutoff=Date.now()-60*86400000;
-  Object.keys(r.days).sort().forEach(day=>{ if(Date.parse(day+"T12:00:00Z")<cutoff&&(r.acked[day]||0)>=r.days[day].revision) delete r.days[day]; });
-  while(new TextEncoder().encode(JSON.stringify(r)).length>REPORT_MAX_BYTES){
-    const day=Object.keys(r.days).sort().find(x=>(r.acked[x]||0)<r.days[x].revision);
-    if(!day)break; reportGap(day,"local_storage_limit"); delete r.days[day]; delete r.acked[day];
-  }
-  r.deadLetters=r.deadLetters.slice(-20);
-}
-function saveP(){
-  reportCompact();
-  try{ localStorage.setItem("wb2",JSON.stringify(P)); reportSaveFailed=false; scheduleReportSync(); return true; }
-  catch(e){
-    try{ P.log=P.log.slice(-Math.floor(LOG_CAP/2)); localStorage.setItem("wb2",JSON.stringify(P)); reportSaveFailed=false; scheduleReportSync(); return true; }
-    catch(e2){ reportSaveFailed=true; setTimeout(()=>alert("Wordbreak could not safely save this step. Free browser storage, then retry before continuing."),0); return false; }
-  }
-}
-function isPackUnit(unit){return !!unit&&(unit.meta?.packVersion===FIELD_PACK_VERSION||FIELD_PACK_IDS.includes(unit.id));}
-function isEnabledUnit(unit){return !!unit&&(!isPackUnit(unit)||FIELD_PACK_ON);}
-function validFieldPackDescriptor(value){
-  if(!value||!Number.isInteger(value.version)||!Array.isArray(value.unitIds)||value.unitIds.length<1||value.unitIds.length>32)return false;
-  const ids=value.unitIds.map(String);return new Set(ids).size===ids.length&&ids.every(id=>/^\d+\.\d+$/.test(id));
-}
-function knownFieldPackDescriptor(value){return validFieldPackDescriptor(value)&&value.version===FIELD_PACK_VERSION&&value.unitIds.length===FIELD_PACK_IDS.length&&value.unitIds.every((id,i)=>id===FIELD_PACK_IDS[i]);}
-function normalizeImportedProgress(value,now=Date.now()){
-  if(!value||typeof value!=="object"||Array.isArray(value))return {ok:false,error:"invalid_progress"};
-  const next=structuredClone(value), descriptor=next.fieldPack;
-  if(!descriptor)return {ok:true,state:next};
-  if(!validFieldPackDescriptor(descriptor))return {ok:false,error:"invalid_field_pack_descriptor"};
-  if(knownFieldPackDescriptor(descriptor))return {ok:true,state:next};
-  const quarantine=next.quarantine&&typeof next.quarantine==="object"?next.quarantine:{}, entries=Array.isArray(quarantine.fieldPacks)?quarantine.fieldPacks:[];
-  if(entries.length>=4)return {ok:false,error:"field_pack_quarantine_full"};
-  const ids=new Set(descriptor.unitIds), docs={},cleared={},sched={},reportingModules={};
-  next.docs=next.docs&&typeof next.docs==="object"?next.docs:{};next.cleared=next.cleared&&typeof next.cleared==="object"?next.cleared:{};next.sched=next.sched&&typeof next.sched==="object"?next.sched:{};
-  for(const id of ids){if(Object.hasOwn(next.docs,id)){docs[id]=next.docs[id];delete next.docs[id];}if(Object.hasOwn(next.cleared,id)){cleared[id]=next.cleared[id];delete next.cleared[id];}}
-  for(const [key,event] of Object.entries(next.sched)){if(ids.has(event?.unit)){sched[key]=event;delete next.sched[key];}}
-  let session=null;
-  const blocks=next.session&&Array.isArray(next.session.blocks)?next.session.blocks:[];
-  const touchesPack=blocks.some(block=>ids.has(block.id)||ids.has(sched[block.key]?.unit));
-  if(touchesPack){session=structuredClone(next.session);const sessionId=next.session.id;next.session.status="abandoned";next.session.endedAt=now;next.session.reason="unknown_pack_version";
-    const row=Array.isArray(next.sessions)?next.sessions.find(x=>x.id===sessionId):null;if(row){row.status="abandoned";row.endedAt=now;row.reason="unknown_pack_version";row.revision=(row.revision||1)+1;}next.session=null;}
-  if(next.reporting?.days&&typeof next.reporting.days==="object")for(const [day,bucket] of Object.entries(next.reporting.days)){
-    if(!Array.isArray(bucket.modulesCleared))continue;const removed=bucket.modulesCleared.filter(id=>ids.has(id));if(removed.length){reportingModules[day]=removed;bucket.modulesCleared=bucket.modulesCleared.filter(id=>!ids.has(id));}}
-  entries.push({version:descriptor.version,unitIds:descriptor.unitIds.slice(),quarantinedAt:now,docs,cleared,sched,session,reportingModules});
-  next.quarantine={...quarantine,fieldPacks:entries};delete next.fieldPack;
-  return {ok:true,state:next,quarantined:true};
-}
-function reportFillDays(){
-  const r=P.reporting, today=reportDay(), keys=Object.keys(r.days).sort();let changed=false;
-  let cursor=keys.length?new Date(keys[keys.length-1]+"T12:00:00Z"):new Date(today+"T12:00:00Z");
-  const end=new Date(today+"T12:00:00Z");
-  while(cursor<=end){ const day=reportDay(cursor.getTime()); if(!r.days[day]){reportTouch(day);changed=true;} cursor.setUTCDate(cursor.getUTCDate()+1); }
-  return changed;
-}
-reportFillDays();
-/* hot test */
-function isHot(w,typed,idx){
-  const h=w.hot, ch=(typed[idx]||"").toLowerCase();
-  if(!ch) return false;
-  if(h.ix) return h.ix.includes(idx);            /* explicit dead-byte cells — the tightest aim spec */
-  if(h.v){ if(!VOWELS.includes(ch)) return false; if(idx<(h.m||0)) return false;
-    if(idx===typed.length-1&&ch==="e") return false; return true; }
-  if(idx<(h.m||0)) return false;
-  return !!(h.c && h.c.includes(ch));
-}
+function createWordbreakContent(ASSESSMENT_VERSION) {
 const UNITS=[];
 /* ================= STAGE 1 — ANGLO-SAXON FOUNDATION ================= */
 UNITS.push(
@@ -1020,6 +830,987 @@ assessmentItem("B-E11-02","acquaintance","An old "," recognized him at the stati
 assessmentItem("B-E11-03","silhouette","The mountain formed a dark "," against the sky.","E11",3,"advanced",[1,2,5,8],"irregular borrowing; dictionary checked"),
 assessmentItem("B-E11-04","business","The family "," opened a second location.","E11",2,"school",[2,3],"irregular spelling; dictionary checked")]
 };
+return {UNITS, ASSESSMENT_FORMS};
+}
+
+"use strict";
+
+(function installWordbreakCore(root) {
+  const STATE_VERSION = 1;
+  const ASSESSMENT_VERSION = 2;
+  const CFG_VERSION = 3;
+  const DEFAULT_SESSION_MIN = 10;
+  const LOG_CAP = 500;
+  const DAY_MS = 86_400_000;
+  const BOX_DAYS = [1, 3, 9, 21, 45];
+  const LAMBDA = 0.92;
+  const VOWELS = "aeiou";
+  const FIELD_PACK_VERSION = 1;
+  const FIELD_PACK_IDS = ["9.1", "9.2", "9.3", "9.4"];
+  const SESSION_QUEUE_VERSION = 2;
+  const SEC_REV = 60;
+  const SEC_PANEL = 30;
+  const SEC_WORD = 90;
+  const REVIEW_BLOCKS_PER_SESSION = 4;
+  const MIN_PRODUCTION_OPPORTUNITIES = 4;
+  const ERR_WEIGHT = { E11: 6, E1: 5, E2: 5, E5: 4, E8: 4, E7: 3, E10: 3, E9: 3, E6: 2, E4: 2, E3: 1, E0: 0 };
+
+  function clone(value) {
+    return value === undefined ? undefined : JSON.parse(JSON.stringify(value));
+  }
+
+  function parseState(stateJson) {
+    if (stateJson === undefined || stateJson === null || stateJson === "") return {};
+    if (typeof stateJson !== "string") throw new TypeError("stateJson must be a JSON string");
+    const parsed = JSON.parse(stateJson);
+    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+      throw new TypeError("stateJson must encode an object");
+    }
+    return parsed;
+  }
+
+  function canonicalize(value) {
+    if (Array.isArray(value)) return value.map(canonicalize);
+    if (!value || typeof value !== "object") return value;
+    const output = {};
+    for (const key of Object.keys(value).sort()) output[key] = canonicalize(value[key]);
+    return output;
+  }
+
+  function serialize(state) {
+    return JSON.stringify(canonicalize(state));
+  }
+
+  function dayNumber(nowMs, timezoneOffsetMinutes) {
+    return Math.floor((nowMs - timezoneOffsetMinutes * 60_000) / DAY_MS);
+  }
+
+  function reportDay(nowMs, timezoneOffsetMinutes) {
+    const local = new Date(nowMs - timezoneOffsetMinutes * 60_000);
+    const year = local.getUTCFullYear();
+    const month = String(local.getUTCMonth() + 1).padStart(2, "0");
+    const day = String(local.getUTCDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  }
+
+  function freshAssessment(completed) {
+    return { version: ASSESSMENT_VERSION, assignment: null, runs: [], nonbonusCompletedTotal: completed || 0 };
+  }
+
+  function emptyReport(day) {
+    return {
+      day, revision: 0, activeMs: 0, practiceEvents: 0, clean: 0, liveAim: 0,
+      reviewEvents: 0, reviewClean: 0, reviewLiveAim: 0, sessionsStarted: 0,
+      sessionsCompleted: 0, sessionsAbandoned: 0, bonusStarted: 0,
+      bonusCompleted: 0, modulesCleared: [], codes: {},
+    };
+  }
+
+  function initialScreen() {
+    return {
+      screen: "home", openStage: null, unit: null, docsIdx: 0, ketsuPick: null,
+      ketsuTyped: false, mode: "module", queue: [], qIdx: 0, wordIdx: 0,
+      phase: "type", typed: "", flagIdx: null, aimGood: false,
+      firstClean: false, walkAnyway: false, condQ: 0, condPicks: {},
+      lineupSpent: {}, witnessFound: false, memPhase: "study", patchTries: 0,
+      reveal: false, log: [], runGen: 0, tShown: 0, latency: null,
+      fastPass: false, fastCleared: false, session: false, docsReadOnly: false,
+      assessmentAudioBusy: false, assessmentPagehideRecorded: false,
+    };
+  }
+
+  function gradeEncounter(event) {
+    if (event.clean) return event.aim ? 0.92 : 0.80;
+    let score = event.aim ? 0.30 : 0.15;
+    if (event.aim && (event.tries || 0) <= 1 && !event.revealed) score += 0.10;
+    if (event.revealed) score -= 0.07;
+    return Math.max(0, Math.min(1, score));
+  }
+
+  function updateCode(state, code, score) {
+    if (!code || code === "E0") return;
+    const profile = state.codes[code] || { a: 1, b: 1, seen: 0 };
+    profile.a = profile.a * LAMBDA + score;
+    profile.b = profile.b * LAMBDA + (1 - score);
+    profile.seen++;
+    state.codes[code] = profile;
+  }
+
+  function normalizeState(input, nowMs, timezoneOffsetMinutes) {
+    const state = clone(input);
+    state.docs ||= {};
+    state.cleared ||= {};
+    state.log = Array.isArray(state.log) ? state.log.slice(-LOG_CAP) : [];
+    state.cfg ||= { budgetMin: DEFAULT_SESSION_MIN, v: CFG_VERSION };
+    if ((state.cfg.v || 0) < CFG_VERSION) {
+      if (state.cfg.budgetMin === 30) state.cfg.budgetMin = DEFAULT_SESSION_MIN;
+      state.cfg.v = CFG_VERSION;
+    }
+    state.session ||= null;
+    state.sessions = Array.isArray(state.sessions) ? state.sessions : [];
+    state.reporting ||= { version: 1, sourceRevision: 0, days: {}, acked: {}, gaps: [], deadLetters: [], legacy: null };
+    state.reporting.days ||= {};
+    state.reporting.acked ||= {};
+    state.reporting.gaps ||= [];
+    state.reporting.deadLetters ||= [];
+    if (!("legacy" in state.reporting)) state.reporting.legacy = null;
+    const completed = state.sessions.filter((entry) => !entry.bonus && entry.status === "completed").length;
+    if (!state.assessment || state.assessment.version !== ASSESSMENT_VERSION || !Array.isArray(state.assessment.runs)) {
+      const hadAssessment = Boolean(state.assessment);
+      state.assessment = freshAssessment(completed);
+      if (hadAssessment) {
+        state.assessment.runs.push({
+          id: `quarantined-${nowMs}`, status: "corrupt_noncomparable", role: "unknown",
+          comparable: false, reasons: ["invalid persisted assessment shape"],
+          startedAt: nowMs, completedAt: null, responses: [],
+        });
+      }
+    }
+    state.assessment.nonbonusCompletedTotal = Math.max(Number(state.assessment.nonbonusCompletedTotal) || 0, completed);
+    const day = reportDay(nowMs, timezoneOffsetMinutes);
+    if (!state.reporting.days[day]) {
+      state.reporting.days[day] = emptyReport(day);
+      state.reporting.days[day].revision++;
+      state.reporting.sourceRevision++;
+    }
+    state.sched ||= {};
+    state.codes ||= {};
+    state.codesV ||= 0;
+    if (state.codesV < 1) {
+      for (const event of state.log) updateCode(state, event.err, gradeEncounter(event));
+      state.codesV = 1;
+    }
+    return state;
+  }
+
+  function reportTouch(state, day) {
+    const report = state.reporting.days[day] || (state.reporting.days[day] = emptyReport(day));
+    state.reporting.sourceRevision++;
+    report.revision++;
+    return report;
+  }
+
+  function isHot(word, typed, index) {
+    const hot = word.hot;
+    const character = (typed[index] || "").toLowerCase();
+    if (!character) return false;
+    if (hot.ix) return hot.ix.includes(index);
+    if (hot.v) {
+      if (!VOWELS.includes(character) || index < (hot.m || 0)) return false;
+      return !(index === typed.length - 1 && character === "e");
+    }
+    if (index < (hot.m || 0)) return false;
+    return Boolean(hot.c && hot.c.includes(character));
+  }
+
+  function theta(state, code) {
+    const profile = state.codes[code];
+    return profile ? profile.a / (profile.a + profile.b) : 0;
+  }
+
+  function codeBroken(state, code) {
+    const profile = state.codes[code];
+    return Boolean(profile && profile.seen >= 3 && theta(state, code) < 0.40);
+  }
+
+  function unitLocked(state, unit) {
+    const codePrerequisites = { E8: ["E7"], E5: ["E8"], E1: ["E8"], E2: ["E8"], E9: ["E7"] };
+    const unitPrerequisites = { "8.1": ["E8", "E5", "E1", "E2"] };
+    return (unitPrerequisites[unit.id] || codePrerequisites[unit.err] || []).some((code) => codeBroken(state, code));
+  }
+
+  function fastPass(state, unit) {
+    const profile = state.codes[unit.err];
+    return !state.cleared[unit.id] && !unitLocked(state, unit) && unit.err !== "E0"
+      && Boolean(profile && profile.seen >= 4 && theta(state, unit.err) >= 0.75);
+  }
+
+  function fnv1a32(input) {
+    let hash = 0x811c9dc5;
+    for (const character of input) {
+      const codePoint = character.codePointAt(0);
+      const bytes = codePoint <= 0x7f ? [codePoint]
+        : codePoint <= 0x7ff ? [0xc0 | (codePoint >> 6), 0x80 | (codePoint & 0x3f)]
+          : codePoint <= 0xffff
+            ? [0xe0 | (codePoint >> 12), 0x80 | ((codePoint >> 6) & 0x3f), 0x80 | (codePoint & 0x3f)]
+            : [0xf0 | (codePoint >> 18), 0x80 | ((codePoint >> 12) & 0x3f), 0x80 | ((codePoint >> 6) & 0x3f), 0x80 | (codePoint & 0x3f)];
+      for (const byte of bytes) {
+        hash ^= byte;
+        hash = Math.imul(hash, 0x01000193) >>> 0;
+      }
+    }
+    return hash.toString(16).padStart(8, "0");
+  }
+
+  function assessmentShuffle(ids, seed) {
+    let value = parseInt(fnv1a32(seed), 16) >>> 0;
+    const output = ids.slice();
+    for (let index = output.length - 1; index > 0; index--) {
+      value = (Math.imul(value, 1664525) + 1013904223) >>> 0;
+      const swap = value % (index + 1);
+      [output[index], output[swap]] = [output[swap], output[index]];
+    }
+    return output;
+  }
+
+  function validFieldPackDescriptor(value) {
+    if (!value || !Number.isInteger(value.version) || !Array.isArray(value.unitIds)
+      || value.unitIds.length < 1 || value.unitIds.length > 32) return false;
+    const ids = value.unitIds.map(String);
+    return new Set(ids).size === ids.length && ids.every((id) => /^\d+\.\d+$/.test(id));
+  }
+
+  function knownFieldPackDescriptor(value) {
+    return validFieldPackDescriptor(value)
+      && value.version === FIELD_PACK_VERSION
+      && value.unitIds.length === FIELD_PACK_IDS.length
+      && value.unitIds.every((id, index) => id === FIELD_PACK_IDS[index]);
+  }
+
+  function normalizeImportedProgress(value, nowMs) {
+    if (!value || typeof value !== "object" || Array.isArray(value)) return { ok: false, error: "invalid_progress" };
+    const next = clone(value);
+    const descriptor = next.fieldPack;
+    if (!descriptor) return { ok: true, state: next };
+    if (!validFieldPackDescriptor(descriptor)) return { ok: false, error: "invalid_field_pack_descriptor" };
+    if (knownFieldPackDescriptor(descriptor)) return { ok: true, state: next };
+    const quarantine = next.quarantine && typeof next.quarantine === "object" ? next.quarantine : {};
+    const entries = Array.isArray(quarantine.fieldPacks) ? quarantine.fieldPacks : [];
+    if (entries.length >= 4) return { ok: false, error: "field_pack_quarantine_full" };
+    const ids = new Set(descriptor.unitIds);
+    const docs = {};
+    const cleared = {};
+    const sched = {};
+    const reportingModules = {};
+    next.docs = next.docs && typeof next.docs === "object" ? next.docs : {};
+    next.cleared = next.cleared && typeof next.cleared === "object" ? next.cleared : {};
+    next.sched = next.sched && typeof next.sched === "object" ? next.sched : {};
+    for (const id of ids) {
+      if (Object.hasOwn(next.docs, id)) { docs[id] = next.docs[id]; delete next.docs[id]; }
+      if (Object.hasOwn(next.cleared, id)) { cleared[id] = next.cleared[id]; delete next.cleared[id]; }
+    }
+    for (const [key, event] of Object.entries(next.sched)) {
+      if (ids.has(event?.unit)) { sched[key] = event; delete next.sched[key]; }
+    }
+    let session = null;
+    const blocks = next.session && Array.isArray(next.session.blocks) ? next.session.blocks : [];
+    const touchesPack = blocks.some((block) => ids.has(block.id) || ids.has(sched[block.key]?.unit));
+    if (touchesPack) {
+      session = clone(next.session);
+      const sessionId = next.session.id;
+      next.session.status = "abandoned";
+      next.session.endedAt = nowMs;
+      next.session.reason = "unknown_pack_version";
+      const row = Array.isArray(next.sessions) ? next.sessions.find((entry) => entry.id === sessionId) : null;
+      if (row) {
+        row.status = "abandoned";
+        row.endedAt = nowMs;
+        row.reason = "unknown_pack_version";
+        row.revision = (row.revision || 1) + 1;
+      }
+      next.session = null;
+    }
+    if (next.reporting?.days && typeof next.reporting.days === "object") {
+      for (const [day, bucket] of Object.entries(next.reporting.days)) {
+        if (!Array.isArray(bucket.modulesCleared)) continue;
+        const removed = bucket.modulesCleared.filter((id) => ids.has(id));
+        if (removed.length) {
+          reportingModules[day] = removed;
+          bucket.modulesCleared = bucket.modulesCleared.filter((id) => !ids.has(id));
+        }
+      }
+    }
+    entries.push({
+      version: descriptor.version, unitIds: descriptor.unitIds.slice(), quarantinedAt: nowMs,
+      docs, cleared, sched, session, reportingModules,
+    });
+    next.quarantine = { ...quarantine, fieldPacks: entries };
+    delete next.fieldPack;
+    return { ok: true, state: next, quarantined: true };
+  }
+
+  function create(options) {
+    if (!options || typeof options !== "object") throw new TypeError("WordbreakCore.create requires options");
+    const nowMs = Number(options.nowMs);
+    const timezoneOffsetMinutes = Number(options.timezoneOffsetMinutes);
+    if (!Number.isFinite(nowMs)) throw new TypeError("nowMs must be finite");
+    if (!Number.isFinite(timezoneOffsetMinutes)) throw new TypeError("timezoneOffsetMinutes must be finite");
+    if (typeof options.random !== "function") throw new TypeError("random must be a function");
+    if (typeof options.uuid !== "function") throw new TypeError("uuid must be a function");
+
+    const content = clone(options.content || {});
+    const units = content.UNITS || content.units || [];
+    const assessmentForms = content.ASSESSMENT_FORMS || content.assessment || { A: [], B: [] };
+    for (const unit of units) for (const word of unit.words || []) word.err ||= unit.err || "E0";
+    let committedState = normalizeState(parseState(options.stateJson), nowMs, timezoneOffsetMinutes);
+    let committedScreen = options.viewModel && typeof options.viewModel === "object" && !Array.isArray(options.viewModel)
+      ? clone(options.viewModel)
+      : initialScreen();
+    let pending = null;
+
+    function currentWord(screen) {
+      return screen.mode === "review" ? screen.queue[screen.qIdx].w : screen.unit.words[screen.wordIdx];
+    }
+
+    function scheduleKey(unit, word) {
+      return `${unit.id}|${word.a.toLowerCase()}`;
+    }
+
+    function scheduledList(state, { dueOnly = false } = {}) {
+      const today = Math.floor(nowMs / DAY_MS);
+      const output = [];
+      for (const entry of Object.values(state.sched)) {
+        if (dueOnly && entry.due > today) continue;
+        const unit = units.find((candidate) => candidate.id === entry.unit);
+        if (!unit) continue;
+        const word = unit.words.find((candidate) => candidate.a.toLowerCase() === entry.word);
+        if (word) output.push({ u: unit, w: word, e: entry });
+      }
+      output.sort((left, right) => (left.e.due - right.e.due)
+        || ((ERR_WEIGHT[right.w.err] || 0) - (ERR_WEIGHT[left.w.err] || 0))
+        || (right.e.lapses - left.e.lapses));
+      return output;
+    }
+
+    function dueList(state) {
+      return scheduledList(state, { dueOnly: true });
+    }
+
+    function unitOrder(left, right) {
+      const parts = (unit) => {
+        const minor = unit.id.split(".")[1] || "";
+        return [unit.st, parseInt(minor, 10) || 0, minor.replace(/^\d+/, "")];
+      };
+      const a = parts(left);
+      const b = parts(right);
+      return (a[0] - b[0]) || (a[1] - b[1]) || (a[2] < b[2] ? -1 : a[2] > b[2] ? 1 : 0);
+    }
+
+    function frontierUnits(state, session) {
+      const queued = new Set((session?.blocks || []).filter((block) => block.k === "mod").map((block) => block.id));
+      return units.filter((unit) => !state.cleared[unit.id] && !unitLocked(state, unit) && !queued.has(unit.id))
+        .sort(unitOrder);
+    }
+
+    function modulePanelCells(state, unit) {
+      return state.docs[unit.id] ? 0 : unit.docs.length;
+    }
+
+    function moduleCells(state, unit) {
+      return modulePanelCells(state, unit) + (fastPass(state, unit) ? 1 : unit.words.length);
+    }
+
+    function estimatedModuleSeconds(state, unit) {
+      return (state.docs[unit.id] ? 0 : unit.docs.length * SEC_PANEL)
+        + (fastPass(state, unit) ? 1 : unit.words.length) * SEC_WORD;
+    }
+
+    function moduleProductionOpportunities(state, unit) {
+      return fastPass(state, unit) ? 1 : unit.words.length;
+    }
+
+    function compileSession(state, budgetMin, bonus) {
+      const blocks = [];
+      let estimated = 0;
+      let plannedOpportunities = 0;
+      const frontier = frontierUnits(state, { blocks });
+      if (bonus) {
+        if (frontier.length) {
+          const unit = frontier[0];
+          blocks.push({ k: "mod", id: unit.id, cells: moduleCells(state, unit), pc: modulePanelCells(state, unit) });
+          plannedOpportunities += moduleProductionOpportunities(state, unit);
+        }
+      } else {
+        if (frontier.length) {
+          const unit = frontier.shift();
+          blocks.push({ k: "mod", id: unit.id, cells: moduleCells(state, unit), pc: modulePanelCells(state, unit) });
+          estimated += estimatedModuleSeconds(state, unit);
+          plannedOpportunities += moduleProductionOpportunities(state, unit);
+        }
+        let reviews = 0;
+        const queuedReviewKeys = new Set();
+        for (const due of dueList(state)) {
+          if (estimated >= budgetMin * 60 || reviews >= REVIEW_BLOCKS_PER_SESSION) break;
+          const key = scheduleKey(due.u, due.w);
+          blocks.push({ k: "rev", key, cells: 1 });
+          queuedReviewKeys.add(key);
+          estimated += SEC_REV;
+          reviews++;
+          plannedOpportunities++;
+        }
+        for (const review of scheduledList(state)) {
+          if (plannedOpportunities >= MIN_PRODUCTION_OPPORTUNITIES || reviews >= REVIEW_BLOCKS_PER_SESSION) break;
+          const key = scheduleKey(review.u, review.w);
+          if (queuedReviewKeys.has(key)) continue;
+          blocks.push({ k: "rev", key, cells: 1, early: true });
+          queuedReviewKeys.add(key);
+          estimated += SEC_REV;
+          reviews++;
+          plannedOpportunities++;
+        }
+        for (const unit of frontier) {
+          if (estimated + estimatedModuleSeconds(state, unit) > budgetMin * 60) break;
+          blocks.push({ k: "mod", id: unit.id, cells: moduleCells(state, unit), pc: modulePanelCells(state, unit) });
+          estimated += estimatedModuleSeconds(state, unit);
+          plannedOpportunities += moduleProductionOpportunities(state, unit);
+        }
+      }
+      return {
+        v: SESSION_QUEUE_VERSION, id: options.uuid(), day: dayNumber(nowMs, timezoneOffsetMinutes),
+        startReportDay: reportDay(nowMs, timezoneOffsetMinutes), startedAt: nowMs,
+        status: "in_progress", revision: 1, activeMs: 0, budgetMin, blocks, idx: 0,
+        done: false, bonus: Boolean(bonus), baseDone: Boolean(bonus), stats: { words: 0, clean: 0 },
+      };
+    }
+
+    function openSessionBlock(state, screen) {
+      const block = state.session.blocks[state.session.idx];
+      if (!block) {
+        screen.screen = "sessionDone";
+        return;
+      }
+      if (block.k === "rev") {
+        const entry = state.sched[block.key];
+        const unit = units.find((candidate) => candidate.id === entry.unit);
+        const word = unit.words.find((candidate) => candidate.a.toLowerCase() === entry.word);
+        Object.assign(screen, {
+          session: true, docsReadOnly: false, mode: "review", queue: [{ u: unit, w: word, e: entry }],
+          qIdx: 0, unit: clone(unit), screen: "run", log: [],
+        });
+        startWord(screen);
+      } else {
+        const unit = units.find((candidate) => candidate.id === block.id);
+        Object.assign(screen, {
+          session: true, docsReadOnly: false, mode: "module", unit: clone(unit), log: [],
+          wordIdx: 0, fastPass: fastPass(state, unit), fastCleared: false,
+        });
+        if (state.docs[unit.id]) {
+          screen.screen = "run";
+          startWord(screen);
+        } else {
+          screen.screen = "docs";
+          screen.docsIdx = 0;
+          screen.ketsuPick = null;
+          screen.ketsuTyped = false;
+          screen.ketsuMiss = 0;
+        }
+      }
+    }
+
+    function result(state, screen, { effects = [], semanticEvents = [] } = {}) {
+      const output = {
+        stateJson: serialize(state), viewModel: clone(screen),
+        effects: clone(effects), semanticEvents: clone(semanticEvents),
+      };
+      pending = { ...output, state: clone(state), screen: clone(screen) };
+      return output;
+    }
+
+    function startWord(screen) {
+      if (screen.mode === "review" && screen.queue[screen.qIdx]) screen.unit = screen.queue[screen.qIdx].u;
+      screen.runGen++;
+      Object.assign(screen, {
+        phase: "type", typed: "", flagIdx: null, aimGood: false, firstClean: false,
+        walkAnyway: false, condQ: 0, condPicks: {}, lineupSpent: {}, witnessFound: false,
+        memPhase: "study", patchTries: 0, reveal: false, tShown: nowMs, latency: null,
+      });
+    }
+
+    function scheduleWord(state, screen, word, firstClean) {
+      const key = `${screen.unit.id}|${word.a.toLowerCase()}`;
+      const today = Math.floor(nowMs / DAY_MS);
+      const entry = state.sched[key] || { box: 0, lapses: 0, seen: 0, unit: screen.unit.id, word: word.a.toLowerCase() };
+      const sameDayReplay = entry.last === today;
+      entry.seen++;
+      if (firstClean) {
+        if (!sameDayReplay) entry.box = Math.min(entry.box + 1, BOX_DAYS.length - 1);
+      } else {
+        entry.lapses++;
+        entry.box = 0;
+      }
+      entry.last = today;
+      entry.due = today + BOX_DAYS[entry.box];
+      state.sched[key] = entry;
+    }
+
+    function logWord(state, screen) {
+      const word = currentWord(screen);
+      const solve = word.fork.k === "mem" ? (screen.firstClean ? "—" : "booked")
+        : screen.firstClean && !screen.aimGood ? "—" : (screen.aimGood ? "earned" : "handed");
+      screen.log.push({ module: screen.unit.nm, word: word.a, clean: screen.firstClean, aim: screen.aimGood, solve, err: word.err });
+      const event = {
+        t: nowMs, unit: screen.unit.id, word: word.a, clean: screen.firstClean,
+        aim: screen.aimGood, solve, err: word.err, latency: screen.latency,
+        tries: screen.patchTries, revealed: screen.reveal,
+      };
+      state.log.push(event);
+      const report = reportTouch(state, reportDay(nowMs, timezoneOffsetMinutes));
+      report.practiceEvents++;
+      if (screen.firstClean) report.clean++;
+      if (screen.aimGood) report.liveAim++;
+      if (screen.mode === "review") {
+        report.reviewEvents++;
+        if (screen.firstClean) report.reviewClean++;
+        if (screen.aimGood) report.reviewLiveAim++;
+      }
+      if (word.err && word.err !== "E0") {
+        const code = report.codes[word.err] || (report.codes[word.err] = { seen: 0, clean: 0, aim: 0 });
+        code.seen++;
+        if (screen.firstClean) code.clean++;
+        if (screen.aimGood) code.aim++;
+      }
+      if (state.log.length > LOG_CAP) state.log = state.log.slice(-LOG_CAP);
+      scheduleWord(state, screen, word, screen.firstClean);
+      updateCode(state, word.err, gradeEncounter(event));
+      if (screen.mode !== "review") {
+        const lastWord = screen.wordIdx === screen.unit.words.length - 1;
+        const fastClear = screen.fastPass && screen.firstClean && screen.wordIdx === 0;
+        if (lastWord || fastClear) {
+          const newlyCleared = !state.cleared[screen.unit.id];
+          state.cleared[screen.unit.id] = true;
+          if (newlyCleared && !report.modulesCleared.includes(screen.unit.id)) report.modulesCleared.push(screen.unit.id);
+          if (fastClear && !lastWord) screen.fastCleared = true;
+        }
+      }
+      return event;
+    }
+
+    function dispatch(action) {
+      if (!action || typeof action !== "object" || typeof action.type !== "string") {
+        throw new TypeError("dispatch requires an action with a type");
+      }
+      const state = clone(committedState);
+      const screen = clone(committedScreen);
+      const semanticEvents = [];
+
+      if (action.type === "state.read") return result(state, screen);
+
+      if (action.type === "progress.import") {
+        const imported = normalizeImportedProgress(action.state, nowMs);
+        if (!imported.ok) throw new RangeError(imported.error);
+        return result(normalizeState(imported.state, nowMs, timezoneOffsetMinutes), screen, {
+          semanticEvents: [{ type: "progress.imported", quarantined: Boolean(imported.quarantined), atMs: nowMs }],
+        });
+      }
+
+      if (action.type === "unit.openRun") {
+        const unit = units.find((candidate) => candidate.id === action.unitId);
+        if (!unit || !state.docs[action.unitId]) throw new RangeError("Unit is unavailable or unread");
+        Object.assign(screen, {
+          session: Boolean(action.session), docsReadOnly: false, mode: "module",
+          unit: clone(unit), screen: "run", wordIdx: 0, log: [], fastPass: fastPass(state, unit),
+          fastCleared: false,
+        });
+        startWord(screen);
+        return result(state, screen);
+      }
+
+      if (action.type === "docs.complete") {
+        if (screen.screen !== "docs" || !screen.unit) throw new RangeError("No lesson is open");
+        state.docs[screen.unit.id] = true;
+        screen.screen = "run";
+        screen.wordIdx = 0;
+        startWord(screen);
+        semanticEvents.push({ type: "unit.docs.completed", unitId: screen.unit.id, atMs: nowMs });
+        return result(state, screen, { semanticEvents });
+      }
+
+      if (action.type === "word.commitTyped") {
+        const value = String(action.value || "").trim();
+        if (!value || screen.screen !== "run" || screen.phase !== "type") return result(state, screen);
+        screen.latency = screen.latency === null ? Math.max(0, nowMs - screen.tShown) : screen.latency;
+        screen.typed = value;
+        screen.phase = "flag";
+        screen.flagIdx = null;
+        return result(state, screen);
+      }
+
+      if (action.type === "word.start") {
+        if (screen.screen !== "run") throw new RangeError("A word can only start inside a run");
+        if (Number.isInteger(action.wordIndex)) screen.wordIdx = action.wordIndex;
+        startWord(screen);
+        return result(state, screen);
+      }
+
+      if (action.type === "word.setFlag") {
+        if (screen.phase !== "flag") throw new RangeError("A letter can only be flagged after typing");
+        screen.flagIdx = Number(action.index);
+        return result(state, screen);
+      }
+
+      if (action.type === "word.execute") {
+        const word = currentWord(screen);
+        const clean = screen.typed.toLowerCase() === word.a.toLowerCase();
+        screen.aimGood = isHot(word, screen.typed, screen.flagIdx);
+        screen.firstClean = clean;
+        if (clean && word.fork.k !== "mem" && !screen.aimGood) {
+          screen.phase = "done";
+          semanticEvents.push({ type: "word.completed", ...logWord(state, screen) });
+        } else {
+          screen.phase = "fork";
+        }
+        return result(state, screen, { semanticEvents });
+      }
+
+      if (action.type === "word.toPatch") {
+        screen.phase = "patch";
+        screen.patchTries = 0;
+        return result(state, screen);
+      }
+
+      if (action.type === "word.confirmDone") {
+        screen.phase = "done";
+        semanticEvents.push({ type: "word.completed", ...logWord(state, screen) });
+        return result(state, screen, { semanticEvents });
+      }
+
+      if (action.type === "word.commitPatch") {
+        const word = currentWord(screen);
+        const value = String(action.value || "").trim().toLowerCase();
+        if (value === word.a.toLowerCase()) {
+          screen.phase = "done";
+          semanticEvents.push({ type: "word.completed", ...logWord(state, screen) });
+        } else {
+          screen.patchTries++;
+          if (screen.patchTries >= 3 && !screen.reveal) screen.reveal = true;
+        }
+        return result(state, screen, { semanticEvents });
+      }
+
+      if (action.type === "word.advance") {
+        if (screen.screen !== "run" || screen.phase !== "done") {
+          throw new RangeError("A completed word is required before advancing");
+        }
+        const lastWord = screen.wordIdx >= screen.unit.words.length - 1 || screen.fastCleared;
+        if (!lastWord) {
+          screen.wordIdx++;
+          startWord(screen);
+          return result(state, screen);
+        }
+        if (!screen.session || !state.session) {
+          screen.screen = "map";
+          return result(state, screen);
+        }
+
+        state.session.idx++;
+        state.session.revision = (state.session.revision || 1) + 1;
+        const row = state.sessions.find((entry) => entry.id === state.session.id);
+        if (row) {
+          row.doneBlocks = Math.min(row.blocksTotal, state.session.idx);
+          row.revision = (row.revision || 1) + 1;
+        }
+        if (state.session.idx < state.session.blocks.length) {
+          openSessionBlock(state, screen);
+          semanticEvents.push({
+            type: "session.block.completed",
+            sessionId: state.session.id,
+            blockIndex: state.session.idx - 1,
+            atMs: nowMs,
+          });
+          return result(state, screen, { semanticEvents });
+        }
+
+        state.session = {
+          ...state.session, done: true, status: "completed", endedAt: nowMs,
+          revision: (state.session.revision || 1) + 1,
+        };
+        if (row && row.status === "in_progress") {
+          row.status = "completed";
+          row.endedAt = nowMs;
+          row.revision = (row.revision || 1) + 1;
+          const report = reportTouch(state, state.session.startReportDay || reportDay(state.session.startedAt, timezoneOffsetMinutes));
+          report[state.session.bonus ? "bonusCompleted" : "sessionsCompleted"]++;
+          if (!state.session.bonus) state.assessment.nonbonusCompletedTotal++;
+        }
+        screen.screen = "sessionDone";
+        semanticEvents.push({ type: "session.completed", sessionId: state.session.id, atMs: nowMs });
+        return result(state, screen, { semanticEvents });
+      }
+
+      if (action.type === "assessment.start") {
+        if (state.assessment.runs.some((run) => run.status === "in_progress")) return result(state, screen);
+        const id = options.uuid();
+        if (!state.assessment.assignment) state.assessment.assignment = Math.floor(options.random() * 256) % 2 ? "A" : "B";
+        const role = action.role || "baseline";
+        const form = role === "baseline" ? state.assessment.assignment : (state.assessment.assignment === "A" ? "B" : "A");
+        state.assessment.runs.push({
+          id, role, form, status: "in_progress",
+          order: assessmentShuffle(assessmentForms[form].map((item) => item.id), id),
+          cursor: 0, responses: [], replays: {}, startedAt: nowMs, completedAt: null,
+          completedNonbonusTotal: null, interruptions: 0, comparable: true, reasons: [],
+          device: clone(action.device || { userAgent: "unknown", platform: "unknown" }),
+          staticAudioFailed: false,
+        });
+        screen.screen = "assessment";
+        screen.assessmentPagehideRecorded = false;
+        semanticEvents.push({ type: "assessment.started", assessmentId: id, role, atMs: nowMs });
+        return result(state, screen, { semanticEvents });
+      }
+
+      if (action.type === "session.begin") {
+        if (state.session && !state.session.done) return result(state, screen);
+        const today = dayNumber(nowMs, timezoneOffsetMinutes);
+        if (!action.bonus && state.sessions.some((entry) => entry.day === today && entry.status === "completed" && !entry.bonus)) {
+          screen.screen = "sessionDone";
+          return result(state, screen);
+        }
+        const budgetMin = Number.isFinite(action.budgetMin) ? action.budgetMin : DEFAULT_SESSION_MIN;
+        state.session = compileSession(state, budgetMin, Boolean(action.bonus));
+        if (!state.session.blocks.length) {
+          state.session = null;
+          return result(state, screen);
+        }
+        state.sessions.push({
+          id: state.session.id, day: state.session.day, startReportDay: state.session.startReportDay,
+          status: "in_progress", revision: 1, bonus: state.session.bonus, budgetMin,
+          blocksTotal: state.session.blocks.length, doneBlocks: 0, activeMs: 0,
+          startedAt: nowMs, endedAt: null,
+        });
+        const report = reportTouch(state, state.session.startReportDay);
+        report[state.session.bonus ? "bonusStarted" : "sessionsStarted"]++;
+        openSessionBlock(state, screen);
+        semanticEvents.push({ type: "session.started", sessionId: state.session.id, atMs: nowMs, budgetMin });
+        return result(state, screen, { semanticEvents });
+      }
+
+      if (action.type === "session.complete") {
+        if (!state.session || state.session.done) return result(state, screen);
+        state.session = {
+          ...state.session, done: true, status: "completed", endedAt: nowMs,
+          revision: (state.session.revision || 1) + 1,
+        };
+        const row = state.sessions.find((entry) => entry.id === state.session.id);
+        if (row && row.status === "in_progress") {
+          row.status = "completed";
+          row.endedAt = nowMs;
+          row.revision = (row.revision || 1) + 1;
+          const report = reportTouch(state, state.session.startReportDay || reportDay(state.session.startedAt, timezoneOffsetMinutes));
+          report[state.session.bonus ? "bonusCompleted" : "sessionsCompleted"]++;
+          if (!state.session.bonus) state.assessment.nonbonusCompletedTotal++;
+        }
+        screen.screen = "sessionDone";
+        semanticEvents.push({ type: "session.completed", sessionId: state.session.id, atMs: nowMs });
+        return result(state, screen, { semanticEvents });
+      }
+
+      throw new RangeError(`Unknown Wordbreak action: ${action.type}`);
+    }
+
+    function accept(stateJson) {
+      if (!pending || stateJson !== pending.stateJson) throw new Error("Only the exact pending state may be accepted");
+      committedState = pending.state;
+      committedScreen = pending.screen;
+      pending = null;
+    }
+
+    function discard() {
+      pending = null;
+    }
+
+    return Object.freeze({
+      dispatch, accept, discard,
+      stateJson: () => serialize(committedState),
+      content: () => clone(content),
+    });
+  }
+
+  root.WordbreakCore = Object.freeze({ create, stateVersion: STATE_VERSION });
+})(typeof globalThis === "object" ? globalThis : this);
+
+"use strict";
+/* Enrollment is a URL fragment so it never reaches an HTTP log. Scrub it before
+   touching the DOM or either localStorage ledger. */
+let REPORT_ENROLL_CODE=null;
+if(location.hash.startsWith("#report-enroll=")){
+  REPORT_ENROLL_CODE=decodeURIComponent(location.hash.slice(15));
+  history.replaceState(null,"",location.pathname+location.search);
+}
+const VOWELS="aeiou";
+const AUDIO_GEN="g1";
+const AUDIO_VOICE="af_heart";
+const AUDIO_BASE="audio/";
+function normalize(text) {
+  return String(text).normalize("NFC").trim().replace(/\s+/g, " ");
+}
+// Keep this byte-for-byte identical to scripts/audio/key.mjs.
+function fnv1a32(input) {
+  const bytes = new TextEncoder().encode(input);
+  let hash = 0x811c9dc5;
+  for (const byte of bytes) {
+    hash ^= byte;
+    hash = Math.imul(hash, 0x01000193) >>> 0;
+  }
+  return hash.toString(16).padStart(8, "0");
+}
+let curAudio=null, curObjectUrl=null, saySeq=0;
+function speakFallback(text,slow){ try{ const u=new SpeechSynthesisUtterance(text);
+  u.rate=slow?0.6:0.85; speechSynthesis.cancel(); speechSynthesis.speak(u); }catch(e){} }
+function say(audioText,slow,fallbackText){
+  reportActivity();
+  const clickSeq=++saySeq;
+  const fallback=()=>speakFallback(fallbackText??audioText,slow);
+  curAudio?.pause(); speechSynthesis.cancel();
+  if(curObjectUrl){ URL.revokeObjectURL(curObjectUrl); curObjectUrl=null; }
+  const speedTag=slow?"s":"n";
+  const key=fnv1a32([AUDIO_GEN,AUDIO_VOICE,speedTag,normalize(audioText)].join("|"));
+  const url=AUDIO_BASE+key+".mp3";
+  let fallbackUsed=false, objectUrl=null;
+  const useFallback=()=>{ if(fallbackUsed||clickSeq!==saySeq)return; fallbackUsed=true; if(objectUrl){URL.revokeObjectURL(objectUrl); if(curObjectUrl===objectUrl)curObjectUrl=null;} fallback(); };
+  const play=async()=>{
+    try{
+      let src=url;
+      if(typeof caches!=="undefined"){
+        const cached=await caches.match(url);
+        if(cached){ objectUrl=URL.createObjectURL(await cached.blob()); src=objectUrl; }
+      }
+      if(clickSeq!==saySeq){ if(objectUrl)URL.revokeObjectURL(objectUrl); return; }
+      const audio=new Audio(src); curAudio=audio;
+      if(objectUrl)curObjectUrl=objectUrl;
+      audio.addEventListener("ended",()=>{ if(objectUrl){URL.revokeObjectURL(objectUrl); if(curObjectUrl===objectUrl)curObjectUrl=null;} });
+      audio.addEventListener("error",useFallback,{once:true});
+      audio.play().catch(useFallback);
+    }catch(e){ useFallback(); }
+  };
+  play();
+}
+function precacheAudio(){
+  if(typeof caches==="undefined"||typeof fetch==="undefined")return;
+  fetch(AUDIO_BASE+"manifest.json").then(r=>r.ok?r.json():Promise.reject()).then(files=>
+    caches.open(`wb-audio-${AUDIO_GEN}`).then(async cache=>{
+      await cache.addAll(files.map(file=>AUDIO_BASE+file));
+      try{ await navigator.storage?.persist?.(); }catch(e){}
+      const names=await caches.keys();
+      await Promise.all(names.filter(name=>name.startsWith("wb-audio-")&&name!==`wb-audio-${AUDIO_GEN}`).map(name=>caches.delete(name)));
+    })
+  ).catch(()=>{});
+}
+function esc(s){ return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+function fmtPrompt(s){ return esc(s).replace(/([+→·?])/g,'<span class="sfx">$1</span>'); }
+function renderStress(stress){ return (stress||[]).map(sg=>`<span class="seg ${sg[1]?"stress":""}">${esc(sg[0])}</span>`).join(""); }
+function wireSay(){
+  const root=document.getElementById("app"); if(!root) return;
+  root.querySelectorAll("[data-say]").forEach(el=>{
+    el.addEventListener("click",()=>say(el.getAttribute("data-say")||"", el.hasAttribute("data-slow"), el.getAttribute("data-fallback")||undefined));
+  });
+}
+/* persistence */
+const ASSESSMENT_VERSION=2;
+const ASSESSMENT_ON=true;
+const FIELD_PACK_VERSION=1;
+const FIELD_PACK_ON=true;
+const FIELD_PACK_IDS=Object.freeze(["9.1","9.2","9.3","9.4"]);
+const LOG_CAP=500;
+const REPORT_KEY="wb2-report-credential", REPORT_MAX_BYTES=128*1024;
+const REPORT_ZONE="America/Los_Angeles";
+let reportSyncTimer=null, reportSyncing=false, reportSaveFailed=false;
+let reportLastActivity=performance.now(), reportLastSample=performance.now();
+let reportCredential=null;
+try{ reportCredential=JSON.parse(localStorage.getItem(REPORT_KEY)||"null"); }catch(e){}
+let P;
+try{ P=JSON.parse(localStorage.getItem("wb2"))||{}; }catch(e){ P={}; }
+P.docs=P.docs||{}; P.cleared=P.cleared||{}; P.log=P.log||[];
+/* session compiler state (plan 003) — additive; deleting these three keys resets the
+   session layer only, leaving progress/schedule/profile untouched. cfg is observer-owned
+   (budget in minutes); session is the current frozen queue+cursor or null; sessions is the
+   observer history ring (per-session scalars, never block arrays — keeps each saveP small).
+   v1 used a 30-minute default; v3 resets every pre-v3 30-minute setting because
+   the old storage has no provenance to distinguish a default from a deliberate choice. */
+const DEFAULT_SESSION_MIN=10;
+const CFG_VERSION=3;
+P.cfg=P.cfg||{budgetMin:DEFAULT_SESSION_MIN,v:CFG_VERSION};
+if((P.cfg.v||0)<CFG_VERSION){ if(P.cfg.budgetMin===30) P.cfg.budgetMin=DEFAULT_SESSION_MIN; P.cfg.v=CFG_VERSION; }
+P.session=P.session||null; P.sessions=P.sessions||[];
+P.reporting=P.reporting||{version:1,sourceRevision:0,days:{},acked:{},gaps:[],deadLetters:[],legacy:null};
+function freshAssessment(completed){return {version:ASSESSMENT_VERSION,assignment:null,runs:[],nonbonusCompletedTotal:completed||0};}
+const completedSessions=P.sessions.filter(x=>!x.bonus&&x.status==="completed").length;
+if(!P.assessment||P.assessment.version!==ASSESSMENT_VERSION||!Array.isArray(P.assessment.runs)){
+  const hadAssessment=!!P.assessment;
+  P.assessment=freshAssessment(completedSessions);
+  if(hadAssessment)P.assessment.runs.push({id:"quarantined-"+Date.now(),status:"corrupt_noncomparable",role:"unknown",
+    comparable:false,reasons:["invalid persisted assessment shape"],startedAt:Date.now(),completedAt:null,responses:[]});
+}
+P.assessment.nonbonusCompletedTotal=Math.max(Number(P.assessment.nonbonusCompletedTotal)||0,completedSessions);
+if(P.log.length>LOG_CAP) P.log=P.log.slice(-LOG_CAP);
+function reportDay(ts){
+  return new Intl.DateTimeFormat("en-CA",{timeZone:REPORT_ZONE,year:"numeric",month:"2-digit",day:"2-digit"}).format(ts??Date.now());
+}
+function reportEmpty(day){ return {day,revision:0,activeMs:0,practiceEvents:0,clean:0,liveAim:0,
+  reviewEvents:0,reviewClean:0,reviewLiveAim:0,sessionsStarted:0,sessionsCompleted:0,
+  sessionsAbandoned:0,bonusStarted:0,bonusCompleted:0,modulesCleared:[],codes:{}}; }
+function reportTouch(day){
+  const r=P.reporting, d=r.days[day]||(r.days[day]=reportEmpty(day));
+  r.sourceRevision++; d.revision++; return d;
+}
+function reportAdd(day,key,n=1){ const d=reportTouch(day); d[key]=(d[key]||0)+n; }
+function reportGap(day,reason){
+  if(!P.reporting.gaps.some(g=>g.start===day&&g.end===day)) P.reporting.gaps.push({start:day,end:day,reason});
+}
+function reportCompact(){
+  const r=P.reporting, cutoff=Date.now()-60*86400000;
+  Object.keys(r.days).sort().forEach(day=>{ if(Date.parse(day+"T12:00:00Z")<cutoff&&(r.acked[day]||0)>=r.days[day].revision) delete r.days[day]; });
+  while(new TextEncoder().encode(JSON.stringify(r)).length>REPORT_MAX_BYTES){
+    const day=Object.keys(r.days).sort().find(x=>(r.acked[x]||0)<r.days[x].revision);
+    if(!day)break; reportGap(day,"local_storage_limit"); delete r.days[day]; delete r.acked[day];
+  }
+  r.deadLetters=r.deadLetters.slice(-20);
+}
+function saveP(){
+  reportCompact();
+  try{ localStorage.setItem("wb2",JSON.stringify(P)); reportSaveFailed=false; scheduleReportSync(); return true; }
+  catch(e){
+    try{ P.log=P.log.slice(-Math.floor(LOG_CAP/2)); localStorage.setItem("wb2",JSON.stringify(P)); reportSaveFailed=false; scheduleReportSync(); return true; }
+    catch(e2){ reportSaveFailed=true; setTimeout(()=>alert("Wordbreak could not safely save this step. Free browser storage, then retry before continuing."),0); return false; }
+  }
+}
+function isPackUnit(unit){return !!unit&&(unit.meta?.packVersion===FIELD_PACK_VERSION||FIELD_PACK_IDS.includes(unit.id));}
+function isEnabledUnit(unit){return !!unit&&(!isPackUnit(unit)||FIELD_PACK_ON);}
+function validFieldPackDescriptor(value){
+  if(!value||!Number.isInteger(value.version)||!Array.isArray(value.unitIds)||value.unitIds.length<1||value.unitIds.length>32)return false;
+  const ids=value.unitIds.map(String);return new Set(ids).size===ids.length&&ids.every(id=>/^\d+\.\d+$/.test(id));
+}
+function knownFieldPackDescriptor(value){return validFieldPackDescriptor(value)&&value.version===FIELD_PACK_VERSION&&value.unitIds.length===FIELD_PACK_IDS.length&&value.unitIds.every((id,i)=>id===FIELD_PACK_IDS[i]);}
+function normalizeImportedProgress(value,now=Date.now()){
+  if(!value||typeof value!=="object"||Array.isArray(value))return {ok:false,error:"invalid_progress"};
+  const next=structuredClone(value), descriptor=next.fieldPack;
+  if(!descriptor)return {ok:true,state:next};
+  if(!validFieldPackDescriptor(descriptor))return {ok:false,error:"invalid_field_pack_descriptor"};
+  if(knownFieldPackDescriptor(descriptor))return {ok:true,state:next};
+  const quarantine=next.quarantine&&typeof next.quarantine==="object"?next.quarantine:{}, entries=Array.isArray(quarantine.fieldPacks)?quarantine.fieldPacks:[];
+  if(entries.length>=4)return {ok:false,error:"field_pack_quarantine_full"};
+  const ids=new Set(descriptor.unitIds), docs={},cleared={},sched={},reportingModules={};
+  next.docs=next.docs&&typeof next.docs==="object"?next.docs:{};next.cleared=next.cleared&&typeof next.cleared==="object"?next.cleared:{};next.sched=next.sched&&typeof next.sched==="object"?next.sched:{};
+  for(const id of ids){if(Object.hasOwn(next.docs,id)){docs[id]=next.docs[id];delete next.docs[id];}if(Object.hasOwn(next.cleared,id)){cleared[id]=next.cleared[id];delete next.cleared[id];}}
+  for(const [key,event] of Object.entries(next.sched)){if(ids.has(event?.unit)){sched[key]=event;delete next.sched[key];}}
+  let session=null;
+  const blocks=next.session&&Array.isArray(next.session.blocks)?next.session.blocks:[];
+  const touchesPack=blocks.some(block=>ids.has(block.id)||ids.has(sched[block.key]?.unit));
+  if(touchesPack){session=structuredClone(next.session);const sessionId=next.session.id;next.session.status="abandoned";next.session.endedAt=now;next.session.reason="unknown_pack_version";
+    const row=Array.isArray(next.sessions)?next.sessions.find(x=>x.id===sessionId):null;if(row){row.status="abandoned";row.endedAt=now;row.reason="unknown_pack_version";row.revision=(row.revision||1)+1;}next.session=null;}
+  if(next.reporting?.days&&typeof next.reporting.days==="object")for(const [day,bucket] of Object.entries(next.reporting.days)){
+    if(!Array.isArray(bucket.modulesCleared))continue;const removed=bucket.modulesCleared.filter(id=>ids.has(id));if(removed.length){reportingModules[day]=removed;bucket.modulesCleared=bucket.modulesCleared.filter(id=>!ids.has(id));}}
+  entries.push({version:descriptor.version,unitIds:descriptor.unitIds.slice(),quarantinedAt:now,docs,cleared,sched,session,reportingModules});
+  next.quarantine={...quarantine,fieldPacks:entries};delete next.fieldPack;
+  return {ok:true,state:next,quarantined:true};
+}
+function reportFillDays(){
+  const r=P.reporting, today=reportDay(), keys=Object.keys(r.days).sort();let changed=false;
+  let cursor=keys.length?new Date(keys[keys.length-1]+"T12:00:00Z"):new Date(today+"T12:00:00Z");
+  const end=new Date(today+"T12:00:00Z");
+  while(cursor<=end){ const day=reportDay(cursor.getTime()); if(!r.days[day]){reportTouch(day);changed=true;} cursor.setUTCDate(cursor.getUTCDate()+1); }
+  return changed;
+}
+reportFillDays();
+/* hot test */
+function isHot(w,typed,idx){
+  const h=w.hot, ch=(typed[idx]||"").toLowerCase();
+  if(!ch) return false;
+  if(h.ix) return h.ix.includes(idx);            /* explicit dead-byte cells — the tightest aim spec */
+  if(h.v){ if(!VOWELS.includes(ch)) return false; if(idx<(h.m||0)) return false;
+    if(idx===typed.length-1&&ch==="e") return false; return true; }
+  if(idx<(h.m||0)) return false;
+  return !!(h.c && h.c.includes(ch));
+}
+const {UNITS, ASSESSMENT_FORMS}=createWordbreakContent(ASSESSMENT_VERSION);
 /* ===================== SPACED RETRIEVAL — THE DUE QUEUE ===================== */
 /* the load-bearing addition: cleared words come back on a widening interval, missed
    words come back tomorrow. day nine stops depending on the kid re-opening a module. */
@@ -1237,6 +2028,7 @@ let S={screen:"home",openStage:null,unit:null,docsIdx:0,ketsuPick:null,ketsuType
   patchTries:0,reveal:false,log:[],runGen:0,
   tShown:0,latency:null,fastPass:false,fastCleared:false,
   session:false,docsReadOnly:false,assessmentAudioBusy:false,assessmentPagehideRecorded:false};   /* session=inside the compiled session flow; docsReadOnly=map's reference-only lesson (plan 003, decision 12) */
+let wordbreakCoreSession=null;
 let condTimer=null;
 const app=document.getElementById("app");
 function html(s){ app.innerHTML=s; }
@@ -1432,7 +2224,7 @@ function ketsuType(){
   }
 }
 /* ---------- RUN ---------- */
-function openRun(id,opts){ opts=opts||{}; const u=UNITS.find(x=>x.id===id); if(!isEnabledUnit(u)||!P.docs[id])return goHome();
+function openRunLegacy(id,opts){ opts=opts||{}; const u=UNITS.find(x=>x.id===id); if(!isEnabledUnit(u)||!P.docs[id])return goHome();
   S.session=!!opts.session; S.docsReadOnly=false;             /* flag owner (decision 12); run is never read-only */
   S.mode="module"; S.unit=u; S.screen="run"; S.wordIdx=0; S.log=[];
   S.fastPass=PLACEMENT_ON&&fastPass(u); S.fastCleared=false;   /* snapshot at open — a mid-run θ change can't move the bar */
@@ -1443,19 +2235,25 @@ function startReview(){
   S.session=false;                                          /* legacy path — never a session (decision 12) */
   S.mode="review"; S.queue=q; S.qIdx=0; S.screen="run"; S.log=[]; startWord(); }
 function reviewNext(){ S.qIdx++; if(S.qIdx>=S.queue.length){ finishReview(); return; } startWord(); }
-function finishReview(){ S.mode="module"; S.queue=[]; S.qIdx=0; S.screen="debrief"; render(); }
+function finishReview(){ wordbreakCoreSession=null; S.mode="module"; S.queue=[]; S.qIdx=0; S.screen="debrief"; render(); }
 /* ===================== SESSION RUNNER (plan 003) ===================== */
 /* one continuous flow over the compiled block queue. rev blocks reuse the single-word review
    machinery; mod blocks reuse docs→run. The cursor (P.session.idx) advances ATOMICALLY inside
    logWord (decision 11), so a reload from any done screen resumes at the next block, never
    replaying a completed one. enterBlock is the sole authority on stale-skip + completion. */
-function startSession(bonus){
+function startSessionLegacy(bonus){
   const reuse = !bonus&&sessionValid(P.session);            /* resume an in-progress session vs compile a new one */
   if(!reuse&&P.session&&P.session.status==="in_progress")recordSessionEnd("abandoned");
   P.session = reuse ? P.session : compileSession(P.cfg.budgetMin,bonus?{bonus:true}:undefined);
   if(!P.session.blocks.length){ P.session=null; saveP(); goHome(); return; }  /* nothing to do — stay home */
   if(!reuse) recordSessionStart();                          /* only a NEW session gets a history row (resume keeps its own) */
   saveP(); enterBlock();
+}
+function startSession(bonus){
+  wordbreakCoreSession=createCoreSession();
+  const committed=commitCoreAction({type:"session.begin",budgetMin:P.cfg.budgetMin,bonus:!!bonus});
+  wordbreakCoreSession=null;
+  return committed;
 }
 function enterBlock(){
   const s=P.session; s.idx=nextLiveIdx(s);                  /* skip stale blocks (resume across a day/other play) */
@@ -1547,7 +2345,7 @@ function recordSessionEnd(status){
   reportAdd(s.startReportDay||reportDay(s.startedAt),status==="completed"?(s.bonus?"bonusCompleted":"sessionsCompleted"):"sessionsAbandoned");
   if(status==="completed"&&!s.bonus)P.assessment.nonbonusCompletedTotal++;
 }
-function startWord(){
+function startWordLegacy(){
   if(condTimer){ clearTimeout(condTimer); condTimer=null; }
   if(S.mode==="review"&&S.queue[S.qIdx]) S.unit=S.queue[S.qIdx].u;   /* borrow the owning unit for this due word */
   S.runGen++; S.phase="type"; S.typed=""; S.flagIdx=null; S.aimGood=false; S.firstClean=false; S.walkAnyway=false;
@@ -1594,14 +2392,14 @@ function renderRun(){
   const inp=document.getElementById("wtype"); if(inp){ inp.focus(); inp.addEventListener("keydown",e=>{if(e.key==="Enter")commitTyped();}); }
   const pin=document.getElementById("ptype"); if(pin){ pin.focus(); pin.addEventListener("keydown",e=>{if(e.key==="Enter")commitPatch();}); }
 }
-function commitTyped(){
+function commitTypedLegacy(){
   const inp=document.getElementById("wtype"); if(!inp)return;
   const v=inp.value.trim(); if(!v)return;
   if(S.latency==null) S.latency=Date.now()-S.tShown;   /* TYPE→FLAG submit; there is no re-commit path */
   S.typed=v; S.phase="flag"; S.flagIdx=null; render();
 }
-function setFlag(j){ S.flagIdx=j; render(); }
-function execute(){
+function setFlagLegacy(j){ S.flagIdx=j; render(); }
+function executeLegacy(){
   const w=cw();
   const clean=S.typed.toLowerCase()===w.a.toLowerCase();
   S.aimGood=isHot(w,S.typed,S.flagIdx);
@@ -1723,8 +2521,8 @@ function pullSource(j){
   if(it.role==="witness") S.witnessFound=true;
   render();
 }
-function toPatch(){ S.phase="patch"; S.patchTries=0; render(); }
-function confirmDone(){ S.phase="done"; logWord(S.firstClean); render(); }
+function toPatchLegacy(){ S.phase="patch"; S.patchTries=0; render(); }
+function confirmDoneLegacy(){ S.phase="done"; logWord(S.firstClean); render(); }
 /* ---------- PATCH ---------- */
 function renderPatch(){
   const w=cw(),f=w.fork;
@@ -1745,10 +2543,10 @@ function renderPatch(){
   ${src}${revealBlock}
   <div class="inputrow"><input type="text" id="ptype" autocomplete="off" autocapitalize="off" spellcheck="false">
   <button class="primary" onclick="commitPatch()">compile ▶</button></div>
-  <div id="pmsg"></div>
+  <div id="pmsg">${S.patchTries&&!S.reveal?`<div class="term"><div class="ln bad">✗ still faulted — check the ${w.fork.k==="lineup"?"source":w.fork.k==="mem"?"dead bytes":"verdict"} and go again.</div></div>`:""}</div>
   ${f.k==="mem"?`<div class="navrow"><button class="ghost small" onclick="S.phase='fork';S.memPhase='study';render()">← re-open the file</button></div>`:""}</div>`;
 }
-function commitPatch(){
+function commitPatchLegacy(){
   const w=cw(); const inp=document.getElementById("ptype"); if(!inp)return;
   const v=inp.value.trim().toLowerCase();
   if(v===w.a.toLowerCase()){ S.phase="done"; logWord(false); render(); return; }
@@ -1757,6 +2555,67 @@ function commitPatch(){
   if(S.patchTries>=3&&!S.reveal){ S.reveal=true; render(); return; }
   msg.innerHTML=`<div class="term"><div class="ln bad">✗ still faulted — check the ${w.fork.k==="lineup"?"source":w.fork.k==="mem"?"dead bytes":"verdict"} and go again.</div></div>`;
   inp.select();
+}
+
+function createCoreSession(){
+  return WordbreakCore.create({
+    stateJson:JSON.stringify(P),content:{UNITS,ASSESSMENT_FORMS},nowMs:Date.now(),
+    timezoneOffsetMinutes:new Date().getTimezoneOffset(),random:()=>{const byte=new Uint8Array(1);crypto.getRandomValues(byte);return byte[0]/256;},
+    uuid:()=>crypto.randomUUID()
+  });
+}
+function commitCoreAction(action){
+  const output=wordbreakCoreSession.dispatch(action);
+  try{ localStorage.setItem("wb2",output.stateJson); }
+  catch(error){
+    wordbreakCoreSession.discard();
+    setTimeout(()=>alert("Wordbreak could not safely save this step. Free browser storage, then retry before continuing."),0);
+    return false;
+  }
+  wordbreakCoreSession.accept(output.stateJson);
+  const nextState=JSON.parse(output.stateJson),nextScreen=output.viewModel;
+  for(const key of Object.keys(P))delete P[key];Object.assign(P,nextState);
+  for(const key of Object.keys(S))delete S[key];Object.assign(S,nextScreen);
+  reportSaveFailed=false;scheduleReportSync();render();
+  return true;
+}
+function openRun(id,opts){
+  opts=opts||{};
+  if(opts.session){wordbreakCoreSession=null;return openRunLegacy(id,opts);}
+  const unit=UNITS.find(candidate=>candidate.id===id);
+  if(!isEnabledUnit(unit)||!P.docs[id])return goHome();
+  wordbreakCoreSession=createCoreSession();
+  commitCoreAction({type:"unit.openRun",unitId:id,session:false});
+}
+function startWord(){
+  if(!wordbreakCoreSession)return startWordLegacy();
+  commitCoreAction({type:"word.start",wordIndex:S.wordIdx});
+}
+function commitTyped(){
+  if(!wordbreakCoreSession)return commitTypedLegacy();
+  const input=document.getElementById("wtype");if(!input)return;
+  commitCoreAction({type:"word.commitTyped",value:input.value});
+}
+function setFlag(index){
+  if(!wordbreakCoreSession)return setFlagLegacy(index);
+  commitCoreAction({type:"word.setFlag",index});
+}
+function execute(){
+  if(!wordbreakCoreSession)return executeLegacy();
+  commitCoreAction({type:"word.execute"});
+}
+function toPatch(){
+  if(!wordbreakCoreSession)return toPatchLegacy();
+  commitCoreAction({type:"word.toPatch"});
+}
+function confirmDone(){
+  if(!wordbreakCoreSession)return confirmDoneLegacy();
+  commitCoreAction({type:"word.confirmDone"});
+}
+function commitPatch(){
+  if(!wordbreakCoreSession)return commitPatchLegacy();
+  const input=document.getElementById("ptype");if(!input)return;
+  commitCoreAction({type:"word.commitPatch",value:input.value});
 }
 /* ---------- DONE / LOG ---------- */
 function logWord(cleanPath){
@@ -1829,7 +2688,7 @@ function renderDone(){
   ${aimNote}</div>
   <div class="navrow"><div class="spacer"></div>${nextBtn}</div></div>`;
 }
-function closeModule(){ S.screen="debrief"; render(); }
+function closeModule(){ wordbreakCoreSession=null; S.screen="debrief"; render(); }
 /* ===================== BEFORE / AFTER SPELLING PROBE ===================== */
 const ASSESSMENT_WAIT_DAYS=28, ASSESSMENT_WAIT_SESSIONS=12;
 function assessmentId(){
@@ -1865,7 +2724,7 @@ function assessmentScore(run){
   return {correct,total:form.length,groups};
 }
 function assessmentDevice(){return {userAgent:navigator.userAgent,platform:navigator.platform||"unknown"};}
-function startAssessment(role,override){
+function startAssessmentLegacy(role,override){
   if(!ASSESSMENT_ON||assessmentActive())return;
   const baseline=assessmentComplete("baseline");
   if(role==="followup"){
@@ -1886,6 +2745,13 @@ function startAssessment(role,override){
     comparable:!reasons.length,reasons,device:assessmentDevice(),staticAudioFailed:false});
   if(!saveP()){P.assessment=before;return;}
   S.screen="assessment";S.assessmentPagehideRecorded=false;render();
+}
+function startAssessment(role,override){
+  if(role!=="baseline")return startAssessmentLegacy(role,override);
+  if(!ASSESSMENT_ON||assessmentActive())return;
+  if(!confirm("Run this spelling calibration in one quiet sitting, on this device with headphones, without hints, spellcheck, or outside help?"))return;
+  wordbreakCoreSession=createCoreSession();
+  commitCoreAction({type:"assessment.start",role:"baseline",device:assessmentDevice()});
 }
 function resumeAssessment(){if(!assessmentActive())return;S.screen="assessment";S.assessmentPagehideRecorded=false;render();}
 function abandonAssessment(){
@@ -2135,7 +3001,7 @@ function reportPagehide(){
 /* ---------- DISPATCH ---------- */
 /* goHome clears the session-flow flags (decision 12) but LEAVES P.session intact — a paused or
    completed session must still be resumable/showable from home (decisions 4, 7). */
-function goHome(){ if(condTimer){ clearTimeout(condTimer); condTimer=null; } S.session=false; S.docsReadOnly=false; S.screen="home"; render(); }
+function goHome(){ wordbreakCoreSession=null; if(condTimer){ clearTimeout(condTimer); condTimer=null; } S.session=false; S.docsReadOnly=false; S.screen="home"; render(); }
 function render(){
   if(S.screen==="home")renderHome();
   else if(S.screen==="docs")renderDocs();

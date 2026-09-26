@@ -3,19 +3,30 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "sync:public": "mkdir -p public && cp wordbreak_v2.html public/index.html",
+    "build:web": "node scripts/build-web.mjs",
+    "check:web": "node scripts/build-web.mjs --check",
+    "sync:public": "npm run build:web && npm run check:web",
     "extract:audio": "node scripts/audio/extract-worklist.mjs",
     "deploy": "npm run sync:public && node scripts/deploy.mjs",
     "dev": "npm run sync:public && wrangler dev --test-scheduled",
-    "test": "npm run validate:curriculum && npm run validate:assessment && npm run test:unit && npm run test:reporting-integration && npm run test:d1 && npm run verify:assets",
+    "test": "npm run check:web && npm run validate:curriculum && npm run validate:assessment && npm run validate:math && npm run validate:experiment && npm run validate:schemas && npm run check:wordbreak-golden && npm run test:unit && npm run test:reporting-integration && npm run test:d1 && npm run verify:assets",
     "validate:curriculum": "node scripts/curriculum/validate-content.mjs",
     "validate:assessment": "node scripts/assessment/validate-bank.mjs",
-    "test:unit": "node --test src/*.test.js scripts/audio/*.test.mjs",
+    "validate:experiment": "node scripts/experiment/validate-config.mjs experiment/config/experiment.v1.json",
+    "validate:schemas": "node scripts/experiment/validate-schemas.mjs",
+    "verify:ios:phase0": "node scripts/apple/verify-phase0-ios.mjs",
+    "verify:ios:engine": "node scripts/apple/verify-shared-engine.mjs",
+    "validate:math": "node scripts/math/validate-content.mjs",
+    "generate:wordbreak-golden": "node scripts/generate-wordbreak-golden.mjs",
+    "check:wordbreak-golden": "node scripts/generate-wordbreak-golden.mjs --check",
+    "test:unit": "node --test src/*.test.js src/game/*.test.js scripts/audio/*.test.mjs",
     "test:reporting-integration": "node scripts/reporting-local-smoke.mjs",
     "test:d1": "wrangler d1 migrations apply wordbreak-reporting --local && wrangler d1 execute wordbreak-reporting --local --command \"SELECT key,value FROM service_config ORDER BY key\"",
     "verify:assets": "npm run sync:public && node scripts/audio/verify-assets.mjs"
   },
   "devDependencies": {
-    "wrangler": "^4.111.0"
+    "ajv": "^8.20.0",
+    "ajv-formats": "^3.0.1",
+    "wrangler": "^4.136.1"
   }
 }

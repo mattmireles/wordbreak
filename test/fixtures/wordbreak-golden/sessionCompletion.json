@@ -1,0 +1,133 @@
+{
+  "label": "session completion transition",
+  "sourceSha256": "44dadae13dd80203c60babde8c27af1fd201115b71ebc9b1f6eed98132592b78",
+  "clock": {
+    "nowMs": 1790118000000,
+    "timezoneOffsetMinutes": 420
+  },
+  "screen": {
+    "screen": "sessionDone",
+    "openStage": null,
+    "unit": null,
+    "docsIdx": 0,
+    "ketsuPick": null,
+    "ketsuTyped": false,
+    "mode": "module",
+    "queue": [],
+    "qIdx": 0,
+    "wordIdx": 0,
+    "phase": "type",
+    "typed": "",
+    "flagIdx": null,
+    "aimGood": false,
+    "firstClean": false,
+    "walkAnyway": false,
+    "condQ": 0,
+    "condPicks": {},
+    "lineupSpent": {},
+    "witnessFound": false,
+    "memPhase": "study",
+    "patchTries": 0,
+    "reveal": false,
+    "log": [],
+    "runGen": 0,
+    "tShown": 0,
+    "latency": null,
+    "fastPass": false,
+    "fastCleared": false,
+    "session": false,
+    "docsReadOnly": false,
+    "assessmentAudioBusy": false,
+    "assessmentPagehideRecorded": false
+  },
+  "state": {
+    "docs": {},
+    "cleared": {},
+    "log": [],
+    "cfg": {
+      "budgetMin": 10,
+      "v": 3
+    },
+    "session": {
+      "v": 2,
+      "id": "00000000-0000-4000-8000-000000000002",
+      "day": 20718,
+      "startReportDay": "2026-09-22",
+      "startedAt": 1790118000000,
+      "status": "completed",
+      "revision": 2,
+      "activeMs": 0,
+      "budgetMin": 10,
+      "blocks": [
+        {
+          "k": "mod",
+          "id": "1.1",
+          "cells": 8,
+          "pc": 4
+        }
+      ],
+      "idx": 1,
+      "done": true,
+      "bonus": false,
+      "baseDone": false,
+      "stats": {
+        "words": 0,
+        "clean": 0
+      },
+      "endedAt": 1790118000000
+    },
+    "sessions": [
+      {
+        "id": "00000000-0000-4000-8000-000000000002",
+        "day": 20718,
+        "startReportDay": "2026-09-22",
+        "status": "completed",
+        "revision": 2,
+        "bonus": false,
+        "budgetMin": 10,
+        "blocksTotal": 1,
+        "doneBlocks": 1,
+        "activeMs": 0,
+        "startedAt": 1790118000000,
+        "endedAt": 1790118000000
+      }
+    ],
+    "reporting": {
+      "version": 1,
+      "sourceRevision": 2,
+      "days": {
+        "2026-09-22": {
+          "day": "2026-09-22",
+          "revision": 2,
+          "activeMs": 0,
+          "practiceEvents": 0,
+          "clean": 0,
+          "liveAim": 0,
+          "reviewEvents": 0,
+          "reviewClean": 0,
+          "reviewLiveAim": 0,
+          "sessionsStarted": 0,
+          "sessionsCompleted": 1,
+          "sessionsAbandoned": 0,
+          "bonusStarted": 0,
+          "bonusCompleted": 0,
+          "modulesCleared": [],
+          "codes": {}
+        }
+      },
+      "acked": {},
+      "gaps": [],
+      "deadLetters": [],
+      "legacy": null
+    },
+    "assessment": {
+      "version": 2,
+      "assignment": null,
+      "runs": [],
+      "nonbonusCompletedTotal": 1
+    },
+    "sched": {},
+    "codes": {},
+    "codesV": 1
+  }
+}

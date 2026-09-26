@@ -1,0 +1,146 @@
+{
+  "label": "assessment boundary and frozen assignment",
+  "sourceSha256": "44dadae13dd80203c60babde8c27af1fd201115b71ebc9b1f6eed98132592b78",
+  "clock": {
+    "nowMs": 1790118000000,
+    "timezoneOffsetMinutes": 420
+  },
+  "screen": {
+    "screen": "assessment",
+    "openStage": null,
+    "unit": null,
+    "docsIdx": 0,
+    "ketsuPick": null,
+    "ketsuTyped": false,
+    "mode": "module",
+    "queue": [],
+    "qIdx": 0,
+    "wordIdx": 0,
+    "phase": "type",
+    "typed": "",
+    "flagIdx": null,
+    "aimGood": false,
+    "firstClean": false,
+    "walkAnyway": false,
+    "condQ": 0,
+    "condPicks": {},
+    "lineupSpent": {},
+    "witnessFound": false,
+    "memPhase": "study",
+    "patchTries": 0,
+    "reveal": false,
+    "log": [],
+    "runGen": 0,
+    "tShown": 0,
+    "latency": null,
+    "fastPass": false,
+    "fastCleared": false,
+    "session": false,
+    "docsReadOnly": false,
+    "assessmentAudioBusy": false,
+    "assessmentPagehideRecorded": false
+  },
+  "state": {
+    "docs": {},
+    "cleared": {},
+    "log": [],
+    "cfg": {
+      "budgetMin": 10,
+      "v": 3
+    },
+    "session": null,
+    "sessions": [],
+    "reporting": {
+      "version": 1,
+      "sourceRevision": 1,
+      "days": {
+        "2026-09-22": {
+          "day": "2026-09-22",
+          "revision": 1,
+          "activeMs": 0,
+          "practiceEvents": 0,
+          "clean": 0,
+          "liveAim": 0,
+          "reviewEvents": 0,
+          "reviewClean": 0,
+          "reviewLiveAim": 0,
+          "sessionsStarted": 0,
+          "sessionsCompleted": 0,
+          "sessionsAbandoned": 0,
+          "bonusStarted": 0,
+          "bonusCompleted": 0,
+          "modulesCleared": [],
+          "codes": {}
+        }
+      },
+      "acked": {},
+      "gaps": [],
+      "deadLetters": [],
+      "legacy": null
+    },
+    "assessment": {
+      "version": 2,
+      "assignment": "A",
+      "runs": [
+        {
+          "id": "00000000-0000-4000-8000-000000000002",
+          "role": "baseline",
+          "form": "A",
+          "status": "in_progress",
+          "order": [
+            "A-E9-01",
+            "A-E11-04",
+            "A-E1-02",
+            "A-E6-02",
+            "A-E5-02",
+            "A-E3-01",
+            "A-E4-02",
+            "A-E9-02",
+            "A-E11-03",
+            "A-E7-02",
+            "A-E5-01",
+            "A-E4-01",
+            "A-E7-01",
+            "A-E8-02",
+            "A-E2-02",
+            "A-E11-02",
+            "A-E3-02",
+            "A-E10-02",
+            "A-E1-01",
+            "A-E2-01",
+            "A-E6-01",
+            "A-E11-01",
+            "A-E8-01",
+            "A-E10-01"
+          ],
+          "cursor": 0,
+          "responses": [],
+          "replays": {},
+          "startedAt": 1790118000000,
+          "completedAt": null,
+          "completedNonbonusTotal": null,
+          "interruptions": 0,
+          "comparable": true,
+          "reasons": [],
+          "device": {
+            "userAgent": "wordbreak-test",
+            "platform": "test"
+          },
+          "staticAudioFailed": false
+        }
+      ],
+      "nonbonusCompletedTotal": 0
+    },
+    "sched": {},
+    "codes": {},
+    "codesV": 1
+  },
+  "derived": {
+    "beforeAssessment": {
+      "eligible": false,
+      "days": 0,
+      "sessions": 0
+    },
+    "phase": "baseline_in_progress"
+  }
+}

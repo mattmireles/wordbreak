@@ -1,0 +1,77 @@
+{
+  "buildNumber" : "1",
+  "bundleIdentifier" : "com.mattmireles.wordbreak.capture-lab",
+  "coverage" : {
+    "appAudio" : 0.9999125057802167,
+    "frontCamera" : 1,
+    "microphone" : 1,
+    "screen" : 0.9988887711900786
+  },
+  "device" : "iPhone13,3",
+  "droppedFrameRatio" : {
+    "frontCamera" : 0,
+    "screen" : 0.9513037350246653
+  },
+  "durationSeconds" : 935.3600300550461,
+  "endedAt" : "2026-09-22T07:48:24Z",
+  "maximumPairwiseDriftMs" : 86.09008300004461,
+  "passesCaptureErrors" : true,
+  "passesCoverage" : true,
+  "passesDrift" : true,
+  "passesDroppedFrames" : false,
+  "schemaVersion" : 1,
+  "snapshot" : {
+    "appAudio" : {
+      "firstHostNs" : 528617063375,
+      "firstPTS" : 528.633323916,
+      "inferredDroppedFrames" : 0,
+      "invalidSamples" : 0,
+      "lastHostNs" : 1463926246875,
+      "lastPTS" : 1463.911515375,
+      "maximumGapMs" : 23.238457999923412,
+      "samples" : 40282
+    },
+    "errors" : [
+
+    ],
+    "events" : [
+      "2026-09-22T07:32:49Z thermal state at start: 0",
+      "2026-09-22T07:32:49Z audio route at start: <AVAudioSessionRouteDescription: 0x13111c590, \ninputs = (\n    \"<AVAudioSessionPortDescription: 0x13111c5b0, type = MicrophoneBuiltIn; name = iPhone Microphone; UID = Built-In Microphone; selectedDataSource = Bottom>\"\n); \noutputs = (\n    \"<AVAudioSessionPortDescription: 0x13111c690, type = Receiver; name = Receiver; UID = Built-In Receiver; selectedDataSource = (null)>\"\n)>",
+      "2026-09-22T07:32:49Z capture started",
+      "2026-09-22T07:48:24Z audio route changed: [AnyHashable(\"AVAudioSessionRouteChangeReasonKey\"): 3, AnyHashable(\"AVAudioSessionRouteChangePreviousRouteKey\"): <AVAudioSessionRouteDescription: 0x13111c310, \ninputs = (\n    \"<AVAudioSessionPortDescription: 0x13111c3f0, type = MicrophoneBuiltIn; name = iPhone Microphone; UID = Built-In Microphone; selectedDataSource = Bottom>\"\n); \noutputs = (\n    \"<AVAudioSessionPortDescription: 0x13111c140, type = Receiver; name = Receiver; UID = Built-In Receiver; selectedDataSource = (null)>\"\n)>]",
+      "2026-09-22T07:48:25Z capture stopped"
+    ],
+    "frontCamera" : {
+      "firstHostNs" : 522041577750,
+      "firstPTS" : 521.980462,
+      "inferredDroppedFrames" : 0,
+      "invalidSamples" : 0,
+      "lastHostNs" : 1464065494083,
+      "lastPTS" : 1464.028820666,
+      "maximumGapMs" : 33.48241699995924,
+      "samples" : 28137
+    },
+    "microphone" : {
+      "firstHostNs" : 528617049875,
+      "firstPTS" : 528.5574166666667,
+      "inferredDroppedFrames" : 0,
+      "invalidSamples" : 0,
+      "lastHostNs" : 1463925951833,
+      "lastPTS" : 1463.9214166666666,
+      "maximumGapMs" : 23.000000000138243,
+      "samples" : 40669
+    },
+    "screen" : {
+      "firstHostNs" : 528613081541,
+      "firstPTS" : 528.603004708,
+      "inferredDroppedFrames" : 26998,
+      "invalidSamples" : 0,
+      "lastHostNs" : 1462931022083,
+      "lastPTS" : 1462.92363575,
+      "maximumGapMs" : 1073.6501250000856,
+      "samples" : 1382
+    }
+  },
+  "startedAt" : "2026-09-22T07:32:49Z",
+  "systemVersion" : "26.5.2"
+}

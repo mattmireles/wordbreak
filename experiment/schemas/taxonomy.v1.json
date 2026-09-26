@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "subjects": ["daily", "wordbreak", "mathbreak", "system", "checkIn"],
+  "screens": ["daily.home", "daily.preparing", "wordbreak.type", "wordbreak.flag", "wordbreak.execute", "wordbreak.fork", "wordbreak.patch", "mathbreak.attempt", "mathbreak.strategy", "mathbreak.construct", "mathbreak.retype", "mathbreak.retrieve", "checkIn.prompt", "daily.complete", "system.captureStatus"],
+  "actions": ["startDaily", "enterText", "selectCell", "submit", "openHint", "closeHint", "selectStrategy", "placeNumber", "confirmConstruction", "pause", "resume", "exit", "submitCheckIn"],
+  "events": ["sessionStarted", "screenPresented", "promptPresented", "touch", "inputChanged", "submission", "answerResult", "strategyOpened", "strategyConstructed", "hintOpened", "correctionStarted", "correctionCompleted", "delayedRetrieval", "engineTransition", "navigation", "paused", "resumed", "captureChanged", "subjectCompleted", "checkInSubmitted", "sessionCompleted", "sessionExited"],
+  "checkIn": { "requiredChoice": ["confusing", "annoying", "too_easy", "okay"], "optionalSpeech": true },
+  "segmentClock": { "host": "continuousClockNanoseconds", "media": "presentationTimeMilliseconds", "mapping": "segmentMediaTimeMs = firstPresentationTimeMs + (hostMonotonicNs - hostAnchorNs) / 1000000", "eventsDuringGap": "captureSegmentId and segmentMediaTimeMs are null" }
+}
+

@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "observedAt": "2026-09-25T20:31:01-07:00",
+  "device": {
+    "name": "Luca's iPhone",
+    "hardwareModel": "iPhone12,8",
+    "operatingSystem": "iOS 27.0",
+    "operatingSystemBuild": "24A437",
+    "udid": "00008030-001C65E43A85802E"
+  },
+  "app": {
+    "bundleIdentifier": "com.mattmireles.wordbreak",
+    "configuration": "Debug",
+    "minimumOperatingSystem": "iOS 26.0"
+  },
+  "familyControls": {
+    "authorizationMode": "child",
+    "authorizationLabel": "Allowed",
+    "selection": {
+      "kind": "category",
+      "label": "Social",
+      "persistedSelectionCount": 1
+    }
+  },
+  "deviceActivity": {
+    "thresholdSeconds": 60,
+    "eligibleForegroundSeconds": 65,
+    "callbackLabelAfterRelaunch": "Check received",
+    "sharedAppGroup": "group.com.mattmireles.wordbreak"
+  },
+  "physicalChecks": {
+    "authorizationApproved": true,
+    "pickerSelectionCommitted": true,
+    "selectionPersistedAcrossRelaunch": true,
+    "monitorStarted": true,
+    "thresholdCallbackReceived": true,
+    "extensionWriteVisibleToApp": true,
+    "notificationPresented": true,
+    "midnightRollover": null,
+    "revocation": null,
+    "replacementInstall": true,
+    "uninstallReinstall": null,
+    "remoteUninstallResult": "Uninstall prohibited by managed-device policy"
+  },
+  "xctest": {
+    "selectionAndMonitor": {
+      "test": "WordbreakUITests.ScreenTimePhysicalTests/testSelectSocialActivityAndStartThresholdProof",
+      "result": "passed"
+    },
+    "restartAndCallback": {
+      "test": "WordbreakUITests.ScreenTimePhysicalTests/testSelectionAndCallbackPersistAcrossRestart",
+      "result": "passed"
+    },
+    "replacementInstallRestartAndCallback": {
+      "test": "WordbreakUITests.ScreenTimePhysicalTests/testSelectionAndCallbackPersistAcrossRestart",
+      "result": "passed"
+    }
+  },
+  "pending": [
+    "midnight rollover",
+    "authorization revocation",
+    "explicit uninstall and reinstall"
+  ]
+}

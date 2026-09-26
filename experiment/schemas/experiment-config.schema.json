@@ -1,0 +1,93 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wordbreak.fun/schemas/experiment-config.v1.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "experimentId", "configVersion", "minimumIOSVersion", "mode", "schedule", "dailySession", "featureFlags", "versions", "model", "hashes", "mediaRequirements", "agentAllowlist", "releaseGates", "protocol"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "experimentId": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+    "configVersion": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+    "minimumIOSVersion": { "type": "string", "pattern": "^26(?:\\.[0-9]+)?$" },
+    "mode": { "enum": ["OBSERVE", "PROPOSE", "AUTOPILOT"] },
+    "schedule": {
+      "type": "object", "additionalProperties": false,
+      "required": ["timeZone", "primaryLocalTime", "fallbackLocalTime", "screenTimeWindowStart", "screenTimeThresholdMinutes"],
+      "properties": {
+        "timeZone": { "const": "device" },
+        "primaryLocalTime": { "type": "string", "pattern": "^[0-2][0-9]:[0-5][0-9]$" },
+        "fallbackLocalTime": { "type": "string", "pattern": "^[0-2][0-9]:[0-5][0-9]$" },
+        "screenTimeWindowStart": { "type": "string", "pattern": "^[0-2][0-9]:[0-5][0-9]$" },
+        "screenTimeThresholdMinutes": { "type": "integer", "minimum": 1, "maximum": 120 }
+      }
+    },
+    "dailySession": {
+      "type": "object", "additionalProperties": false,
+      "required": ["softTargetMinutes", "minimumProductionOpportunitiesPerSubject", "atomicWordbreakModule", "atomicMathCorrection"],
+      "properties": {
+        "softTargetMinutes": { "type": "integer", "minimum": 1, "maximum": 60 },
+        "minimumProductionOpportunitiesPerSubject": { "type": "integer", "minimum": 1 },
+        "atomicWordbreakModule": { "const": true },
+        "atomicMathCorrection": { "const": true }
+      }
+    },
+    "featureFlags": { "$ref": "#/$defs/featureFlags" },
+    "versions": { "$ref": "#/$defs/stringMap" },
+    "model": {
+      "type": "object", "additionalProperties": false,
+      "required": ["provider", "modelId", "settingsHash"],
+      "properties": {
+        "provider": { "const": "vertex-ai" },
+        "modelId": { "type": "string", "minLength": 1 },
+        "settingsHash": { "type": "string", "minLength": 1 }
+      }
+    },
+    "hashes": { "$ref": "#/$defs/stringMap" },
+    "mediaRequirements": {
+      "type": "object", "additionalProperties": false,
+      "required": ["tracks", "minimumCoverageRatio", "maximumDriftMs", "maximumDroppedFrameRatio", "feasibilityRunMinutes"],
+      "properties": {
+        "tracks": { "type": "array", "const": ["screen", "frontCamera", "microphone", "appAudio", "events"] },
+        "minimumCoverageRatio": { "type": "number", "minimum": 0.98, "maximum": 1 },
+        "maximumDriftMs": { "type": "integer", "minimum": 0, "maximum": 250 },
+        "maximumDroppedFrameRatio": { "type": "number", "minimum": 0, "maximum": 0.01 },
+        "feasibilityRunMinutes": { "const": 15 }
+      }
+    },
+    "agentAllowlist": {
+      "type": "object", "additionalProperties": false,
+      "required": ["roles", "candidateProviders", "allowedSurfaces", "forbiddenSurfaces"],
+      "properties": {
+        "roles": { "type": "array", "minItems": 6, "uniqueItems": true, "items": { "type": "string" } },
+        "candidateProviders": { "type": "array", "const": ["codex", "claude"] },
+        "allowedSurfaces": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string" } },
+        "forbiddenSurfaces": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string" } }
+      }
+    },
+    "releaseGates": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string" } },
+    "protocol": {
+      "type": "object", "additionalProperties": false,
+      "required": ["calibrationSessions", "experimentSequence", "maximumSubstantiveChangesPerEpoch", "resultLabels"],
+      "properties": {
+        "calibrationSessions": { "const": 2 },
+        "experimentSequence": { "type": "array", "const": ["A", "A", "B", "B", "A", "B"] },
+        "maximumSubstantiveChangesPerEpoch": { "const": 1 },
+        "resultLabels": { "type": "array", "const": ["directionally_consistent", "directionally_inconsistent", "inconclusive"] }
+      }
+    }
+  },
+  "$defs": {
+    "featureFlags": {
+      "type": "object", "additionalProperties": false,
+      "required": ["capture", "upload", "analysis", "agentWrite", "automatedInstall", "notifications", "screenTime"],
+      "properties": {
+        "capture": { "type": "boolean" }, "upload": { "type": "boolean" },
+        "analysis": { "type": "boolean" }, "agentWrite": { "type": "boolean" },
+        "automatedInstall": { "type": "boolean" }, "notifications": { "type": "boolean" },
+        "screenTime": { "type": "boolean" }
+      }
+    },
+    "stringMap": { "type": "object", "minProperties": 1, "additionalProperties": { "type": "string", "minLength": 1 } }
+  }
+}
+

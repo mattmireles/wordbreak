@@ -1,0 +1,1235 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		013BC69B40146D88B7C06E88 /* CaptureSpikeModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37E3A29BECC73168BABF18D5 /* CaptureSpikeModel.swift */; };
+		05900CA0C779FD3E7E52B9A3 /* NativeWordbreakView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C62D441499EFFB1BCEC94F /* NativeWordbreakView.swift */; };
+		11DB7DB003593FD6CC2713A9 /* CaptureCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7161B3CA143FDFFD851589CA /* CaptureCoordinator.swift */; };
+		1293DACD856EB47EF7A7D68C /* DailySessionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D4D684EEFEDAFAC62EA7FB5 /* DailySessionController.swift */; };
+		1631BBDF917A88411E08EF5D /* WordbreakEngineBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69CEE5C14791C85E7E323BB1 /* WordbreakEngineBridge.swift */; };
+		234AF57A4143AED9F85118FC /* CaptureLabPhysicalTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 341BC475B947F7D84E367BF3 /* CaptureLabPhysicalTests.swift */; };
+		354975933162E17A18455F2A /* DailyOpportunityPolicyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C101329BF0EF7CA86FCA53B5 /* DailyOpportunityPolicyTests.swift */; };
+		357E80688C701E44B7A3EEA3 /* DailyOpportunityPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CB8C3D52A8BE295A71974CC /* DailyOpportunityPolicy.swift */; };
+		3BD09EA93B5D857C2BC62E6E /* WordbreakEngineBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69CEE5C14791C85E7E323BB1 /* WordbreakEngineBridge.swift */; };
+		3DFA2C112B170B4B3B3621FE /* SessionPackager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9086B887A56FA02E2FA1F3C2 /* SessionPackager.swift */; };
+		41CC442B3B08EA373437623F /* NotificationScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3958DB182CDD1D9FA27DAD80 /* NotificationScheduler.swift */; };
+		46C7E659ADE2B541F4D68235 /* DailySessionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D4D684EEFEDAFAC62EA7FB5 /* DailySessionController.swift */; };
+		49B5C6C1534D297A66646A10 /* ScreenTimeOpportunityScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10EE6F2C19A940E15806AFCA /* ScreenTimeOpportunityScheduler.swift */; };
+		49E9C5E2E6FCEB4CE8F13A4D /* ExperimentConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 682E3A4DFB4CC6C9C6C56078 /* ExperimentConfiguration.swift */; };
+		4A85D63ADAC58BD24F11A0F7 /* CaptureSpikeCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F7A855DA4E9E924BB7F7180 /* CaptureSpikeCoordinator.swift */; };
+		4B01812D29E3253495DE17D4 /* ExperimentConfigurationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CBAC03A1A0AC38D47D6EA55 /* ExperimentConfigurationTests.swift */; };
+		4C307FE0C20306C868148BB1 /* SessionPackagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1534389BD736FD1F0F52D282 /* SessionPackagerTests.swift */; };
+		4C9C1D62029A6EC1A05D2C8C /* MathbreakEngineBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8BD56CFEE74F59FD6E5D4B /* MathbreakEngineBridge.swift */; };
+		4D612A37AFD43A3219971E25 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDEAF984EA86E352782A40DC /* RootView.swift */; };
+		4F2CEA5A452DB89239A85550 /* CaptureSpikeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 093639AD8A12A7F285D8DAEC /* CaptureSpikeView.swift */; };
+		578985718F6F681CFCEFC673 /* NativeMathbreakView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0EB98DEFFBE2B2EB8D14FBC /* NativeMathbreakView.swift */; };
+		5BFA1C81AAEDDA74E491005D /* CaptureSpikeModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37E3A29BECC73168BABF18D5 /* CaptureSpikeModel.swift */; };
+		5CA37AC8FAC49EA2968C94C2 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDEAF984EA86E352782A40DC /* RootView.swift */; };
+		62327B87B3AE9FA5DACF254D /* NotificationSchedulerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D23BA61DA63B06629DDD3E92 /* NotificationSchedulerTests.swift */; };
+		6BD5C8ABDDB9A361BBE1E05B /* ScreenTimeOpportunityScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10EE6F2C19A940E15806AFCA /* ScreenTimeOpportunityScheduler.swift */; };
+		75E59EBD0A6F2B9042D9C420 /* NativeWordbreakView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C62D441499EFFB1BCEC94F /* NativeWordbreakView.swift */; };
+		7BC818C3611270BF601CFEF0 /* NativeMathbreakView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0EB98DEFFBE2B2EB8D14FBC /* NativeMathbreakView.swift */; };
+		7F2368AB6FCD275522436B78 /* SessionPackagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1534389BD736FD1F0F52D282 /* SessionPackagerTests.swift */; };
+		82947233D742353133E36D9B /* DailyEventLedger.swift in Sources */ = {isa = PBXBuildFile; fileRef = A665C41856150105565A8BBA /* DailyEventLedger.swift */; };
+		8330555CBDD48AC429005679 /* WordbreakApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C638F8C0B0004257952C9F2 /* WordbreakApp.swift */; };
+		85A5D5A8DFDD3228D9A11877 /* ProductionCapturePhysicalTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E56EA659CCD361B611DC3E05 /* ProductionCapturePhysicalTests.swift */; };
+		8712D683BA082FE72BF225CB /* CaptureBudgetEvaluationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B365581BAFDBDA833D6C2BDB /* CaptureBudgetEvaluationTests.swift */; };
+		8D1DE8A27284A5E8C3A0087B /* DailyPracticeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6ECADC34074282AAE000AB79 /* DailyPracticeView.swift */; };
+		8ECDFADF3568097ADE1BDAD3 /* DailyPracticeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6ECADC34074282AAE000AB79 /* DailyPracticeView.swift */; };
+		8ED777D5DCFC719214247261 /* ProductionCaptureSmokeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB87EBF91B2D9AF54D910BEA /* ProductionCaptureSmokeView.swift */; };
+		92237BAEDF577A692EDFB1C4 /* WordbreakApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C638F8C0B0004257952C9F2 /* WordbreakApp.swift */; };
+		927C89FDEE05053867C0CAB5 /* CaptureSpikeCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F7A855DA4E9E924BB7F7180 /* CaptureSpikeCoordinator.swift */; };
+		967427C4CC0FE5E41F4820AB /* MathbreakEngineBridgeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9DCCB97A9E539C611EBABB8 /* MathbreakEngineBridgeTests.swift */; };
+		985BC7E6501B63087C0CF8AE /* CapabilityDiagnosticView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDDA5114EA273208A5F680E0 /* CapabilityDiagnosticView.swift */; };
+		98897A1C183D8A7628694550 /* DailyOpportunityPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CB8C3D52A8BE295A71974CC /* DailyOpportunityPolicy.swift */; };
+		AC4FD57E5C3A4620FF6E5A1C /* MathbreakEngineBridgeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9DCCB97A9E539C611EBABB8 /* MathbreakEngineBridgeTests.swift */; };
+		AF61B74C0A3E733DAF73190B /* CheckInVoiceRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1491BC86D2F0EA58C1E106F /* CheckInVoiceRecorder.swift */; };
+		B14F1EBD41C50D5DE9C9212B /* ScreenTimePhysicalTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A69812BF83AFB6C6C34A555 /* ScreenTimePhysicalTests.swift */; };
+		B37CACD501396599835F7C63 /* SessionPackager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9086B887A56FA02E2FA1F3C2 /* SessionPackager.swift */; };
+		B386AB8E597F409B0835030D /* ExperimentConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 682E3A4DFB4CC6C9C6C56078 /* ExperimentConfiguration.swift */; };
+		B45002109758B9F3B43F8EE8 /* CheckInVoiceRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1491BC86D2F0EA58C1E106F /* CheckInVoiceRecorder.swift */; };
+		B9209FC097F9A45ECE7D0A2F /* CapabilityDiagnosticView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDDA5114EA273208A5F680E0 /* CapabilityDiagnosticView.swift */; };
+		BA22B954048B2A599A723E79 /* WordbreakDeviceActivityMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 108E7FC4AC2CF2EA666BC665 /* WordbreakDeviceActivityMonitor.swift */; };
+		BBF4C803FEC76DD2DE359704 /* CaptureSpikeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 093639AD8A12A7F285D8DAEC /* CaptureSpikeView.swift */; };
+		C17A518ECA31FE12F9C11149 /* MathbreakEngineBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8BD56CFEE74F59FD6E5D4B /* MathbreakEngineBridge.swift */; };
+		C1815437C5A3D2BC27646FEF /* DailyPracticeUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 547EF2143196E55F5E3104C7 /* DailyPracticeUITests.swift */; };
+		C5368E0502AF843844CA9D5A /* DailyEventLedgerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8546E14F35CEC0AFF086121E /* DailyEventLedgerTests.swift */; };
+		C6AAF99764F92A1D454BCF28 /* NotificationSchedulerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D23BA61DA63B06629DDD3E92 /* NotificationSchedulerTests.swift */; };
+		C71B31AB23A8098B9CB58B10 /* DailyEventLedger.swift in Sources */ = {isa = PBXBuildFile; fileRef = A665C41856150105565A8BBA /* DailyEventLedger.swift */; };
+		CED8374D48D4D1CB301E4041 /* WordbreakScreenTimeMonitor.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = BCD474F9AE6F7DC4B06474D9 /* WordbreakScreenTimeMonitor.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		D19C84BFE5384F6E2F2A8F04 /* ProductionCaptureSmokeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB87EBF91B2D9AF54D910BEA /* ProductionCaptureSmokeView.swift */; };
+		D8DC053CB12B15C6AFCDF392 /* WordbreakEngineBridgeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA6BA250F67440E9E6125CF2 /* WordbreakEngineBridgeTests.swift */; };
+		DC382FC05C3E3D21E2F5C0A9 /* CaptureCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7161B3CA143FDFFD851589CA /* CaptureCoordinator.swift */; };
+		DCFC2D9D5A11AA5AC70A539D /* NotificationScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3958DB182CDD1D9FA27DAD80 /* NotificationScheduler.swift */; };
+		E20BF6390E502578D74334EA /* WordbreakEngineBridgeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA6BA250F67440E9E6125CF2 /* WordbreakEngineBridgeTests.swift */; };
+		EBA1248E10627C5E8E6CCF79 /* DailyOpportunityPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CB8C3D52A8BE295A71974CC /* DailyOpportunityPolicy.swift */; };
+		EE2DF26943AE39BB1B5F7965 /* ExperimentConfigurationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CBAC03A1A0AC38D47D6EA55 /* ExperimentConfigurationTests.swift */; };
+		F34B614BEB11F772F95F4BD0 /* DailyEventLedgerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8546E14F35CEC0AFF086121E /* DailyEventLedgerTests.swift */; };
+		F351F650E62BB4F74112904C /* DailyOpportunityPolicyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C101329BF0EF7CA86FCA53B5 /* DailyOpportunityPolicyTests.swift */; };
+		FBAA5F9B5FA034FE66ABABF6 /* CaptureBudgetEvaluationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B365581BAFDBDA833D6C2BDB /* CaptureBudgetEvaluationTests.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		4C539FCBEC40F8EFF4E21D57 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7D33C6C83E931E563D854AF0 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = DBDFDEC4DC7C93A65FD11C88;
+			remoteInfo = WordbreakCaptureLab;
+		};
+		54F29E5F6CE9A6179F8DDAC1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7D33C6C83E931E563D854AF0 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = DBDFDEC4DC7C93A65FD11C88;
+			remoteInfo = WordbreakCaptureLab;
+		};
+		A24D7D9138796E742EB933D4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7D33C6C83E931E563D854AF0 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 4E01336DBBB8645FD1C1D4EC;
+			remoteInfo = WordbreakScreenTimeMonitor;
+		};
+		D7C029ED87032FC0522A9476 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7D33C6C83E931E563D854AF0 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 1BFC8F121E61D616E7FE99B2;
+			remoteInfo = Wordbreak;
+		};
+		F1BBC3F408C57DA1991506DD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7D33C6C83E931E563D854AF0 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 1BFC8F121E61D616E7FE99B2;
+			remoteInfo = Wordbreak;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		E0AE37A227803AAD09F5C3DD /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				CED8374D48D4D1CB301E4041 /* WordbreakScreenTimeMonitor.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		093639AD8A12A7F285D8DAEC /* CaptureSpikeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureSpikeView.swift; sourceTree = "<group>"; };
+		108E7FC4AC2CF2EA666BC665 /* WordbreakDeviceActivityMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordbreakDeviceActivityMonitor.swift; sourceTree = "<group>"; };
+		10EE6F2C19A940E15806AFCA /* ScreenTimeOpportunityScheduler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenTimeOpportunityScheduler.swift; sourceTree = "<group>"; };
+		1534389BD736FD1F0F52D282 /* SessionPackagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionPackagerTests.swift; sourceTree = "<group>"; };
+		1A69812BF83AFB6C6C34A555 /* ScreenTimePhysicalTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenTimePhysicalTests.swift; sourceTree = "<group>"; };
+		1E8BD56CFEE74F59FD6E5D4B /* MathbreakEngineBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MathbreakEngineBridge.swift; sourceTree = "<group>"; };
+		260A130D047665A556A9E2AB /* WordbreakScreenTimeMonitor.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = WordbreakScreenTimeMonitor.entitlements; sourceTree = "<group>"; };
+		2CBAC03A1A0AC38D47D6EA55 /* ExperimentConfigurationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExperimentConfigurationTests.swift; sourceTree = "<group>"; };
+		341BC475B947F7D84E367BF3 /* CaptureLabPhysicalTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureLabPhysicalTests.swift; sourceTree = "<group>"; };
+		37E3A29BECC73168BABF18D5 /* CaptureSpikeModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureSpikeModel.swift; sourceTree = "<group>"; };
+		3958DB182CDD1D9FA27DAD80 /* NotificationScheduler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationScheduler.swift; sourceTree = "<group>"; };
+		3BD12245BFA28F5D4686802B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		3F7A855DA4E9E924BB7F7180 /* CaptureSpikeCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureSpikeCoordinator.swift; sourceTree = "<group>"; };
+		547EF2143196E55F5E3104C7 /* DailyPracticeUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyPracticeUITests.swift; sourceTree = "<group>"; };
+		682E3A4DFB4CC6C9C6C56078 /* ExperimentConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExperimentConfiguration.swift; sourceTree = "<group>"; };
+		69CEE5C14791C85E7E323BB1 /* WordbreakEngineBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordbreakEngineBridge.swift; sourceTree = "<group>"; };
+		6BF5F355AF8B339D7C448D55 /* WordbreakCaptureLab.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = WordbreakCaptureLab.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		6ECADC34074282AAE000AB79 /* DailyPracticeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyPracticeView.swift; sourceTree = "<group>"; };
+		7161B3CA143FDFFD851589CA /* CaptureCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureCoordinator.swift; sourceTree = "<group>"; };
+		75622970125E0FE89C349ECB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		7C638F8C0B0004257952C9F2 /* WordbreakApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordbreakApp.swift; sourceTree = "<group>"; };
+		8546E14F35CEC0AFF086121E /* DailyEventLedgerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyEventLedgerTests.swift; sourceTree = "<group>"; };
+		9086B887A56FA02E2FA1F3C2 /* SessionPackager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionPackager.swift; sourceTree = "<group>"; };
+		9098E71BA10D9DE7768DF06E /* WordbreakUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = WordbreakUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		97DD1649E76EC6A3F5532AB5 /* Wordbreak.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Wordbreak.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		9CB8C3D52A8BE295A71974CC /* DailyOpportunityPolicy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyOpportunityPolicy.swift; sourceTree = "<group>"; };
+		9D4D684EEFEDAFAC62EA7FB5 /* DailySessionController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailySessionController.swift; sourceTree = "<group>"; };
+		A665C41856150105565A8BBA /* DailyEventLedger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyEventLedger.swift; sourceTree = "<group>"; };
+		B365581BAFDBDA833D6C2BDB /* CaptureBudgetEvaluationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureBudgetEvaluationTests.swift; sourceTree = "<group>"; };
+		B7BAD4D28CF6FE37EDE60012 /* WordbreakTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = WordbreakTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		B8637AF49C5ECECE6A312B90 /* Wordbreak.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Wordbreak.entitlements; sourceTree = "<group>"; };
+		B91590F37BBE53EF2806CB10 /* WordbreakCaptureLabUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = WordbreakCaptureLabUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		BCD474F9AE6F7DC4B06474D9 /* WordbreakScreenTimeMonitor.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = WordbreakScreenTimeMonitor.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		C0EB98DEFFBE2B2EB8D14FBC /* NativeMathbreakView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeMathbreakView.swift; sourceTree = "<group>"; };
+		C101329BF0EF7CA86FCA53B5 /* DailyOpportunityPolicyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyOpportunityPolicyTests.swift; sourceTree = "<group>"; };
+		C1491BC86D2F0EA58C1E106F /* CheckInVoiceRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckInVoiceRecorder.swift; sourceTree = "<group>"; };
+		D23BA61DA63B06629DDD3E92 /* NotificationSchedulerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationSchedulerTests.swift; sourceTree = "<group>"; };
+		D9DCCB97A9E539C611EBABB8 /* MathbreakEngineBridgeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MathbreakEngineBridgeTests.swift; sourceTree = "<group>"; };
+		DA6BA250F67440E9E6125CF2 /* WordbreakEngineBridgeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordbreakEngineBridgeTests.swift; sourceTree = "<group>"; };
+		DDDA5114EA273208A5F680E0 /* CapabilityDiagnosticView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CapabilityDiagnosticView.swift; sourceTree = "<group>"; };
+		E56EA659CCD361B611DC3E05 /* ProductionCapturePhysicalTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductionCapturePhysicalTests.swift; sourceTree = "<group>"; };
+		E8F3EA7A1B767981FE46FFDD /* WordbreakCaptureLabTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = WordbreakCaptureLabTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		EB87EBF91B2D9AF54D910BEA /* ProductionCaptureSmokeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductionCaptureSmokeView.swift; sourceTree = "<group>"; };
+		F7C62D441499EFFB1BCEC94F /* NativeWordbreakView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeWordbreakView.swift; sourceTree = "<group>"; };
+		FDEAF984EA86E352782A40DC /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		011878EC311518AB44DBEB5A /* Experiment */ = {
+			isa = PBXGroup;
+			children = (
+				682E3A4DFB4CC6C9C6C56078 /* ExperimentConfiguration.swift */,
+			);
+			path = Experiment;
+			sourceTree = "<group>";
+		};
+		054EEBB0A38B854FC6D64D01 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				97DD1649E76EC6A3F5532AB5 /* Wordbreak.app */,
+				6BF5F355AF8B339D7C448D55 /* WordbreakCaptureLab.app */,
+				E8F3EA7A1B767981FE46FFDD /* WordbreakCaptureLabTests.xctest */,
+				B91590F37BBE53EF2806CB10 /* WordbreakCaptureLabUITests.xctest */,
+				BCD474F9AE6F7DC4B06474D9 /* WordbreakScreenTimeMonitor.appex */,
+				B7BAD4D28CF6FE37EDE60012 /* WordbreakTests.xctest */,
+				9098E71BA10D9DE7768DF06E /* WordbreakUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		458B92C5F453A3E839C9E486 /* Capture */ = {
+			isa = PBXGroup;
+			children = (
+				7161B3CA143FDFFD851589CA /* CaptureCoordinator.swift */,
+				C1491BC86D2F0EA58C1E106F /* CheckInVoiceRecorder.swift */,
+				EB87EBF91B2D9AF54D910BEA /* ProductionCaptureSmokeView.swift */,
+				9086B887A56FA02E2FA1F3C2 /* SessionPackager.swift */,
+			);
+			path = Capture;
+			sourceTree = "<group>";
+		};
+		5400F0D5836C9000F514BEA7 /* WordbreakScreenTimeMonitor */ = {
+			isa = PBXGroup;
+			children = (
+				3BD12245BFA28F5D4686802B /* Info.plist */,
+				108E7FC4AC2CF2EA666BC665 /* WordbreakDeviceActivityMonitor.swift */,
+				260A130D047665A556A9E2AB /* WordbreakScreenTimeMonitor.entitlements */,
+			);
+			path = WordbreakScreenTimeMonitor;
+			sourceTree = "<group>";
+		};
+		58B79F28B799E70540E1CFA9 /* WordbreakCaptureLabUITests */ = {
+			isa = PBXGroup;
+			children = (
+				341BC475B947F7D84E367BF3 /* CaptureLabPhysicalTests.swift */,
+			);
+			path = WordbreakCaptureLabUITests;
+			sourceTree = "<group>";
+		};
+		6312151D5298F36648DD3A5D /* Engine */ = {
+			isa = PBXGroup;
+			children = (
+				1E8BD56CFEE74F59FD6E5D4B /* MathbreakEngineBridge.swift */,
+				69CEE5C14791C85E7E323BB1 /* WordbreakEngineBridge.swift */,
+			);
+			path = Engine;
+			sourceTree = "<group>";
+		};
+		7046D0A7AD0B36A7E5E76DFD = {
+			isa = PBXGroup;
+			children = (
+				9D5B2CB1A5A539164C591B99 /* Wordbreak */,
+				58B79F28B799E70540E1CFA9 /* WordbreakCaptureLabUITests */,
+				8F270F1EF028EEDA3EEF4609 /* WordbreakCaptureSpike */,
+				5400F0D5836C9000F514BEA7 /* WordbreakScreenTimeMonitor */,
+				8D6BAB2C3EE8BBE1A2EDD1B1 /* WordbreakTests */,
+				CF4613715C16A7D86D7A1FBC /* WordbreakUITests */,
+				054EEBB0A38B854FC6D64D01 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		8848673D63C43A25BB12E549 /* Mathbreak */ = {
+			isa = PBXGroup;
+			children = (
+				C0EB98DEFFBE2B2EB8D14FBC /* NativeMathbreakView.swift */,
+			);
+			path = Mathbreak;
+			sourceTree = "<group>";
+		};
+		8D6BAB2C3EE8BBE1A2EDD1B1 /* WordbreakTests */ = {
+			isa = PBXGroup;
+			children = (
+				B365581BAFDBDA833D6C2BDB /* CaptureBudgetEvaluationTests.swift */,
+				8546E14F35CEC0AFF086121E /* DailyEventLedgerTests.swift */,
+				C101329BF0EF7CA86FCA53B5 /* DailyOpportunityPolicyTests.swift */,
+				2CBAC03A1A0AC38D47D6EA55 /* ExperimentConfigurationTests.swift */,
+				D9DCCB97A9E539C611EBABB8 /* MathbreakEngineBridgeTests.swift */,
+				D23BA61DA63B06629DDD3E92 /* NotificationSchedulerTests.swift */,
+				1534389BD736FD1F0F52D282 /* SessionPackagerTests.swift */,
+				DA6BA250F67440E9E6125CF2 /* WordbreakEngineBridgeTests.swift */,
+			);
+			path = WordbreakTests;
+			sourceTree = "<group>";
+		};
+		8F270F1EF028EEDA3EEF4609 /* WordbreakCaptureSpike */ = {
+			isa = PBXGroup;
+			children = (
+				3F7A855DA4E9E924BB7F7180 /* CaptureSpikeCoordinator.swift */,
+				37E3A29BECC73168BABF18D5 /* CaptureSpikeModel.swift */,
+				093639AD8A12A7F285D8DAEC /* CaptureSpikeView.swift */,
+			);
+			path = WordbreakCaptureSpike;
+			sourceTree = "<group>";
+		};
+		920E7C5AF742D6824B07D6D5 /* ScreenTime */ = {
+			isa = PBXGroup;
+			children = (
+				9CB8C3D52A8BE295A71974CC /* DailyOpportunityPolicy.swift */,
+				10EE6F2C19A940E15806AFCA /* ScreenTimeOpportunityScheduler.swift */,
+			);
+			path = ScreenTime;
+			sourceTree = "<group>";
+		};
+		987D78B9F991E8E490930683 /* Notifications */ = {
+			isa = PBXGroup;
+			children = (
+				3958DB182CDD1D9FA27DAD80 /* NotificationScheduler.swift */,
+			);
+			path = Notifications;
+			sourceTree = "<group>";
+		};
+		9D5B2CB1A5A539164C591B99 /* Wordbreak */ = {
+			isa = PBXGroup;
+			children = (
+				458B92C5F453A3E839C9E486 /* Capture */,
+				B84646065C36A47B4966A26C /* Daily */,
+				6312151D5298F36648DD3A5D /* Engine */,
+				011878EC311518AB44DBEB5A /* Experiment */,
+				8848673D63C43A25BB12E549 /* Mathbreak */,
+				987D78B9F991E8E490930683 /* Notifications */,
+				920E7C5AF742D6824B07D6D5 /* ScreenTime */,
+				A8292814DBB9C35E08FD8111 /* Wordbreak */,
+				DDDA5114EA273208A5F680E0 /* CapabilityDiagnosticView.swift */,
+				75622970125E0FE89C349ECB /* Info.plist */,
+				FDEAF984EA86E352782A40DC /* RootView.swift */,
+				B8637AF49C5ECECE6A312B90 /* Wordbreak.entitlements */,
+				7C638F8C0B0004257952C9F2 /* WordbreakApp.swift */,
+			);
+			path = Wordbreak;
+			sourceTree = "<group>";
+		};
+		A8292814DBB9C35E08FD8111 /* Wordbreak */ = {
+			isa = PBXGroup;
+			children = (
+				F7C62D441499EFFB1BCEC94F /* NativeWordbreakView.swift */,
+			);
+			path = Wordbreak;
+			sourceTree = "<group>";
+		};
+		B84646065C36A47B4966A26C /* Daily */ = {
+			isa = PBXGroup;
+			children = (
+				A665C41856150105565A8BBA /* DailyEventLedger.swift */,
+				6ECADC34074282AAE000AB79 /* DailyPracticeView.swift */,
+				9D4D684EEFEDAFAC62EA7FB5 /* DailySessionController.swift */,
+			);
+			path = Daily;
+			sourceTree = "<group>";
+		};
+		CF4613715C16A7D86D7A1FBC /* WordbreakUITests */ = {
+			isa = PBXGroup;
+			children = (
+				547EF2143196E55F5E3104C7 /* DailyPracticeUITests.swift */,
+				E56EA659CCD361B611DC3E05 /* ProductionCapturePhysicalTests.swift */,
+				1A69812BF83AFB6C6C34A555 /* ScreenTimePhysicalTests.swift */,
+			);
+			path = WordbreakUITests;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		02C5A3139E74307641913AC8 /* WordbreakTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BF4BC867059817CCBAFC343B /* Build configuration list for PBXNativeTarget "WordbreakTests" */;
+			buildPhases = (
+				C16DDAF1D6412EE70C3CE4EF /* Sources */,
+				FFB3EA8263DEA7277BF59820 /* Bundle frozen parity fixtures */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				9B8F11E08BABD99CF3FA2FD1 /* PBXTargetDependency */,
+			);
+			name = WordbreakTests;
+			packageProductDependencies = (
+			);
+			productName = WordbreakTests;
+			productReference = B7BAD4D28CF6FE37EDE60012 /* WordbreakTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		1BFC8F121E61D616E7FE99B2 /* Wordbreak */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 6B0314052EAF26E3CA64427B /* Build configuration list for PBXNativeTarget "Wordbreak" */;
+			buildPhases = (
+				82CFA4791F6821392474107A /* Sources */,
+				E0AE37A227803AAD09F5C3DD /* Embed Foundation Extensions */,
+				72887AD42BF9400A56D1661C /* Bundle shared Wordbreak engine */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				B6DD2089E2292741E9249D8F /* PBXTargetDependency */,
+			);
+			name = Wordbreak;
+			packageProductDependencies = (
+			);
+			productName = Wordbreak;
+			productReference = 97DD1649E76EC6A3F5532AB5 /* Wordbreak.app */;
+			productType = "com.apple.product-type.application";
+		};
+		4E01336DBBB8645FD1C1D4EC /* WordbreakScreenTimeMonitor */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A5DA57FD64D866D54CDAACDB /* Build configuration list for PBXNativeTarget "WordbreakScreenTimeMonitor" */;
+			buildPhases = (
+				0A81164E8C85A47F172F5FAF /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = WordbreakScreenTimeMonitor;
+			packageProductDependencies = (
+			);
+			productName = WordbreakScreenTimeMonitor;
+			productReference = BCD474F9AE6F7DC4B06474D9 /* WordbreakScreenTimeMonitor.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+		854DF50DDC2C300AF82E0887 /* WordbreakCaptureLabTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1C0D3DF6EEA2972878020A0B /* Build configuration list for PBXNativeTarget "WordbreakCaptureLabTests" */;
+			buildPhases = (
+				998F0AB3A5635D3974A3F5A2 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				FC0B31414104C21A89F918F8 /* PBXTargetDependency */,
+			);
+			name = WordbreakCaptureLabTests;
+			packageProductDependencies = (
+			);
+			productName = WordbreakCaptureLabTests;
+			productReference = E8F3EA7A1B767981FE46FFDD /* WordbreakCaptureLabTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		884A8A17D2287D5925E68166 /* WordbreakUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2B2C19F0B4376CDE7F8392B7 /* Build configuration list for PBXNativeTarget "WordbreakUITests" */;
+			buildPhases = (
+				AB359939CFFA38D7FB76EE6D /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				009DE997BF8B12C1D7CB8074 /* PBXTargetDependency */,
+			);
+			name = WordbreakUITests;
+			packageProductDependencies = (
+			);
+			productName = WordbreakUITests;
+			productReference = 9098E71BA10D9DE7768DF06E /* WordbreakUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+		D50ADD915555600FD7C8F2B9 /* WordbreakCaptureLabUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D584C6CAFD3A1A2A02D70A4F /* Build configuration list for PBXNativeTarget "WordbreakCaptureLabUITests" */;
+			buildPhases = (
+				B01D50B709393240281A55E7 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				AAE67EA4090B39A892B71A35 /* PBXTargetDependency */,
+			);
+			name = WordbreakCaptureLabUITests;
+			packageProductDependencies = (
+			);
+			productName = WordbreakCaptureLabUITests;
+			productReference = B91590F37BBE53EF2806CB10 /* WordbreakCaptureLabUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+		DBDFDEC4DC7C93A65FD11C88 /* WordbreakCaptureLab */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 99D67BCB378CF2BCA465DA23 /* Build configuration list for PBXNativeTarget "WordbreakCaptureLab" */;
+			buildPhases = (
+				64BF31A587EDB398D173281F /* Sources */,
+				805D45D1E9F8A10E9A7A010C /* Bundle shared Wordbreak engine */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = WordbreakCaptureLab;
+			packageProductDependencies = (
+			);
+			productName = WordbreakCaptureLab;
+			productReference = 6BF5F355AF8B339D7C448D55 /* WordbreakCaptureLab.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		7D33C6C83E931E563D854AF0 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					02C5A3139E74307641913AC8 = {
+						DevelopmentTeam = 6ETYBAJKY8;
+						ProvisioningStyle = Automatic;
+					};
+					1BFC8F121E61D616E7FE99B2 = {
+						DevelopmentTeam = 6ETYBAJKY8;
+						ProvisioningStyle = Automatic;
+					};
+					4E01336DBBB8645FD1C1D4EC = {
+						DevelopmentTeam = 6ETYBAJKY8;
+						ProvisioningStyle = Automatic;
+					};
+					854DF50DDC2C300AF82E0887 = {
+						DevelopmentTeam = 6ETYBAJKY8;
+						ProvisioningStyle = Automatic;
+					};
+					884A8A17D2287D5925E68166 = {
+						DevelopmentTeam = 6ETYBAJKY8;
+						ProvisioningStyle = Automatic;
+						TestTargetID = 1BFC8F121E61D616E7FE99B2;
+					};
+					D50ADD915555600FD7C8F2B9 = {
+						DevelopmentTeam = 6ETYBAJKY8;
+						ProvisioningStyle = Automatic;
+						TestTargetID = DBDFDEC4DC7C93A65FD11C88;
+					};
+					DBDFDEC4DC7C93A65FD11C88 = {
+						DevelopmentTeam = 6ETYBAJKY8;
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = FF5996AF1C4EEA1CDE346BC3 /* Build configuration list for PBXProject "Wordbreak" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 7046D0A7AD0B36A7E5E76DFD;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 054EEBB0A38B854FC6D64D01 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				1BFC8F121E61D616E7FE99B2 /* Wordbreak */,
+				DBDFDEC4DC7C93A65FD11C88 /* WordbreakCaptureLab */,
+				4E01336DBBB8645FD1C1D4EC /* WordbreakScreenTimeMonitor */,
+				02C5A3139E74307641913AC8 /* WordbreakTests */,
+				D50ADD915555600FD7C8F2B9 /* WordbreakCaptureLabUITests */,
+				884A8A17D2287D5925E68166 /* WordbreakUITests */,
+				854DF50DDC2C300AF82E0887 /* WordbreakCaptureLabTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		72887AD42BF9400A56D1661C /* Bundle shared Wordbreak engine */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/../src/game/wordbreak-core.js",
+				"$(SRCROOT)/../src/game/wordbreak-content.js",
+				"$(SRCROOT)/../src/game/mathbreak-core.js",
+				"$(SRCROOT)/../src/game/mathbreak-content.json",
+				"$(SRCROOT)/../experiment/config/experiment.v1.json",
+			);
+			name = "Bundle shared Wordbreak engine";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/wordbreak-core.js",
+				"$(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/wordbreak-content.js",
+				"$(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/mathbreak-core.js",
+				"$(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/mathbreak-content.json",
+				"$(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/experiment.v1.json",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "/bin/cp \"${SRCROOT}/../src/game/wordbreak-core.js\" \"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/wordbreak-core.js\"\n/bin/cp \"${SRCROOT}/../src/game/wordbreak-content.js\" \"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/wordbreak-content.js\"\n/bin/cp \"${SRCROOT}/../src/game/mathbreak-core.js\" \"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/mathbreak-core.js\"\n/bin/cp \"${SRCROOT}/../src/game/mathbreak-content.json\" \"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/mathbreak-content.json\"\n/bin/cp \"${SRCROOT}/../experiment/config/experiment.v1.json\" \"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/experiment.v1.json\"\n";
+		};
+		805D45D1E9F8A10E9A7A010C /* Bundle shared Wordbreak engine */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/../src/game/wordbreak-core.js",
+				"$(SRCROOT)/../src/game/wordbreak-content.js",
+				"$(SRCROOT)/../src/game/mathbreak-core.js",
+				"$(SRCROOT)/../src/game/mathbreak-content.json",
+				"$(SRCROOT)/../experiment/config/experiment.v1.json",
+			);
+			name = "Bundle shared Wordbreak engine";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/wordbreak-core.js",
+				"$(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/wordbreak-content.js",
+				"$(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/mathbreak-core.js",
+				"$(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/mathbreak-content.json",
+				"$(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/experiment.v1.json",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "/bin/cp \"${SRCROOT}/../src/game/wordbreak-core.js\" \"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/wordbreak-core.js\"\n/bin/cp \"${SRCROOT}/../src/game/wordbreak-content.js\" \"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/wordbreak-content.js\"\n/bin/cp \"${SRCROOT}/../src/game/mathbreak-core.js\" \"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/mathbreak-core.js\"\n/bin/cp \"${SRCROOT}/../src/game/mathbreak-content.json\" \"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/mathbreak-content.json\"\n/bin/cp \"${SRCROOT}/../experiment/config/experiment.v1.json\" \"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/experiment.v1.json\"\n";
+		};
+		FFB3EA8263DEA7277BF59820 /* Bundle frozen parity fixtures */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/../test/fixtures/wordbreak-golden",
+			);
+			name = "Bundle frozen parity fixtures";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/wordbreak-golden",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "/usr/bin/ditto \"${SRCROOT}/../test/fixtures/wordbreak-golden\" \"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/wordbreak-golden\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		0A81164E8C85A47F172F5FAF /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				98897A1C183D8A7628694550 /* DailyOpportunityPolicy.swift in Sources */,
+				BA22B954048B2A599A723E79 /* WordbreakDeviceActivityMonitor.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		64BF31A587EDB398D173281F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				985BC7E6501B63087C0CF8AE /* CapabilityDiagnosticView.swift in Sources */,
+				DC382FC05C3E3D21E2F5C0A9 /* CaptureCoordinator.swift in Sources */,
+				927C89FDEE05053867C0CAB5 /* CaptureSpikeCoordinator.swift in Sources */,
+				5BFA1C81AAEDDA74E491005D /* CaptureSpikeModel.swift in Sources */,
+				4F2CEA5A452DB89239A85550 /* CaptureSpikeView.swift in Sources */,
+				AF61B74C0A3E733DAF73190B /* CheckInVoiceRecorder.swift in Sources */,
+				C71B31AB23A8098B9CB58B10 /* DailyEventLedger.swift in Sources */,
+				EBA1248E10627C5E8E6CCF79 /* DailyOpportunityPolicy.swift in Sources */,
+				8ECDFADF3568097ADE1BDAD3 /* DailyPracticeView.swift in Sources */,
+				46C7E659ADE2B541F4D68235 /* DailySessionController.swift in Sources */,
+				B386AB8E597F409B0835030D /* ExperimentConfiguration.swift in Sources */,
+				4C9C1D62029A6EC1A05D2C8C /* MathbreakEngineBridge.swift in Sources */,
+				7BC818C3611270BF601CFEF0 /* NativeMathbreakView.swift in Sources */,
+				05900CA0C779FD3E7E52B9A3 /* NativeWordbreakView.swift in Sources */,
+				DCFC2D9D5A11AA5AC70A539D /* NotificationScheduler.swift in Sources */,
+				D19C84BFE5384F6E2F2A8F04 /* ProductionCaptureSmokeView.swift in Sources */,
+				4D612A37AFD43A3219971E25 /* RootView.swift in Sources */,
+				49B5C6C1534D297A66646A10 /* ScreenTimeOpportunityScheduler.swift in Sources */,
+				3DFA2C112B170B4B3B3621FE /* SessionPackager.swift in Sources */,
+				8330555CBDD48AC429005679 /* WordbreakApp.swift in Sources */,
+				1631BBDF917A88411E08EF5D /* WordbreakEngineBridge.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		82CFA4791F6821392474107A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B9209FC097F9A45ECE7D0A2F /* CapabilityDiagnosticView.swift in Sources */,
+				11DB7DB003593FD6CC2713A9 /* CaptureCoordinator.swift in Sources */,
+				4A85D63ADAC58BD24F11A0F7 /* CaptureSpikeCoordinator.swift in Sources */,
+				013BC69B40146D88B7C06E88 /* CaptureSpikeModel.swift in Sources */,
+				BBF4C803FEC76DD2DE359704 /* CaptureSpikeView.swift in Sources */,
+				B45002109758B9F3B43F8EE8 /* CheckInVoiceRecorder.swift in Sources */,
+				82947233D742353133E36D9B /* DailyEventLedger.swift in Sources */,
+				357E80688C701E44B7A3EEA3 /* DailyOpportunityPolicy.swift in Sources */,
+				8D1DE8A27284A5E8C3A0087B /* DailyPracticeView.swift in Sources */,
+				1293DACD856EB47EF7A7D68C /* DailySessionController.swift in Sources */,
+				49E9C5E2E6FCEB4CE8F13A4D /* ExperimentConfiguration.swift in Sources */,
+				C17A518ECA31FE12F9C11149 /* MathbreakEngineBridge.swift in Sources */,
+				578985718F6F681CFCEFC673 /* NativeMathbreakView.swift in Sources */,
+				75E59EBD0A6F2B9042D9C420 /* NativeWordbreakView.swift in Sources */,
+				41CC442B3B08EA373437623F /* NotificationScheduler.swift in Sources */,
+				8ED777D5DCFC719214247261 /* ProductionCaptureSmokeView.swift in Sources */,
+				5CA37AC8FAC49EA2968C94C2 /* RootView.swift in Sources */,
+				6BD5C8ABDDB9A361BBE1E05B /* ScreenTimeOpportunityScheduler.swift in Sources */,
+				B37CACD501396599835F7C63 /* SessionPackager.swift in Sources */,
+				92237BAEDF577A692EDFB1C4 /* WordbreakApp.swift in Sources */,
+				3BD09EA93B5D857C2BC62E6E /* WordbreakEngineBridge.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		998F0AB3A5635D3974A3F5A2 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8712D683BA082FE72BF225CB /* CaptureBudgetEvaluationTests.swift in Sources */,
+				C5368E0502AF843844CA9D5A /* DailyEventLedgerTests.swift in Sources */,
+				F351F650E62BB4F74112904C /* DailyOpportunityPolicyTests.swift in Sources */,
+				EE2DF26943AE39BB1B5F7965 /* ExperimentConfigurationTests.swift in Sources */,
+				967427C4CC0FE5E41F4820AB /* MathbreakEngineBridgeTests.swift in Sources */,
+				62327B87B3AE9FA5DACF254D /* NotificationSchedulerTests.swift in Sources */,
+				7F2368AB6FCD275522436B78 /* SessionPackagerTests.swift in Sources */,
+				E20BF6390E502578D74334EA /* WordbreakEngineBridgeTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AB359939CFFA38D7FB76EE6D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C1815437C5A3D2BC27646FEF /* DailyPracticeUITests.swift in Sources */,
+				85A5D5A8DFDD3228D9A11877 /* ProductionCapturePhysicalTests.swift in Sources */,
+				B14F1EBD41C50D5DE9C9212B /* ScreenTimePhysicalTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B01D50B709393240281A55E7 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				234AF57A4143AED9F85118FC /* CaptureLabPhysicalTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C16DDAF1D6412EE70C3CE4EF /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FBAA5F9B5FA034FE66ABABF6 /* CaptureBudgetEvaluationTests.swift in Sources */,
+				F34B614BEB11F772F95F4BD0 /* DailyEventLedgerTests.swift in Sources */,
+				354975933162E17A18455F2A /* DailyOpportunityPolicyTests.swift in Sources */,
+				4B01812D29E3253495DE17D4 /* ExperimentConfigurationTests.swift in Sources */,
+				AC4FD57E5C3A4620FF6E5A1C /* MathbreakEngineBridgeTests.swift in Sources */,
+				C6AAF99764F92A1D454BCF28 /* NotificationSchedulerTests.swift in Sources */,
+				4C307FE0C20306C868148BB1 /* SessionPackagerTests.swift in Sources */,
+				D8DC053CB12B15C6AFCDF392 /* WordbreakEngineBridgeTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		009DE997BF8B12C1D7CB8074 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 1BFC8F121E61D616E7FE99B2 /* Wordbreak */;
+			targetProxy = F1BBC3F408C57DA1991506DD /* PBXContainerItemProxy */;
+		};
+		9B8F11E08BABD99CF3FA2FD1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 1BFC8F121E61D616E7FE99B2 /* Wordbreak */;
+			targetProxy = D7C029ED87032FC0522A9476 /* PBXContainerItemProxy */;
+		};
+		AAE67EA4090B39A892B71A35 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = DBDFDEC4DC7C93A65FD11C88 /* WordbreakCaptureLab */;
+			targetProxy = 54F29E5F6CE9A6179F8DDAC1 /* PBXContainerItemProxy */;
+		};
+		B6DD2089E2292741E9249D8F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 4E01336DBBB8645FD1C1D4EC /* WordbreakScreenTimeMonitor */;
+			targetProxy = A24D7D9138796E742EB933D4 /* PBXContainerItemProxy */;
+		};
+		FC0B31414104C21A89F918F8 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = DBDFDEC4DC7C93A65FD11C88 /* WordbreakCaptureLab */;
+			targetProxy = 4C539FCBEC40F8EFF4E21D57 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		0BDDC75C9FAE813031133536 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.mattmireles.wordbreak.capture-lab-tests";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) CAPTURE_LAB_TESTS";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/WordbreakCaptureLab.app/WordbreakCaptureLab";
+			};
+			name = Debug;
+		};
+		42F43167596DEAFC5FFB7F60 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = 6ETYBAJKY8;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		4B5D896834EDAB67ABD0069E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.mattmireles.wordbreak.capture-lab-ui-tests";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = WordbreakCaptureLab;
+			};
+			name = Debug;
+		};
+		4D270E912526FD553D30936D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = WordbreakCaptureLab/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.mattmireles.wordbreak.capture-lab";
+				PRODUCT_NAME = WordbreakCaptureLab;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) CAPTURE_LAB";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		4EF691861356552638FD4147 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Wordbreak/Wordbreak.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Wordbreak/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.mattmireles.wordbreak;
+				PRODUCT_NAME = Wordbreak;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		8BA011DC2C0FB50A4946A4E3 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = 6ETYBAJKY8;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		950849AC6913769ADFB732BD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Wordbreak/Wordbreak.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Wordbreak/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.mattmireles.wordbreak;
+				PRODUCT_NAME = Wordbreak;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		A3EFC2246CEDADB1D5812C9B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = WordbreakCaptureLab/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.mattmireles.wordbreak.capture-lab";
+				PRODUCT_NAME = WordbreakCaptureLab;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) CAPTURE_LAB";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		B3E422582B87EE825F23A513 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.mattmireles.wordbreak.tests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Wordbreak.app/Wordbreak";
+			};
+			name = Debug;
+		};
+		B4636F78DAE8B74695034AB5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.mattmireles.wordbreak.capture-lab-ui-tests";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = WordbreakCaptureLab;
+			};
+			name = Release;
+		};
+		B4BC671984BE1D8CD9BEF9A7 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.mattmireles.wordbreak.capture-lab-tests";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) CAPTURE_LAB_TESTS";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/WordbreakCaptureLab.app/WordbreakCaptureLab";
+			};
+			name = Release;
+		};
+		C0585E8440A2ADDDA2B91357 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = WordbreakScreenTimeMonitor/WordbreakScreenTimeMonitor.entitlements;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = WordbreakScreenTimeMonitor/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.mattmireles.wordbreak.screentime-monitor";
+				PRODUCT_NAME = WordbreakScreenTimeMonitor;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		D546520FDEA30593F9987F87 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.mattmireles.wordbreak.ui-tests";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = Wordbreak;
+			};
+			name = Debug;
+		};
+		E4ADB8A73B54A3269B29A96D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = WordbreakScreenTimeMonitor/WordbreakScreenTimeMonitor.entitlements;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = WordbreakScreenTimeMonitor/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.mattmireles.wordbreak.screentime-monitor";
+				PRODUCT_NAME = WordbreakScreenTimeMonitor;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		EF78AFDCE343022AA7416700 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.mattmireles.wordbreak.tests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Wordbreak.app/Wordbreak";
+			};
+			name = Release;
+		};
+		F0B2AD7B7CE7B46705DFD28C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.mattmireles.wordbreak.ui-tests";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = Wordbreak;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1C0D3DF6EEA2972878020A0B /* Build configuration list for PBXNativeTarget "WordbreakCaptureLabTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0BDDC75C9FAE813031133536 /* Debug */,
+				B4BC671984BE1D8CD9BEF9A7 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		2B2C19F0B4376CDE7F8392B7 /* Build configuration list for PBXNativeTarget "WordbreakUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D546520FDEA30593F9987F87 /* Debug */,
+				F0B2AD7B7CE7B46705DFD28C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		6B0314052EAF26E3CA64427B /* Build configuration list for PBXNativeTarget "Wordbreak" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				950849AC6913769ADFB732BD /* Debug */,
+				4EF691861356552638FD4147 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		99D67BCB378CF2BCA465DA23 /* Build configuration list for PBXNativeTarget "WordbreakCaptureLab" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4D270E912526FD553D30936D /* Debug */,
+				A3EFC2246CEDADB1D5812C9B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		A5DA57FD64D866D54CDAACDB /* Build configuration list for PBXNativeTarget "WordbreakScreenTimeMonitor" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C0585E8440A2ADDDA2B91357 /* Debug */,
+				E4ADB8A73B54A3269B29A96D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		BF4BC867059817CCBAFC343B /* Build configuration list for PBXNativeTarget "WordbreakTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B3E422582B87EE825F23A513 /* Debug */,
+				EF78AFDCE343022AA7416700 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		D584C6CAFD3A1A2A02D70A4F /* Build configuration list for PBXNativeTarget "WordbreakCaptureLabUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4B5D896834EDAB67ABD0069E /* Debug */,
+				B4636F78DAE8B74695034AB5 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		FF5996AF1C4EEA1CDE346BC3 /* Build configuration list for PBXProject "Wordbreak" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8BA011DC2C0FB50A4946A4E3 /* Debug */,
+				42F43167596DEAFC5FFB7F60 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 7D33C6C83E931E563D854AF0 /* Project object */;
+}

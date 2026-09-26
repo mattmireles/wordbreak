@@ -1,0 +1,85 @@
+{
+  "buildNumber" : "1",
+  "bundleIdentifier" : "com.mattmireles.wordbreak.capture-lab",
+  "coverage" : {
+    "appAudio" : 0.9999785783206927,
+    "frontCamera" : 1,
+    "microphone" : 1,
+    "screen" : 0.9999638435990769
+  },
+  "device" : "iPhone12,8",
+  "droppedFrameRatio" : {
+    "frontCamera" : 0,
+    "screen" : 0
+  },
+  "durationSeconds" : 942.23870408535,
+  "endedAt" : "2026-09-26T02:45:59Z",
+  "maximumGapMs" : {
+    "appAudio" : 23.236249999854408,
+    "frontCamera" : 41.65912500002378,
+    "microphone" : 22.99319727899274,
+    "screen" : 53.32983400001012
+  },
+  "maximumPairwiseDriftMs" : 174.98545663295317,
+  "passesCaptureErrors" : true,
+  "passesContinuity" : true,
+  "passesCoverage" : true,
+  "passesDrift" : true,
+  "passesDroppedFrames" : true,
+  "schemaVersion" : 3,
+  "snapshot" : {
+    "appAudio" : {
+      "droppedBuffers" : 0,
+      "firstHostNs" : 660083565875,
+      "firstPTS" : 660.01653325,
+      "invalidSamples" : 0,
+      "lastHostNs" : 1602226540041,
+      "lastPTS" : 1602.235053,
+      "maximumGapMs" : 23.236249999854408,
+      "samples" : 40583
+    },
+    "errors" : [
+
+    ],
+    "events" : [
+      "2026-09-26T02:30:17Z thermal state at start: 1",
+      "2026-09-26T02:30:17Z audio route at start: <AVAudioSessionRouteDescription: 0x11a5bbb00, \ninputs = (\n    \"<AVAudioSessionPortDescription: 0x11a5bbb10, type = MicrophoneBuiltIn; name = iPhone Microphone; UID = Built-In Microphone; selectedDataSource = Bottom>\"\n); \noutputs = (\n    \"<AVAudioSessionPortDescription: 0x11a5bbbb0, type = Receiver; name = Receiver; UID = Built-In Receiver; selectedDataSource = (null)>\"\n)>",
+      "2026-09-26T02:30:17Z capture started",
+      "2026-09-26T02:35:06Z thermal state: 0",
+      "2026-09-26T02:45:59Z audio route changed: [AnyHashable(\"AVAudioSessionRouteChangePreviousRouteKey\"): <AVAudioSessionRouteDescription: 0x11b3e8030, \ninputs = (\n    \"<AVAudioSessionPortDescription: 0x11b3e8260, type = MicrophoneBuiltIn; name = iPhone Microphone; UID = Built-In Microphone; selectedDataSource = Bottom>\"\n); \noutputs = (\n    \"<AVAudioSessionPortDescription: 0x11b3e8080, type = Receiver; name = Receiver; UID = Built-In Receiver; selectedDataSource = (null)>\"\n)>, AnyHashable(\"AVAudioSessionRouteChangeReasonKey\"): 3]",
+      "2026-09-26T02:46:00Z capture stopped"
+    ],
+    "frontCamera" : {
+      "droppedBuffers" : 0,
+      "firstHostNs" : 595838679958,
+      "firstPTS" : 595.694080083,
+      "invalidSamples" : 0,
+      "lastHostNs" : 1602710802708,
+      "lastPTS" : 1602.665373333,
+      "maximumGapMs" : 41.65912500002378,
+      "samples" : 30062
+    },
+    "microphone" : {
+      "droppedBuffers" : 0,
+      "firstHostNs" : 660083642708,
+      "firstPTS" : 659.8923809523809,
+      "invalidSamples" : 0,
+      "lastHostNs" : 1602226474958,
+      "lastPTS" : 1602.2225850340137,
+      "maximumGapMs" : 22.99319727899274,
+      "samples" : 40984
+    },
+    "screen" : {
+      "droppedBuffers" : 0,
+      "firstHostNs" : 660027357666,
+      "firstPTS" : 660.008586666,
+      "invalidSamples" : 0,
+      "lastHostNs" : 1602219607416,
+      "lastPTS" : 1602.213222791,
+      "maximumGapMs" : 53.32983400001012,
+      "samples" : 20055
+    }
+  },
+  "startedAt" : "2026-09-26T02:30:17Z",
+  "systemVersion" : "27.0"
+}

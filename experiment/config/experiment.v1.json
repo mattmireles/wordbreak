@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "experimentId": "luca-native-daily-v1",
+  "configVersion": "1.0.0",
+  "minimumIOSVersion": "26.0",
+  "mode": "OBSERVE",
+  "schedule": {
+    "timeZone": "device",
+    "primaryLocalTime": "16:00",
+    "fallbackLocalTime": "19:30",
+    "screenTimeWindowStart": "15:00",
+    "screenTimeThresholdMinutes": 15
+  },
+  "dailySession": {
+    "softTargetMinutes": 12,
+    "minimumProductionOpportunitiesPerSubject": 4,
+    "atomicWordbreakModule": true,
+    "atomicMathCorrection": true
+  },
+  "featureFlags": {
+    "capture": false,
+    "upload": false,
+    "analysis": false,
+    "agentWrite": false,
+    "automatedInstall": false,
+    "notifications": true,
+    "screenTime": true
+  },
+  "versions": {
+    "wordbreakEngine": "legacy-freeze-v1",
+    "wordbreakContent": "legacy-freeze-v1",
+    "mathContent": "mathbreak-v1",
+    "eventTaxonomy": "event-v1",
+    "captureManifest": "capture-manifest-v1",
+    "sessionManifest": "session-manifest-v1",
+    "llmWorkflowsClient": "wordbreak",
+    "llmWorkflowsWorkflow": "wordbreak_session_analysis_v1",
+    "llmWorkflowsWorkflowVersion": "2026-09-22",
+    "llmWorkflowsInputContract": "wordbreak-session-analysis-input-v1",
+    "llmWorkflowsResultContract": "wordbreak-session-analysis-result-v1",
+    "observationSchema": "pending-phase-5",
+    "diagnosisSchema": "pending-phase-5"
+  },
+  "model": {
+    "provider": "vertex-ai",
+    "modelId": "pending-phase-5-calibration",
+    "settingsHash": "pending-phase-5-calibration"
+  },
+  "hashes": {
+    "observerPrompt": "pending-phase-5",
+    "learningDiagnosticianPrompt": "pending-phase-5",
+    "productSynthesizerPrompt": "pending-phase-5",
+    "observationSchema": "pending-phase-5",
+    "diagnosisSchema": "pending-phase-5"
+  },
+  "mediaRequirements": {
+    "tracks": ["screen", "frontCamera", "microphone", "appAudio", "events"],
+    "minimumCoverageRatio": 0.98,
+    "maximumDriftMs": 250,
+    "maximumDroppedFrameRatio": 0.01,
+    "feasibilityRunMinutes": 15
+  },
+  "agentAllowlist": {
+    "roles": ["learningCritic", "productCritic", "codeMapper", "synthesizer", "candidate", "judge"],
+    "candidateProviders": ["codex", "claude"],
+    "allowedSurfaces": ["swiftuiPresentation", "noncanonicalHints", "dailyOrdering", "validatedSelectionWeights", "eventInstrumentation", "performance"],
+    "forbiddenSurfaces": ["canonicalTruth", "assessment", "entitlements", "backendAuth", "reportingDefinitions", "credentials", "allowlist"]
+  },
+  "releaseGates": [
+    "npmTest",
+    "wordbreakParity",
+    "javascriptCoreParity",
+    "xcodeUnitTests",
+    "xcodeUITests",
+    "captureSmoke",
+    "schemaValidation",
+    "secretScan",
+    "scopedAudit",
+    "archiveIdentity",
+    "installedIdentity"
+  ],
+  "protocol": {
+    "calibrationSessions": 2,
+    "experimentSequence": ["A", "A", "B", "B", "A", "B"],
+    "maximumSubstantiveChangesPerEpoch": 1,
+    "resultLabels": ["directionally_consistent", "directionally_inconsistent", "inconclusive"]
+  }
+}
