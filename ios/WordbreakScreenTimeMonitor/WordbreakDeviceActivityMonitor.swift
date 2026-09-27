@@ -8,6 +8,8 @@ final class WordbreakDeviceActivityMonitor: DeviceActivityMonitor {
             deliverDailyOpportunityIfNeeded()
             return
         }
+        // Only the DEBUG device-check activity (CapabilityDiagnosticView) reaches the proof banner.
+        guard activity.rawValue == "wordbreak.phase0" else { return }
         UserDefaults(suiteName: DailyCoordinationStore.appGroup)?
             .set(Date().timeIntervalSince1970, forKey: "phase0.lastThresholdCallback")
         let content = UNMutableNotificationContent()

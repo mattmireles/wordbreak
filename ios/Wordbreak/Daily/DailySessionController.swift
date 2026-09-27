@@ -71,22 +71,24 @@ final class DailySessionController: ObservableObject {
         (try? environment.coordination().read().completedDay) == today
     }
 
-    /// Re-derives the resting screen after launch, foregrounding, or a clock change. An active
-    /// session is never interrupted; a finished day returns home once the local day rolls over.
-    func refreshDay() {
+    /// Re-derives the resting screen after launch, foregrounding, or a clock change. A finished
+    /// day returns home once the local day rolls over. A run is never cut off mid-item: only when
+    /// the app comes back to the foreground (`releaseStaleRun`) is a run started on an earlier day
+    /// released, so the next start rebuilds on today's clock. The engine then abandons the stale
+    /// Wordbreak session, and credit goes to the day the work is actually finished.
+    func refreshDay(releaseStaleRun: Bool = false) {
         switch stage {
         case .home, .done:
             stage = completedToday ? .done : .home
         case .wordbreak, .mathbreak, .checkIn:
-            // Engines hold the clock they were built with. A run left open across local midnight
-            // is released so the next start rebuilds on today's clock; the engine abandons a stale
-            // Wordbreak session, and credit goes to the day the work is actually finished.
-            if sessionDay != today { releaseRun(); stage = .home }
+            if releaseStaleRun, sessionDay != today { releaseRun(); stage = .home }
         }
     }
 
     private func releaseRun() {
         stopCaptureSegment(reason: "rollover", seal: false)
+        // Queued after the stop, which captured this run's ledger, so nothing leaks forward.
+        enqueueCaptureTransition { self.capturedSegments.removeAll() }
         wordEngine = nil
         mathEngine = nil
         ledger = nil
@@ -105,7 +107,7 @@ final class DailySessionController: ObservableObject {
             errorMessage = nil
             let now = environment.now()
             let wordEngine = try WordbreakEngineBridge(store: environment.wordStore(), now: now, timezone: environment.calendar.timeZone)
-            let mathEngine = try MathbreakEngineBridge(store: environment.mathStore(), now: now)
+            let mathEngine = try MathbreakEngineBridge(store: environment.mathStore(), now: now, timezone: environment.calendar.timeZone)
             self.wordEngine = wordEngine
             self.mathEngine = mathEngine
             sessionDay = today
@@ -129,7 +131,7 @@ final class DailySessionController: ObservableObject {
             }
             recordOutput(output, subject: .wordbreak)
             stage = .wordbreak
-            if output.viewModel["screen"] as? String == "sessionDone" { startMath() }
+            if !Self.isWordPractice(output.viewModel) { startMath() }
             beginCapture(sessionId: sessionId)
         } catch {
             errorMessage = error.localizedDescription
@@ -142,9 +144,7 @@ final class DailySessionController: ObservableObject {
             let output = try wordEngine.dispatch(action)
             wordView = output.viewModel
             recordAction(action, subject: .wordbreak, output: output)
-            if output.viewModel["screen"] as? String == "sessionDone" {
-                startMath()
-            }
+            if !Self.isWordPractice(output.viewModel) { startMath() }
         } catch {
             errorMessage = error.localizedDescription
         }
@@ -167,7 +167,7 @@ final class DailySessionController: ObservableObject {
     }
 
     func handleScenePhase(_ phase: ScenePhase) {
-        if phase == .active { refreshDay() }
+        if phase == .active { refreshDay(releaseStaleRun: true) }
         guard stage != .home, stage != .done else { return }
         switch phase {
         case .active:
@@ -210,6 +210,13 @@ final class DailySessionController: ObservableObject {
         } catch {
             recoverAtHome(error)
         }
+    }
+
+    /// Only lesson and run screens are Wordbreak work. `sessionDone`, and any neutral engine
+    /// screen (an empty compile, an imported state with nothing due), hands off to math instead
+    /// of stranding the learner on a screen the native view does not draw.
+    private static func isWordPractice(_ view: [String: Any]) -> Bool {
+        ["docs", "run"].contains(view["screen"] as? String ?? "")
     }
 
     /// Both subjects have committed their protected work.
@@ -318,12 +325,14 @@ final class DailySessionController: ObservableObject {
     }
 
     private func stopCaptureSegment(reason: String, seal: Bool) {
+        let ledger = ledger
+        let sessionId = sessionId
         enqueueCaptureTransition {
             if self.capture.activeSegmentId != nil {
                 do {
                     let segment = try await self.capture.stop(reason: reason)
                     self.capturedSegments.append(segment)
-                    try self.ledger?.record(
+                    try ledger?.record(
                         subject: .system,
                         screen: "daily.capture",
                         eventType: "captureStopped",
@@ -336,25 +345,25 @@ final class DailySessionController: ObservableObject {
                         ]
                     )
                 } catch {
-                    try? self.ledger?.record(
+                    try? ledger?.record(
                         subject: .system,
                         screen: "daily.capture",
                         eventType: "captureFailed",
                         payload: ["reason": error.localizedDescription]
                     )
                 }
-                self.ledger?.endCapture()
+                ledger?.endCapture()
                 self.isCapturing = false
             }
             guard seal, !self.capturedSegments.isEmpty else { return }
             do {
-                try self.ledger?.record(
+                try ledger?.record(
                     subject: .system,
                     screen: "daily.capture",
                     eventType: "capturePackaging",
                     payload: ["manifest": "capture-manifest.json"]
                 )
-                if let sessionId = self.sessionId, let eventsURL = self.ledger?.url {
+                if let sessionId, let eventsURL = ledger?.url {
                     _ = try SessionPackager().seal(
                         sessionId: sessionId,
                         segments: self.capturedSegments,
@@ -362,7 +371,7 @@ final class DailySessionController: ObservableObject {
                     )
                 }
             } catch {
-                try? self.ledger?.record(
+                try? ledger?.record(
                     subject: .system,
                     screen: "daily.capture",
                     eventType: "captureFailed",

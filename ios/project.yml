@@ -55,7 +55,8 @@ targets:
         NSCameraUsageDescription: Wordbreak records your expression during an explicitly started practice session so the parent can improve the experience.
         NSMicrophoneUsageDescription: Wordbreak records speech during an explicitly started practice session so the parent can understand where instructions are unclear.
         NSPhotoLibraryAddUsageDescription: Wordbreak can save a parent-requested diagnostic recording to the photo library for review.
-        WordbreakGitSHA: e8f1bfca80a607def322f0c88de7cf330ce0c457-dirty
+        # Pass WORDBREAK_GIT_SHA=$(git rev-parse HEAD) to xcodebuild for release archives.
+        WordbreakGitSHA: $(WORDBREAK_GIT_SHA)
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.mattmireles.wordbreak
@@ -63,6 +64,7 @@ targets:
         CURRENT_PROJECT_VERSION: 1
         MARKETING_VERSION: 0.1.0
         GENERATE_INFOPLIST_FILE: NO
+        WORDBREAK_GIT_SHA: unrecorded
     dependencies:
       - target: WordbreakScreenTimeMonitor
         embed: true

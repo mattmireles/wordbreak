@@ -33,6 +33,6 @@
 		<string>UIInterfaceOrientationPortrait</string>
 	</array>
 	<key>WordbreakGitSHA</key>
-	<string>e8f1bfca80a607def322f0c88de7cf330ce0c457-dirty</string>
+	<string>$(WORDBREAK_GIT_SHA)</string>
 </dict>
 </plist>

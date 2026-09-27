@@ -47,6 +47,7 @@ struct NativeMathbreakView: View {
         .onAppear { beginItem() }
         .onChange(of: viewModel["prompt"] as? String) { _, _ in beginItem() }
         .onChange(of: phase) { _, newPhase in
+            if newPhase == "attempt" { shownAt = Date() }
             answer = ""
             answerFocused = newPhase == "attempt" || newPhase == "retype"
         }

@@ -63,7 +63,7 @@ struct DailyPracticeView: View {
             controller.handleScenePhase(newPhase)
         }
         .onReceive(NotificationCenter.default.publisher(for: UIApplication.significantTimeChangeNotification)) { _ in
-            controller.refreshDay()
+            controller.refreshDay()  // a midnight tick never interrupts an item in progress
         }
     }
 }

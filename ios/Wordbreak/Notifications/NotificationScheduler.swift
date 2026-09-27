@@ -13,7 +13,8 @@ extension Notification.Name {
 struct NotificationScheduler {
     static let pendingPrefix = DailyNudgePolicy.notificationPrefix
     static let openDailyKey = "notification.openDaily"
-    static let horizonDays = 14
+    /// 28 days x 2 reminders stays under iOS's 64 pending-notification limit.
+    static let horizonDays = 28
 
     private let center = UNUserNotificationCenter.current()
 

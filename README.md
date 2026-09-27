@@ -126,6 +126,14 @@ or empirically equated. See
 - The Worker stores only aggregate daily summaries, coverage checkpoints,
   scoped credential hashes, and frozen email bodies. Collection and email have
   separate fail-closed D1 switches.
+- The iPhone app (`ios/`, SwiftUI) is one quiet daily doorway: a Wordbreak
+  block, then an untimed Mathbreak block, then done. It runs the exact
+  `src/game/wordbreak-core.js` and curriculum bytes through JavaScriptCore
+  (`npm run verify:ios:engine` proves it) and needs no network. The daily
+  contract, reminders, Screen Time suggestion, and day-credit rules live in
+  [docs/notes/native-daily-practice-contract.md](docs/notes/native-daily-practice-contract.md).
+  Parent setup opens from a long press on the home screen's "TODAY" label and
+  can import web progress from the observer panel's "export progress" file.
 - All 48 modules were structurally validated before publish — every word's answer contains at least one genuinely "hot" (uncertain) byte, every rule-fork has a valid verdict, every schwa lineup has exactly one witness plus one silent relative plus one impostor, every legacy word has its dark bytes marked.
 
 ## 10. Roadmap (not built yet)

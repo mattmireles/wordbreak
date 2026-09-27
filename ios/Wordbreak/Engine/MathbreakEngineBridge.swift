@@ -11,6 +11,7 @@ final class MathbreakEngineBridge {
         store: WordbreakStateStore,
         bundle: Bundle = .main,
         now: Date = Date(),
+        timezone: TimeZone = .current,
         random: @escaping () -> Double = { Double.random(in: 0 ..< 1) }
     ) throws {
         guard let context = JSContext() else {
@@ -28,7 +29,7 @@ final class MathbreakEngineBridge {
         context.setObject(stateJSON, forKeyedSubscript: "__mathbreakStateJSON" as NSString)
         context.setObject(now.timeIntervalSince1970 * 1_000, forKeyedSubscript: "__mathbreakNowMS" as NSString)
         context.setObject(
-            -TimeZone.current.secondsFromGMT(for: now) / 60,
+            -timezone.secondsFromGMT(for: now) / 60,
             forKeyedSubscript: "__mathbreakTimezoneOffset" as NSString
         )
 

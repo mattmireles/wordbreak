@@ -203,6 +203,8 @@ final class DailySessionControllerTests: XCTestCase {
         controller.startToday()
         XCTAssertEqual(controller.stage, .wordbreak)
         clock = clock.addingTimeInterval(86_400)
+        controller.refreshDay()
+        XCTAssertEqual(controller.stage, .wordbreak, "The midnight clock tick never interrupts an item in progress")
         controller.handleScenePhase(.active)
         XCTAssertEqual(controller.stage, .home, "A stale-clock run is released at the doorway")
         controller.startToday()
@@ -215,5 +217,24 @@ final class DailySessionControllerTests: XCTestCase {
             calendar.timeZone = TimeZone(identifier: "America/Los_Angeles")!
             return calendar
         }()))
+    }
+
+    func testNeutralWordbreakScreenHandsOffToMathInsteadOfStranding() throws {
+        // Every unit cleared and nothing scheduled: the engine compiles no blocks.
+        let url = try XCTUnwrap(Bundle.main.url(forResource: "wordbreak-content", withExtension: "js"))
+        let source = try String(contentsOf: url, encoding: .utf8)
+        let regex = try NSRegularExpression(pattern: #"\{id:"([^"]+)",st:"#)
+        let ids = regex.matches(in: source, range: NSRange(source.startIndex..., in: source))
+            .compactMap { Range($0.range(at: 1), in: source).map { String(source[$0]) } }
+        XCTAssertGreaterThan(ids.count, 40)
+        let cleared = Dictionary(uniqueKeysWithValues: ids.map { ($0, true) })
+        let state = try JSONSerialization.data(withJSONObject: ["cleared": cleared, "docs": cleared, "sched": [String: Any]()])
+        let stateURL = directory.appending(path: "state/wb2.json")
+        try FileManager.default.createDirectory(at: stateURL.deletingLastPathComponent(), withIntermediateDirectories: true)
+        try state.write(to: stateURL)
+
+        let controller = makeController()
+        controller.startToday()
+        XCTAssertEqual(controller.stage, .mathbreak)
     }
 }

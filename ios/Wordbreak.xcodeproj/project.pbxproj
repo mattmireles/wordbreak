@@ -919,6 +919,7 @@
 				PRODUCT_NAME = Wordbreak;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				WORDBREAK_GIT_SHA = unrecorded;
 			};
 			name = Release;
 		};
@@ -1007,6 +1008,7 @@
 				PRODUCT_NAME = Wordbreak;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				WORDBREAK_GIT_SHA = unrecorded;
 			};
 			name = Debug;
 		};

@@ -17,6 +17,15 @@ struct DailyCoordinationState: Codable, Equatable {
     /// Per-local-day nudge ledger. One entry covers every route into the same session.
     struct DayLedger: Codable, Equatable {
         var opportunityDelivered = false
+
+        init(opportunityDelivered: Bool = false) {
+            self.opportunityDelivered = opportunityDelivered
+        }
+
+        init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            opportunityDelivered = try container.decodeIfPresent(Bool.self, forKey: .opportunityDelivered) ?? false
+        }
     }
 
     static let currentVersion = 1
@@ -28,6 +37,19 @@ struct DailyCoordinationState: Codable, Equatable {
     var afternoon = Self.defaultAfternoon
     var evening = Self.defaultEvening
     var days: [String: DayLedger] = [:]
+
+    init() {}
+
+    /// Tolerant decoding: a field added later (without a version bump) must not make an older
+    /// file unreadable and cost the learner today's completion and the parent's times.
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        version = try container.decode(Int.self, forKey: .version)
+        completedDay = try container.decodeIfPresent(String.self, forKey: .completedDay)
+        afternoon = try container.decodeIfPresent(LocalTime.self, forKey: .afternoon) ?? Self.defaultAfternoon
+        evening = try container.decodeIfPresent(LocalTime.self, forKey: .evening) ?? Self.defaultEvening
+        days = try container.decodeIfPresent([String: DayLedger].self, forKey: .days) ?? [:]
+    }
 
     func ledger(for day: String) -> DayLedger { days[day] ?? DayLedger() }
 
@@ -144,7 +166,13 @@ final class DailyCoordinationStore {
     }
 
     private static func load(_ url: URL, quarantineUnreadable: Bool) -> DailyCoordinationState {
-        guard let data = try? Data(contentsOf: url) else { return DailyCoordinationState() }
+        guard FileManager.default.fileExists(atPath: url.path) else { return DailyCoordinationState() }
+        // An existing file that cannot be read right now (for example, briefly unavailable) is
+        // treated like unreadable bytes: set aside under write coordination, never overwritten.
+        guard let data = try? Data(contentsOf: url) else {
+            if quarantineUnreadable { quarantine(url) }
+            return DailyCoordinationState()
+        }
         if let state = try? JSONDecoder().decode(DailyCoordinationState.self, from: data),
            state.version == DailyCoordinationState.currentVersion
         {
@@ -152,9 +180,13 @@ final class DailyCoordinationStore {
         }
         // Unreadable or future-version bytes are set aside (only under write coordination),
         // never silently overwritten.
-        guard quarantineUnreadable else { return DailyCoordinationState() }
-        let quarantine = url.deletingPathExtension().appendingPathExtension("unreadable-\(Int(Date().timeIntervalSince1970)).json")
-        try? FileManager.default.moveItem(at: url, to: quarantine)
+        if quarantineUnreadable { quarantine(url) }
         return DailyCoordinationState()
+    }
+
+    private static func quarantine(_ url: URL) {
+        let destination = url.deletingPathExtension()
+            .appendingPathExtension("unreadable-\(Int(Date().timeIntervalSince1970)).json")
+        try? FileManager.default.moveItem(at: url, to: destination)
     }
 }

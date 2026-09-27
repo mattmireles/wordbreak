@@ -17,6 +17,9 @@ final class WordbreakAppDelegate: NSObject, UIApplicationDelegate, UNUserNotific
     }
 
     func applicationDidBecomeActive(_ application: UIApplication) {
+        // Reminders are one-shot and finite; every foreground extends the horizon so a learner
+        // who only warm-resumes the app never runs off the end of the schedule.
+        Task { try? await NotificationScheduler().refresh() }
         ScreenTimeOpportunityScheduler().reconcile()
     }
 

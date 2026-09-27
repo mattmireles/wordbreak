@@ -130,13 +130,15 @@ struct ParentSetupView: View {
             case .allowed, .switchedOff:
                 EmptyView()
             }
-            DatePicker("Afternoon", selection: $model.afternoon, displayedComponents: .hourAndMinute)
-                .accessibilityIdentifier("parent.reminders.afternoon")
-            DatePicker("Evening", selection: $model.evening, displayedComponents: .hourAndMinute)
-                .accessibilityIdentifier("parent.reminders.evening")
-            Button("Save times") { Task { await model.saveTimes() } }
-                .buttonStyle(.bordered)
-                .accessibilityIdentifier("parent.reminders.save")
+            if model.reminderStatus != .switchedOff {
+                DatePicker("Afternoon", selection: $model.afternoon, displayedComponents: .hourAndMinute)
+                    .accessibilityIdentifier("parent.reminders.afternoon")
+                DatePicker("Evening", selection: $model.evening, displayedComponents: .hourAndMinute)
+                    .accessibilityIdentifier("parent.reminders.evening")
+                Button("Save times") { Task { await model.saveTimes() } }
+                    .buttonStyle(.bordered)
+                    .accessibilityIdentifier("parent.reminders.save")
+            }
         }
         .foregroundStyle(.white)
     }
