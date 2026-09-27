@@ -3,12 +3,16 @@
 import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
+import { loadEnvFile } from "node:process";
 
 const root = resolve(import.meta.dirname, "../..");
+const envPath = resolve(root, ".env");
+if (existsSync(envPath)) loadEnvFile(envPath);
 const expected = {
   team: "6ETYBAJKY8",
   deploymentTarget: "26.0",
-  deviceUDID: "00008030-001C65E43A85802E",
+  // Learner device identity stays out of the repo: set it in the ignored .env.
+  deviceUDID: process.env.WORDBREAK_DEVICE_UDID || "unset: add WORDBREAK_DEVICE_UDID to .env",
   appBundleID: "com.mattmireles.wordbreak",
   extensionBundleID: "com.mattmireles.wordbreak.screentime-monitor",
   appGroup: "group.com.mattmireles.wordbreak",

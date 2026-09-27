@@ -13,11 +13,15 @@ struct RootView: View {
     }
 
     var body: some View {
-        if opensCapabilityCheck {
-            NavigationStack { CapabilityDiagnosticView() }
-        } else {
+        #if DEBUG
+            if opensCapabilityCheck {
+                NavigationStack { CapabilityDiagnosticView() }
+            } else {
+                DailyPracticeView()
+            }
+        #else
             DailyPracticeView()
-        }
+        #endif
     }
 }
 

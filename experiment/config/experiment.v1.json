@@ -4,19 +4,6 @@
   "configVersion": "1.0.0",
   "minimumIOSVersion": "26.0",
   "mode": "OBSERVE",
-  "schedule": {
-    "timeZone": "device",
-    "primaryLocalTime": "16:00",
-    "fallbackLocalTime": "19:30",
-    "screenTimeWindowStart": "15:00",
-    "screenTimeThresholdMinutes": 15
-  },
-  "dailySession": {
-    "softTargetMinutes": 12,
-    "minimumProductionOpportunitiesPerSubject": 4,
-    "atomicWordbreakModule": true,
-    "atomicMathCorrection": true
-  },
   "featureFlags": {
     "capture": false,
     "upload": false,

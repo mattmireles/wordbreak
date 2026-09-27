@@ -20,12 +20,13 @@ final class DailyEventLedger {
 
     init(sessionId: String, bundle: Bundle = .main) throws {
         guard let root = FileManager.default.containerURL(
-            forSecurityApplicationGroupIdentifier: "group.com.mattmireles.wordbreak"
+            forSecurityApplicationGroupIdentifier: DailyCoordinationStore.appGroup
         ) else {
             throw WordbreakEngineError.stateStoreUnavailable
         }
         let directory = root.appending(path: "events", directoryHint: .isDirectory)
         try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        Self.prune(directory: directory, keeping: "\(sessionId).jsonl")
         self.sessionId = sessionId
         fileURL = directory.appending(path: "\(sessionId).jsonl")
         contentHash = try Self.hashResources(bundle: bundle)
@@ -88,6 +89,22 @@ final class DailyEventLedger {
     }
 
     var url: URL { fileURL }
+
+    /// Raw event files hold typed answers. Sealed session packages keep their own copy, so raw
+    /// files are kept only for `retentionDays`.
+    static let retentionDays = 30
+
+    static func prune(directory: URL, keeping current: String, now: Date = Date()) {
+        let cutoff = now.addingTimeInterval(-Double(retentionDays) * 86_400)
+        let files = (try? FileManager.default.contentsOfDirectory(
+            at: directory,
+            includingPropertiesForKeys: [.contentModificationDateKey]
+        )) ?? []
+        for file in files where file.pathExtension == "jsonl" && file.lastPathComponent != current {
+            let modified = (try? file.resourceValues(forKeys: [.contentModificationDateKey]))?.contentModificationDate
+            if let modified, modified < cutoff { try? FileManager.default.removeItem(at: file) }
+        }
+    }
 
     private static func nextSequence(fileURL: URL) -> Int {
         guard let data = try? Data(contentsOf: fileURL), !data.isEmpty else { return 0 }

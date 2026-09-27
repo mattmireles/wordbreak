@@ -7,13 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		013BC69B40146D88B7C06E88 /* CaptureSpikeModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37E3A29BECC73168BABF18D5 /* CaptureSpikeModel.swift */; };
 		05900CA0C779FD3E7E52B9A3 /* NativeWordbreakView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C62D441499EFFB1BCEC94F /* NativeWordbreakView.swift */; };
 		11DB7DB003593FD6CC2713A9 /* CaptureCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7161B3CA143FDFFD851589CA /* CaptureCoordinator.swift */; };
 		1293DACD856EB47EF7A7D68C /* DailySessionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D4D684EEFEDAFAC62EA7FB5 /* DailySessionController.swift */; };
 		15DDEB1A686F1576B0A0730B /* ParentSetupModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3147D774B3924C0C294078F /* ParentSetupModel.swift */; };
 		1631BBDF917A88411E08EF5D /* WordbreakEngineBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69CEE5C14791C85E7E323BB1 /* WordbreakEngineBridge.swift */; };
 		234AF57A4143AED9F85118FC /* CaptureLabPhysicalTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 341BC475B947F7D84E367BF3 /* CaptureLabPhysicalTests.swift */; };
+		281C685E4F229124C06EECD1 /* ReplayKitCaptureAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D27DFE5B7934513B8EEF9DC /* ReplayKitCaptureAdapter.swift */; };
+		39ECF66408B8953AA6B9BEF5 /* JavaScriptEngineHost.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44FB2CD29DD2BC481BA5FBB5 /* JavaScriptEngineHost.swift */; };
 		3BD09EA93B5D857C2BC62E6E /* WordbreakEngineBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69CEE5C14791C85E7E323BB1 /* WordbreakEngineBridge.swift */; };
 		3DFA2C112B170B4B3B3621FE /* SessionPackager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9086B887A56FA02E2FA1F3C2 /* SessionPackager.swift */; };
 		41CC442B3B08EA373437623F /* NotificationScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3958DB182CDD1D9FA27DAD80 /* NotificationScheduler.swift */; };
@@ -22,7 +23,6 @@
 		46C7E659ADE2B541F4D68235 /* DailySessionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D4D684EEFEDAFAC62EA7FB5 /* DailySessionController.swift */; };
 		49B5C6C1534D297A66646A10 /* ScreenTimeOpportunityScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10EE6F2C19A940E15806AFCA /* ScreenTimeOpportunityScheduler.swift */; };
 		49E9C5E2E6FCEB4CE8F13A4D /* ExperimentConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 682E3A4DFB4CC6C9C6C56078 /* ExperimentConfiguration.swift */; };
-		4A85D63ADAC58BD24F11A0F7 /* CaptureSpikeCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F7A855DA4E9E924BB7F7180 /* CaptureSpikeCoordinator.swift */; };
 		4B01812D29E3253495DE17D4 /* ExperimentConfigurationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CBAC03A1A0AC38D47D6EA55 /* ExperimentConfigurationTests.swift */; };
 		4C307FE0C20306C868148BB1 /* SessionPackagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1534389BD736FD1F0F52D282 /* SessionPackagerTests.swift */; };
 		4C9C1D62029A6EC1A05D2C8C /* MathbreakEngineBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8BD56CFEE74F59FD6E5D4B /* MathbreakEngineBridge.swift */; };
@@ -48,7 +48,6 @@
 		8ECDFADF3568097ADE1BDAD3 /* DailyPracticeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6ECADC34074282AAE000AB79 /* DailyPracticeView.swift */; };
 		8ED777D5DCFC719214247261 /* ProductionCaptureSmokeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB87EBF91B2D9AF54D910BEA /* ProductionCaptureSmokeView.swift */; };
 		92237BAEDF577A692EDFB1C4 /* WordbreakApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C638F8C0B0004257952C9F2 /* WordbreakApp.swift */; };
-		927C89FDEE05053867C0CAB5 /* CaptureSpikeCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F7A855DA4E9E924BB7F7180 /* CaptureSpikeCoordinator.swift */; };
 		967427C4CC0FE5E41F4820AB /* MathbreakEngineBridgeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9DCCB97A9E539C611EBABB8 /* MathbreakEngineBridgeTests.swift */; };
 		985BC7E6501B63087C0CF8AE /* CapabilityDiagnosticView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDDA5114EA273208A5F680E0 /* CapabilityDiagnosticView.swift */; };
 		A8EC9094A93F53403AEE6B0B /* DailyCoordinationStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC32F09327CDA1D36D61B434 /* DailyCoordinationStore.swift */; };
@@ -61,7 +60,7 @@
 		B503E5ADEDAD32E86AB57E4E /* DailyCoordinationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCBD19767BD9E986ED64F7D0 /* DailyCoordinationTests.swift */; };
 		B9209FC097F9A45ECE7D0A2F /* CapabilityDiagnosticView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDDA5114EA273208A5F680E0 /* CapabilityDiagnosticView.swift */; };
 		BA22B954048B2A599A723E79 /* WordbreakDeviceActivityMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 108E7FC4AC2CF2EA666BC665 /* WordbreakDeviceActivityMonitor.swift */; };
-		BBF4C803FEC76DD2DE359704 /* CaptureSpikeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 093639AD8A12A7F285D8DAEC /* CaptureSpikeView.swift */; };
+		BA3BD039D3693B4326A41240 /* JavaScriptEngineHost.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44FB2CD29DD2BC481BA5FBB5 /* JavaScriptEngineHost.swift */; };
 		BE64ECCEF236D8AC24EC72DC /* DailySessionControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0C39BA3887CBAEBD7CE7260 /* DailySessionControllerTests.swift */; };
 		C17A518ECA31FE12F9C11149 /* MathbreakEngineBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8BD56CFEE74F59FD6E5D4B /* MathbreakEngineBridge.swift */; };
 		C1815437C5A3D2BC27646FEF /* DailyPracticeUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 547EF2143196E55F5E3104C7 /* DailyPracticeUITests.swift */; };
@@ -73,6 +72,7 @@
 		CFEA5EE9ABBA02CA813741B6 /* ParentSetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4254EBD5815B626CA1EFD8E4 /* ParentSetupView.swift */; };
 		D19C84BFE5384F6E2F2A8F04 /* ProductionCaptureSmokeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB87EBF91B2D9AF54D910BEA /* ProductionCaptureSmokeView.swift */; };
 		D26C60C39E12634EF89640AA /* WebProgressImport.swift in Sources */ = {isa = PBXBuildFile; fileRef = B36E1D0308DB6289A66C1273 /* WebProgressImport.swift */; };
+		D4DF4A0AB7699274D6DB1018 /* ReplayKitCaptureAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D27DFE5B7934513B8EEF9DC /* ReplayKitCaptureAdapter.swift */; };
 		D8DC053CB12B15C6AFCDF392 /* WordbreakEngineBridgeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA6BA250F67440E9E6125CF2 /* WordbreakEngineBridgeTests.swift */; };
 		DC382FC05C3E3D21E2F5C0A9 /* CaptureCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7161B3CA143FDFFD851589CA /* CaptureCoordinator.swift */; };
 		DCFC2D9D5A11AA5AC70A539D /* NotificationScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3958DB182CDD1D9FA27DAD80 /* NotificationScheduler.swift */; };
@@ -148,8 +148,8 @@
 		37E3A29BECC73168BABF18D5 /* CaptureSpikeModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureSpikeModel.swift; sourceTree = "<group>"; };
 		3958DB182CDD1D9FA27DAD80 /* NotificationScheduler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationScheduler.swift; sourceTree = "<group>"; };
 		3BD12245BFA28F5D4686802B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
-		3F7A855DA4E9E924BB7F7180 /* CaptureSpikeCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureSpikeCoordinator.swift; sourceTree = "<group>"; };
 		4254EBD5815B626CA1EFD8E4 /* ParentSetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParentSetupView.swift; sourceTree = "<group>"; };
+		44FB2CD29DD2BC481BA5FBB5 /* JavaScriptEngineHost.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JavaScriptEngineHost.swift; sourceTree = "<group>"; };
 		547EF2143196E55F5E3104C7 /* DailyPracticeUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyPracticeUITests.swift; sourceTree = "<group>"; };
 		682E3A4DFB4CC6C9C6C56078 /* ExperimentConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExperimentConfiguration.swift; sourceTree = "<group>"; };
 		69CEE5C14791C85E7E323BB1 /* WordbreakEngineBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordbreakEngineBridge.swift; sourceTree = "<group>"; };
@@ -158,6 +158,7 @@
 		7161B3CA143FDFFD851589CA /* CaptureCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureCoordinator.swift; sourceTree = "<group>"; };
 		75622970125E0FE89C349ECB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		7C638F8C0B0004257952C9F2 /* WordbreakApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordbreakApp.swift; sourceTree = "<group>"; };
+		7D27DFE5B7934513B8EEF9DC /* ReplayKitCaptureAdapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReplayKitCaptureAdapter.swift; sourceTree = "<group>"; };
 		7DD20014D5634A0918C23176 /* wordbreak-golden */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "wordbreak-golden"; path = "../test/fixtures/wordbreak-golden"; sourceTree = SOURCE_ROOT; };
 		8546E14F35CEC0AFF086121E /* DailyEventLedgerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyEventLedgerTests.swift; sourceTree = "<group>"; };
 		9086B887A56FA02E2FA1F3C2 /* SessionPackager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionPackager.swift; sourceTree = "<group>"; };
@@ -217,6 +218,7 @@
 				7161B3CA143FDFFD851589CA /* CaptureCoordinator.swift */,
 				C1491BC86D2F0EA58C1E106F /* CheckInVoiceRecorder.swift */,
 				EB87EBF91B2D9AF54D910BEA /* ProductionCaptureSmokeView.swift */,
+				7D27DFE5B7934513B8EEF9DC /* ReplayKitCaptureAdapter.swift */,
 				9086B887A56FA02E2FA1F3C2 /* SessionPackager.swift */,
 			);
 			path = Capture;
@@ -243,6 +245,7 @@
 		6312151D5298F36648DD3A5D /* Engine */ = {
 			isa = PBXGroup;
 			children = (
+				44FB2CD29DD2BC481BA5FBB5 /* JavaScriptEngineHost.swift */,
 				1E8BD56CFEE74F59FD6E5D4B /* MathbreakEngineBridge.swift */,
 				69CEE5C14791C85E7E323BB1 /* WordbreakEngineBridge.swift */,
 			);
@@ -290,7 +293,6 @@
 		8F270F1EF028EEDA3EEF4609 /* WordbreakCaptureSpike */ = {
 			isa = PBXGroup;
 			children = (
-				3F7A855DA4E9E924BB7F7180 /* CaptureSpikeCoordinator.swift */,
 				37E3A29BECC73168BABF18D5 /* CaptureSpikeModel.swift */,
 				093639AD8A12A7F285D8DAEC /* CaptureSpikeView.swift */,
 			);
@@ -648,7 +650,6 @@
 			files = (
 				985BC7E6501B63087C0CF8AE /* CapabilityDiagnosticView.swift in Sources */,
 				DC382FC05C3E3D21E2F5C0A9 /* CaptureCoordinator.swift in Sources */,
-				927C89FDEE05053867C0CAB5 /* CaptureSpikeCoordinator.swift in Sources */,
 				5BFA1C81AAEDDA74E491005D /* CaptureSpikeModel.swift in Sources */,
 				4F2CEA5A452DB89239A85550 /* CaptureSpikeView.swift in Sources */,
 				AF61B74C0A3E733DAF73190B /* CheckInVoiceRecorder.swift in Sources */,
@@ -657,6 +658,7 @@
 				8ECDFADF3568097ADE1BDAD3 /* DailyPracticeView.swift in Sources */,
 				46C7E659ADE2B541F4D68235 /* DailySessionController.swift in Sources */,
 				B386AB8E597F409B0835030D /* ExperimentConfiguration.swift in Sources */,
+				BA3BD039D3693B4326A41240 /* JavaScriptEngineHost.swift in Sources */,
 				4C9C1D62029A6EC1A05D2C8C /* MathbreakEngineBridge.swift in Sources */,
 				7BC818C3611270BF601CFEF0 /* NativeMathbreakView.swift in Sources */,
 				05900CA0C779FD3E7E52B9A3 /* NativeWordbreakView.swift in Sources */,
@@ -664,6 +666,7 @@
 				43A1C2BD5922D698B2B33BBB /* ParentSetupModel.swift in Sources */,
 				E77A1B048346CE6FD7EF67C7 /* ParentSetupView.swift in Sources */,
 				D19C84BFE5384F6E2F2A8F04 /* ProductionCaptureSmokeView.swift in Sources */,
+				281C685E4F229124C06EECD1 /* ReplayKitCaptureAdapter.swift in Sources */,
 				4D612A37AFD43A3219971E25 /* RootView.swift in Sources */,
 				49B5C6C1534D297A66646A10 /* ScreenTimeOpportunityScheduler.swift in Sources */,
 				3DFA2C112B170B4B3B3621FE /* SessionPackager.swift in Sources */,
@@ -679,15 +682,13 @@
 			files = (
 				B9209FC097F9A45ECE7D0A2F /* CapabilityDiagnosticView.swift in Sources */,
 				11DB7DB003593FD6CC2713A9 /* CaptureCoordinator.swift in Sources */,
-				4A85D63ADAC58BD24F11A0F7 /* CaptureSpikeCoordinator.swift in Sources */,
-				013BC69B40146D88B7C06E88 /* CaptureSpikeModel.swift in Sources */,
-				BBF4C803FEC76DD2DE359704 /* CaptureSpikeView.swift in Sources */,
 				B45002109758B9F3B43F8EE8 /* CheckInVoiceRecorder.swift in Sources */,
 				4545939F557303042FFFE0CC /* DailyCoordinationStore.swift in Sources */,
 				82947233D742353133E36D9B /* DailyEventLedger.swift in Sources */,
 				8D1DE8A27284A5E8C3A0087B /* DailyPracticeView.swift in Sources */,
 				1293DACD856EB47EF7A7D68C /* DailySessionController.swift in Sources */,
 				49E9C5E2E6FCEB4CE8F13A4D /* ExperimentConfiguration.swift in Sources */,
+				39ECF66408B8953AA6B9BEF5 /* JavaScriptEngineHost.swift in Sources */,
 				C17A518ECA31FE12F9C11149 /* MathbreakEngineBridge.swift in Sources */,
 				578985718F6F681CFCEFC673 /* NativeMathbreakView.swift in Sources */,
 				75E59EBD0A6F2B9042D9C420 /* NativeWordbreakView.swift in Sources */,
@@ -695,6 +696,7 @@
 				15DDEB1A686F1576B0A0730B /* ParentSetupModel.swift in Sources */,
 				CFEA5EE9ABBA02CA813741B6 /* ParentSetupView.swift in Sources */,
 				8ED777D5DCFC719214247261 /* ProductionCaptureSmokeView.swift in Sources */,
+				D4DF4A0AB7699274D6DB1018 /* ReplayKitCaptureAdapter.swift in Sources */,
 				5CA37AC8FAC49EA2968C94C2 /* RootView.swift in Sources */,
 				6BD5C8ABDDB9A361BBE1E05B /* ScreenTimeOpportunityScheduler.swift in Sources */,
 				B37CACD501396599835F7C63 /* SessionPackager.swift in Sources */,
@@ -838,6 +840,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = 6ETYBAJKY8;
 				ENABLE_NS_ASSERTIONS = NO;
@@ -852,6 +855,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				MARKETING_VERSION = 0.1.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -958,6 +962,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = 6ETYBAJKY8;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -978,6 +983,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				MARKETING_VERSION = 0.1.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;

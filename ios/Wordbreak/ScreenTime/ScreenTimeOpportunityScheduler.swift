@@ -3,7 +3,7 @@ import FamilyControls
 import Foundation
 
 extension DeviceActivityName {
-    static let wordbreakDailyOpportunity = Self("wordbreak.daily.opportunity")
+    static let wordbreakDailyOpportunity = Self(DailyNudgePolicy.opportunityActivity)
 }
 
 extension DeviceActivityEvent.Name {
@@ -14,8 +14,7 @@ extension DeviceActivityEvent.Name {
 /// selection; it never shields or blocks an app. Delivery rules live in `DailyNudgePolicy`.
 struct ScreenTimeOpportunityScheduler {
     static let selectionKey = "phase0.familyActivitySelection"
-    /// Read by the monitor extension, which cannot see the app's bundled kill switches.
-    static let enabledKey = "screenTime.dailyOpportunityEnabled"
+    private static let enabledKey = DailyNudgePolicy.opportunityEnabledKey
     private let defaults = UserDefaults(suiteName: DailyCoordinationStore.appGroup)
 
     var isEnabled: Bool { defaults?.bool(forKey: Self.enabledKey) == true }

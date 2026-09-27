@@ -21,7 +21,11 @@ struct DailySessionEnvironment {
         try WordbreakFileStateStore.appGroup(filename: "mathbreak.v1.json")
     }
     var coordination: () throws -> DailyCoordinationStore = { try DailyCoordinationStore.shared() }
-    var ledger: (String) throws -> DailyEventLedger = { try DailyEventLedger(sessionId: $0) }
+    /// Plan 008's semantic event ledger records typed answers, so it exists only while an
+    /// observation flag is on; with every flag off nothing is written.
+    var ledger: (String) throws -> DailyEventLedger? = {
+        ExperimentConfiguration.observationEnabled ? try DailyEventLedger(sessionId: $0) : nil
+    }
     /// Plan 008's post-session check-in is experiment evidence, so it rides the capture flag.
     var checkInEnabled: Bool = ExperimentConfiguration.captureEnabled
     /// Nonessential effect run only after completion is durably committed.
@@ -106,8 +110,9 @@ final class DailySessionController: ObservableObject {
         do {
             errorMessage = nil
             let now = environment.now()
-            let wordEngine = try WordbreakEngineBridge(store: environment.wordStore(), now: now, timezone: environment.calendar.timeZone)
-            let mathEngine = try MathbreakEngineBridge(store: environment.mathStore(), now: now, timezone: environment.calendar.timeZone)
+            let zone = environment.calendar.timeZone
+            let wordEngine = try WordbreakEngineBridge(store: environment.wordStore(), now: now, clock: environment.now, timezone: zone)
+            let mathEngine = try MathbreakEngineBridge(store: environment.mathStore(), now: now, clock: environment.now, timezone: zone)
             self.wordEngine = wordEngine
             self.mathEngine = mathEngine
             sessionDay = today
@@ -119,7 +124,7 @@ final class DailySessionController: ObservableObject {
             let session = state?["session"] as? [String: Any]
             let sessionId = session?["id"] as? String ?? "daily-\(UUID().uuidString.lowercased())"
             self.sessionId = sessionId
-            ledger = try? environment.ledger(sessionId)
+            ledger = (try? environment.ledger(sessionId)) ?? nil
             wordView = output.viewModel
             observe {
                 try $0.record(

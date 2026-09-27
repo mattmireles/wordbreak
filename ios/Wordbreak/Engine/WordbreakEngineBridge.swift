@@ -24,7 +24,7 @@ final class WordbreakFileStateStore: WordbreakSnapshotStateStore {
 
     static func appGroup(filename: String) throws -> WordbreakFileStateStore {
         guard let root = FileManager.default.containerURL(
-            forSecurityApplicationGroupIdentifier: "group.com.mattmireles.wordbreak"
+            forSecurityApplicationGroupIdentifier: DailyCoordinationStore.appGroup
         ) else {
             throw WordbreakEngineError.stateStoreUnavailable
         }
@@ -98,49 +98,37 @@ struct WordbreakEngineOutput {
 
 @MainActor
 final class WordbreakEngineBridge {
-    private let context: JSContext
-    private let store: WordbreakStateStore
-    private let randomBlock: @convention(block) () -> Double
-    private let uuidBlock: @convention(block) () -> String
+    private let host: JavaScriptEngineHost
 
+    /// - Parameter clock: stamped onto every action; defaults to the creation instant so golden
+    ///   parity replays stay byte-identical. Live hosts pass a real clock.
     init(
         store: WordbreakStateStore,
         bundle: Bundle = .main,
         now: Date = Date(),
+        clock: (() -> Date)? = nil,
         timezone: TimeZone = .current,
         random: @escaping () -> Double = { Double.random(in: 0 ..< 1) },
         uuid: @escaping () -> String = { UUID().uuidString.lowercased() }
     ) throws {
-        guard let context = JSContext() else {
-            throw WordbreakEngineError.javascript("JavaScriptCore context creation failed")
-        }
-        self.context = context
-        self.store = store
-        randomBlock = random
-        uuidBlock = uuid
+        host = try JavaScriptEngineHost(
+            engine: "__wordbreakEngine",
+            store: store,
+            clock: clock ?? { now },
+            writesSnapshots: true
+        )
+        let randomBlock: @convention(block) () -> Double = random
+        let uuidBlock: @convention(block) () -> String = uuid
+        host.set(randomBlock, "__wordbreakRandom")
+        host.set(uuidBlock, "__wordbreakUUID")
+        host.set(try host.savedState(), "__wordbreakStateJSON")
+        host.set(try host.savedViewModel(), "__wordbreakViewModelJSON")
+        host.set(now.timeIntervalSince1970 * 1_000, "__wordbreakNowMS")
+        host.set(timezone.secondsFromGMT(for: now) / -60, "__wordbreakTimezoneOffset")
 
-        context.setObject(randomBlock, forKeyedSubscript: "__wordbreakRandom" as NSString)
-        context.setObject(uuidBlock, forKeyedSubscript: "__wordbreakUUID" as NSString)
-
-        let stateData = try store.readState() ?? Data("{}".utf8)
-        guard let stateJSON = String(data: stateData, encoding: .utf8) else {
-            throw WordbreakEngineError.invalidStateEncoding
-        }
-        context.setObject(stateJSON, forKeyedSubscript: "__wordbreakStateJSON" as NSString)
-        if let snapshotStore = store as? WordbreakSnapshotStateStore,
-           let viewData = try snapshotStore.readViewModel(),
-           let viewJSON = String(data: viewData, encoding: .utf8)
-        {
-            context.setObject(viewJSON, forKeyedSubscript: "__wordbreakViewModelJSON" as NSString)
-        } else {
-            context.setObject(nil, forKeyedSubscript: "__wordbreakViewModelJSON" as NSString)
-        }
-        context.setObject(now.timeIntervalSince1970 * 1_000, forKeyedSubscript: "__wordbreakNowMS" as NSString)
-        context.setObject(timezone.secondsFromGMT(for: now) / -60, forKeyedSubscript: "__wordbreakTimezoneOffset" as NSString)
-
-        try evaluateResource("wordbreak-content", bundle: bundle)
-        try evaluateResource("wordbreak-core", bundle: bundle)
-        try evaluate(
+        try host.evaluate(host.loadResource("wordbreak-content", extension: "js", bundle: bundle))
+        try host.evaluate(host.loadResource("wordbreak-core", extension: "js", bundle: bundle))
+        try host.evaluate(
             """
             globalThis.__wordbreakEngine = WordbreakCore.create({
               stateJson: __wordbreakStateJSON,
@@ -156,65 +144,6 @@ final class WordbreakEngineBridge {
     }
 
     func dispatch(_ action: [String: Any]) throws -> WordbreakEngineOutput {
-        let actionData = try JSONSerialization.data(withJSONObject: action, options: [.sortedKeys])
-        guard let actionJSON = String(data: actionData, encoding: .utf8) else {
-            throw WordbreakEngineError.invalidEngineOutput
-        }
-        context.setObject(actionJSON, forKeyedSubscript: "__wordbreakActionJSON" as NSString)
-        let value = try evaluate(
-            "JSON.stringify(__wordbreakEngine.dispatch(JSON.parse(__wordbreakActionJSON)))"
-        )
-        guard let outputJSON = value.toString(),
-              let outputData = outputJSON.data(using: .utf8),
-              let envelope = try JSONSerialization.jsonObject(with: outputData) as? [String: Any],
-              let stateJSON = envelope["stateJson"] as? String,
-              let viewModel = envelope["viewModel"] as? [String: Any],
-              let effects = envelope["effects"] as? [[String: Any]],
-              let semanticEvents = envelope["semanticEvents"] as? [[String: Any]]
-        else {
-            throw WordbreakEngineError.invalidEngineOutput
-        }
-
-        do {
-            let stateData = Data(stateJSON.utf8)
-            if let snapshotStore = store as? WordbreakSnapshotStateStore {
-                let viewData = try JSONSerialization.data(withJSONObject: viewModel, options: [.sortedKeys])
-                try snapshotStore.writeSnapshotAtomically(state: stateData, viewModel: viewData)
-            } else {
-                try store.writeStateAtomically(stateData)
-            }
-        } catch {
-            _ = try? evaluate("__wordbreakEngine.discard()")
-            throw error
-        }
-
-        context.setObject(stateJSON, forKeyedSubscript: "__wordbreakPendingStateJSON" as NSString)
-        _ = try evaluate("__wordbreakEngine.accept(__wordbreakPendingStateJSON)")
-        return WordbreakEngineOutput(
-            stateJSON: stateJSON,
-            viewModel: viewModel,
-            effects: effects,
-            semanticEvents: semanticEvents
-        )
-    }
-
-    private func evaluateResource(_ name: String, bundle: Bundle) throws {
-        guard let url = bundle.url(forResource: name, withExtension: "js") else {
-            throw WordbreakEngineError.missingResource("\(name).js")
-        }
-        try evaluate(String(contentsOf: url, encoding: .utf8))
-    }
-
-    @discardableResult
-    private func evaluate(_ source: String) throws -> JSValue {
-        context.exception = nil
-        guard let value = context.evaluateScript(source) else {
-            throw WordbreakEngineError.javascript("evaluation returned no value")
-        }
-        if let exception = context.exception {
-            context.exception = nil
-            throw WordbreakEngineError.javascript(exception.toString())
-        }
-        return value
+        try host.dispatch(action)
     }
 }

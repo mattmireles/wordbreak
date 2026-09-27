@@ -179,3 +179,36 @@ test("a same-day session resumes at its current block even without a saved sessi
   assert.equal(output.viewModel.screen, "docs");
   assert.equal(output.viewModel.session, true);
 });
+
+test("review days follow the local calendar day, not UTC", () => {
+  // 6:30 PM PDT on Sept 25 is already Sept 26 in UTC.
+  const evening = Date.UTC(2026, 8, 26, 1, 30, 0);
+  const localDay = Math.floor((evening - 420 * 60_000) / 86_400_000);
+  const core = create({ nowMs: evening });
+  let output = core.dispatch({ type: "session.begin", budgetMin: 1 });
+  core.accept(output.stateJson);
+  for (const action of [
+    { type: "docs.complete" }, { type: "word.commitTyped", value: "sunset" },
+    { type: "word.setFlag", index: 2 }, { type: "word.execute" }, { type: "word.confirmDone" },
+  ]) {
+    output = core.dispatch(action);
+    core.accept(output.stateJson);
+  }
+  const entry = JSON.parse(output.stateJson).sched["1.1|sunset"];
+  assert.equal(entry.last, localDay);
+  assert.equal(entry.due, localDay + 3, "a first clean answer lands in box 1: due three local days later");
+});
+
+test("a long-lived host advances the injected clock per action", () => {
+  const start = Date.UTC(2026, 8, 25, 23, 0, 0);
+  const core = create({ nowMs: start });
+  let output = core.dispatch({ type: "session.begin", budgetMin: 1 });
+  core.accept(output.stateJson);
+  output = core.dispatch({ type: "docs.complete", nowMs: start + 5_000 });
+  core.accept(output.stateJson);
+  assert.equal(output.semanticEvents[0].atMs, start + 5_000);
+  output = core.dispatch({ type: "word.commitTyped", value: "sunset", nowMs: start + 12_000 });
+  core.accept(output.stateJson);
+  assert.equal(output.viewModel.latency, 7_000, "latency is measured from when the word was shown");
+  assert.throws(() => core.dispatch({ type: "word.setFlag", index: 1, nowMs: Number.NaN }), /finite/);
+});

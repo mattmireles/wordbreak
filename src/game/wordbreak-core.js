@@ -296,7 +296,10 @@
 
   function create(options) {
     if (!options || typeof options !== "object") throw new TypeError("WordbreakCore.create requires options");
-    const nowMs = Number(options.nowMs);
+    // The injected clock. A long-lived host (the native app keeps one engine per run) advances it
+    // by putting `nowMs` on each action, so latency, log times, and event times stay real while
+    // every transition remains a pure function of (state, action).
+    let nowMs = Number(options.nowMs);
     const timezoneOffsetMinutes = Number(options.timezoneOffsetMinutes);
     if (!Number.isFinite(nowMs)) throw new TypeError("nowMs must be finite");
     if (!Number.isFinite(timezoneOffsetMinutes)) throw new TypeError("timezoneOffsetMinutes must be finite");
@@ -322,7 +325,7 @@
     }
 
     function scheduledList(state, { dueOnly = false } = {}) {
-      const today = Math.floor(nowMs / DAY_MS);
+      const today = dayNumber(nowMs, timezoneOffsetMinutes);
       const output = [];
       for (const entry of Object.values(state.sched)) {
         if (dueOnly && entry.due > today) continue;
@@ -483,7 +486,9 @@
 
     function scheduleWord(state, screen, word, firstClean) {
       const key = `${screen.unit.id}|${word.a.toLowerCase()}`;
-      const today = Math.floor(nowMs / DAY_MS);
+      // Review days are local calendar days, like sessions. Stored `due`/`last` values written
+      // under the legacy UTC day are read as-is: west of UTC they are at most one day late.
+      const today = dayNumber(nowMs, timezoneOffsetMinutes);
       const entry = state.sched[key] || { box: 0, lapses: 0, seen: 0, unit: screen.unit.id, word: word.a.toLowerCase() };
       const sameDayReplay = entry.last === today;
       entry.seen++;
@@ -543,6 +548,10 @@
     function dispatch(action) {
       if (!action || typeof action !== "object" || typeof action.type !== "string") {
         throw new TypeError("dispatch requires an action with a type");
+      }
+      if (action.nowMs !== undefined) {
+        if (!Number.isFinite(action.nowMs)) throw new TypeError("action.nowMs must be finite");
+        nowMs = action.nowMs;
       }
       const state = clone(committedState);
       const screen = clone(committedScreen);

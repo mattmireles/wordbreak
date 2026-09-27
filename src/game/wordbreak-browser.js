@@ -197,12 +197,13 @@ const {UNITS, ASSESSMENT_FORMS}=createWordbreakContent(ASSESSMENT_VERSION);
    words come back tomorrow. day nine stops depending on the kid re-opening a module. */
 P.sched=P.sched||{};                        /* keyed by "unitId|word" — see scheduleWord() */
 const DAY=86400000;
-function today(){ return Math.floor(Date.now()/DAY); }
-/* localDay() scopes the SESSION layer (plan 003) to the local calendar day. today() stays
-   UTC for the SRS (days-coarse intervals don't care), but UTC midnight lands mid-afternoon
-   US time — a session paused/completed then must not discard or re-arm during homework hours.
-   So session/history scoping uses local midnight; scheduleWord/dueList never see this. */
+/* Sessions, history, and the SRS all use the local calendar day. UTC midnight lands
+   mid-afternoon US time, inside the practice window, so a UTC SRS day made a box-1 word's
+   first review slip a day depending on whether it was practised before or after ~5 PM.
+   Stored due/last values from the old UTC day are read as local days (at most one day
+   late west of UTC); the shared core (wordbreak-core.js dayNumber) applies the same rule. */
 function localDay(){ return Math.floor((Date.now()-new Date().getTimezoneOffset()*60000)/DAY); }
+function today(){ return localDay(); }
 const BOX_DAYS=[1,3,9,21,45];                           /* Leitner intervals, anchored on the day-nine beat */
 const REVIEW_CAP=12;                                    /* legacy per-batch cap — retired on the session path (plan 003) */
 /* session compiler tunables (plan 003). the SEC_* estimates only SIZE the compile — they are

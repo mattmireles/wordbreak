@@ -72,6 +72,39 @@ foreground. The next start rebuilds the engines on today's clock. The shared
 engine abandons an unfinished Wordbreak session from an earlier day (like the
 legacy web runner), and completion credits the day the work actually finishes.
 
+## Engine clock and review days — 2026-09-27 — resolved
+
+**Symptom:** Native Wordbreak recorded zero word latency and one timestamp for a
+whole run, and a review's due day depended on whether practice happened before
+or after about 5 PM in California.
+
+**Root cause:** The shared cores captured `nowMs` once in `create()`, and the
+native app keeps one engine per run. The SRS used `Math.floor(nowMs / DAY_MS)`,
+a UTC day, inherited from the legacy runner; UTC midnight falls inside the
+afternoon practice window.
+
+**Fix / status:** Hosts stamp `nowMs` on every action (`JavaScriptEngineHost`);
+the cores stay pure functions of state plus action, and replays without
+`nowMs` keep the creation clock, so golden parity is unchanged. Review days now
+use the local calendar day in both the core (`dayNumber`) and the browser
+(`today()`). Stored `due`/`last` values are not rewritten: west of UTC they read
+as at most one day late, never early. Mathbreak keeps its practice day fixed at
+creation so a queue never flips days mid-run.
+
+**Verification:** proven — core tests for local review days and per-action
+clocks, a native bridge test with real latency across one long-lived bridge, and
+unchanged golden fixtures.
+
+## Configuration ownership
+
+The daily schedule and session budget live in exactly one place each: reminder
+times in the coordination ledger (defaults 4:00 PM and 7:30 PM, parent-editable),
+the 15-minute threshold in `ScreenTimeOpportunityScheduler`, and the Wordbreak
+block in `DailySessionContract`. `experiment.v1.json` carries only Plan 008
+flags and versions. Plan 008's semantic event ledger records typed answers, so
+it is written only while `capture`, `upload`, or `analysis` is on, and raw event
+files are pruned after 30 days (sealed packages keep their own copy).
+
 Native reporting is paused. Parent setup says iPhone practice is not in the
 weekly email; it is never reported as zero.
 

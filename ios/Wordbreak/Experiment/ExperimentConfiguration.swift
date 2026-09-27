@@ -29,4 +29,6 @@ enum ExperimentConfiguration {
     static var automatedInstallEnabled: Bool { document?.featureFlags.automatedInstall == true }
     static var notificationsEnabled: Bool { document?.featureFlags.notifications == true }
     static var screenTimeEnabled: Bool { document?.featureFlags.screenTime == true }
+    /// Plan 008 observes the session only while one of its evidence flags is on.
+    static var observationEnabled: Bool { captureEnabled || uploadEnabled || analysisEnabled }
 }

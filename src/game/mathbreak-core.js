@@ -136,7 +136,10 @@
     }
     const timezoneOffsetMinutes = Number(options.timezoneOffsetMinutes);
     if (!Number.isFinite(timezoneOffsetMinutes)) throw new TypeError("timezoneOffsetMinutes must be finite");
-    const today = dayNumber(options.nowMs, timezoneOffsetMinutes);
+    // Injected clock; a long-lived host advances it with `nowMs` on each action. The practice
+    // day stays fixed to the engine's creation so a queue never flips days mid-run.
+    let nowMs = options.nowMs;
+    const today = dayNumber(nowMs, timezoneOffsetMinutes);
     const content = clone(options.content);
     let committedState = normalizeState(parseState(options.stateJson));
     let pending = null;
@@ -204,7 +207,7 @@
         answer: Number(answer),
         correct,
         latencyMs: Number.isFinite(latencyMs) ? Math.max(0, latencyMs) : null,
-        atMs: options.nowMs,
+        atMs: nowMs,
       };
       if (stage === "practice") state.history.push({ ...response, stage, retrieval: Boolean(item.retrieval) });
       else state.placement.responses.push({ ...response, stage });
@@ -235,6 +238,10 @@
 
     function dispatch(action) {
       if (!action || typeof action.type !== "string") throw new TypeError("dispatch requires an action with a type");
+      if (action.nowMs !== undefined) {
+        if (!Number.isFinite(action.nowMs)) throw new TypeError("action.nowMs must be finite");
+        nowMs = action.nowMs;
+      }
       const state = clone(committedState);
       const events = [];
 
@@ -243,11 +250,11 @@
         if (!state.placement) {
           state.placement = { phase: "screener", cursor: 0, responses: [], lane: null };
           state.revision++;
-          events.push({ type: "math.placement.started", atMs: options.nowMs });
+          events.push({ type: "math.placement.started", atMs: nowMs });
         } else if (state.placement.phase === "complete" && (!state.practice || (state.practice.done && state.practice.day !== today))) {
           beginPractice(state);
           state.revision++;
-          events.push({ type: "math.practice.started", lane: state.placement.lane, atMs: options.nowMs });
+          events.push({ type: "math.practice.started", lane: state.placement.lane, atMs: nowMs });
         }
         return result(state, events);
       }
@@ -269,7 +276,7 @@
             state.placement.lane = weakestLane(state.placement.responses);
             state.placement.phase = "probe";
             state.placement.cursor = 0;
-            events.push({ type: "math.lane.selected", lane: state.placement.lane, atMs: options.nowMs });
+            events.push({ type: "math.lane.selected", lane: state.placement.lane, atMs: nowMs });
           } else if (stage === "probe" && state.placement.cursor >= content.laneProbes[state.placement.lane].length) {
             beginPractice(state);
             events.push({
@@ -277,7 +284,7 @@
               lane: state.placement.lane,
               factFamily: state.placement.family,
               strategyId: state.placement.strategyId,
-              atMs: options.nowMs,
+              atMs: nowMs,
             });
           }
         }
@@ -300,7 +307,7 @@
           strategyId: item.strategyId,
           choiceId: choice.id,
           equivalent: choice.equivalent,
-          atMs: options.nowMs,
+          atMs: nowMs,
         });
         return result(state, events);
       }
@@ -308,7 +315,7 @@
         if (!state.practice || state.practice.phase !== "retype") throw new RangeError("Retype is not expected now");
         const item = currentItem(state);
         const correct = Number(action.answer) === item.answer;
-        events.push({ type: "math.retyped", itemId: item.id, correct, atMs: options.nowMs });
+        events.push({ type: "math.retyped", itemId: item.id, correct, atMs: nowMs });
         if (correct) {
           state.practice.cursor++;
           state.practice.phase = "attempt";
@@ -316,7 +323,7 @@
           state.practice.strategyConstructed = false;
           if (state.practice.cursor >= state.practice.queue.length) {
             state.practice.done = true;
-            events.push({ type: "math.session.completed", lane: state.placement.lane, atMs: options.nowMs });
+            events.push({ type: "math.session.completed", lane: state.placement.lane, atMs: nowMs });
           }
         }
         state.revision++;

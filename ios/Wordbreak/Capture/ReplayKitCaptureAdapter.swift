@@ -133,7 +133,7 @@ struct CaptureStopResult: Sendable {
     let receiptURL: URL
 }
 
-enum CaptureSpikeError: LocalizedError {
+enum CaptureAdapterError: LocalizedError {
     case cameraDenied
     case cameraUnavailable
     case cannotConfigureCamera
@@ -213,11 +213,11 @@ final class FrontCameraProbe: NSObject, AVCaptureVideoDataOutputSampleBufferDele
 
     func start() async throws {
         let granted = await AVCaptureDevice.requestAccess(for: .video)
-        guard granted else { throw CaptureSpikeError.cameraDenied }
+        guard granted else { throw CaptureAdapterError.cameraDenied }
         try await withCheckedThrowingContinuation { continuation in
             queue.async {
                 do {
-                    guard let camera = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .front) else { throw CaptureSpikeError.cameraUnavailable }
+                    guard let camera = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .front) else { throw CaptureAdapterError.cameraUnavailable }
                     let input = try AVCaptureDeviceInput(device: camera)
                     let output = AVCaptureVideoDataOutput()
                     output.alwaysDiscardsLateVideoFrames = false
@@ -227,7 +227,7 @@ final class FrontCameraProbe: NSObject, AVCaptureVideoDataOutputSampleBufferDele
                     do {
                         self.session.sessionPreset = .medium
                         guard self.session.canAddInput(input), self.session.canAddOutput(output) else {
-                            throw CaptureSpikeError.cannotConfigureCamera
+                            throw CaptureAdapterError.cannotConfigureCamera
                         }
                         self.session.addInput(input)
                         self.session.addOutput(output)
@@ -267,7 +267,7 @@ final class FrontCameraProbe: NSObject, AVCaptureVideoDataOutputSampleBufferDele
 }
 
 @MainActor
-final class CaptureSpikeCoordinator: @unchecked Sendable {
+final class ReplayKitCaptureAdapter: @unchecked Sendable {
     private let metrics = CaptureMetricsStore()
     private let sampleHandler: (@Sendable (CMSampleBuffer, CaptureSampleTrack) -> Void)?
     private lazy var frontCamera = FrontCameraProbe(metrics: metrics, sampleHandler: sampleHandler)
@@ -280,7 +280,7 @@ final class CaptureSpikeCoordinator: @unchecked Sendable {
     }
 
     func start() async throws {
-        guard startedAt == nil else { throw CaptureSpikeError.alreadyRunning }
+        guard startedAt == nil else { throw CaptureAdapterError.alreadyRunning }
         metrics.reset()
         installObservers()
         do {
@@ -316,7 +316,7 @@ final class CaptureSpikeCoordinator: @unchecked Sendable {
     }
 
     func stop() async throws -> CaptureStopResult {
-        guard let startedAt else { throw CaptureSpikeError.notRunning }
+        guard let startedAt else { throw CaptureAdapterError.notRunning }
         defer {
             self.startedAt = nil
             removeObservers()

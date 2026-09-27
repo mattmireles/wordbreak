@@ -261,4 +261,20 @@ final class WordbreakEngineBridgeTests: XCTestCase {
         XCTAssertEqual(restored.viewModel["phase"] as? String, "flag")
         XCTAssertEqual(restored.viewModel["typed"] as? String, "sunset")
     }
+
+    @MainActor
+    func testLiveClockGivesRealWordLatencyAcrossOneLongLivedBridge() throws {
+        var current = now
+        let store = MemoryStateStore(json: "{}")
+        let bridge = try WordbreakEngineBridge(store: store, now: now, clock: { current }, timezone: timezone)
+        _ = try bridge.dispatch(["type": "session.begin", "budgetMin": 6])
+        current = now.addingTimeInterval(4)
+        let docs = try bridge.dispatch(["type": "docs.complete"])
+        XCTAssertEqual(docs.semanticEvents.first?["atMs"] as? Double, current.timeIntervalSince1970 * 1_000)
+        let unit = try XCTUnwrap(docs.viewModel["unit"] as? [String: Any])
+        let answer = try XCTUnwrap((unit["words"] as? [[String: Any]])?.first?["a"] as? String)
+        current = now.addingTimeInterval(11)
+        let typed = try bridge.dispatch(["type": "word.commitTyped", "value": answer])
+        XCTAssertEqual(typed.viewModel["latency"] as? Double, 7_000)
+    }
 }

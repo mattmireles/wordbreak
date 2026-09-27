@@ -24,4 +24,28 @@ final class DailyEventLedgerTests: XCTestCase {
         XCTAssertEqual(events[1]?["sequence"] as? Int, 1)
         XCTAssertTrue(events.allSatisfy { $0?["captureSegmentId"] is NSNull })
     }
+
+    func testRawEventFilesArePrunedAfterRetention() throws {
+        let root = FileManager.default.temporaryDirectory
+            .appending(path: "wordbreak-prune-\(UUID().uuidString)", directoryHint: .isDirectory)
+        try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: root) }
+        let old = root.appending(path: "old.jsonl")
+        let recent = root.appending(path: "recent.jsonl")
+        let current = root.appending(path: "current.jsonl")
+        for url in [old, recent, current] { try Data("{}\n".utf8).write(to: url) }
+        let now = Date()
+        let stale = now.addingTimeInterval(-Double(DailyEventLedger.retentionDays + 1) * 86_400)
+        try FileManager.default.setAttributes([.modificationDate: stale], ofItemAtPath: old.path)
+        try FileManager.default.setAttributes([.modificationDate: stale], ofItemAtPath: current.path)
+
+        DailyEventLedger.prune(directory: root, keeping: "current.jsonl", now: now)
+        XCTAssertFalse(FileManager.default.fileExists(atPath: old.path))
+        XCTAssertTrue(FileManager.default.fileExists(atPath: recent.path))
+        XCTAssertTrue(FileManager.default.fileExists(atPath: current.path), "The active session's file is never pruned")
+    }
+
+    func testBundledFlagsKeepTheEventLedgerOff() {
+        XCTAssertFalse(ExperimentConfiguration.observationEnabled, "With every Plan 008 evidence flag off, no typed answers are written")
+    }
 }

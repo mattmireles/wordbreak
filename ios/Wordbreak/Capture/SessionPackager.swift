@@ -49,7 +49,7 @@ struct SessionPackager {
         bundle: Bundle = .main
     ) throws -> URL {
         guard let container = FileManager.default.containerURL(
-            forSecurityApplicationGroupIdentifier: "group.com.mattmireles.wordbreak"
+            forSecurityApplicationGroupIdentifier: DailyCoordinationStore.appGroup
         ) else { throw WordbreakEngineError.stateStoreUnavailable }
         return try seal(
             sessionId: sessionId,

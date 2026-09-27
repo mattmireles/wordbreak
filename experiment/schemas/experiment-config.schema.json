@@ -3,34 +3,13 @@
   "$id": "https://wordbreak.fun/schemas/experiment-config.v1.json",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schemaVersion", "experimentId", "configVersion", "minimumIOSVersion", "mode", "schedule", "dailySession", "featureFlags", "versions", "model", "hashes", "mediaRequirements", "agentAllowlist", "releaseGates", "protocol"],
+  "required": ["schemaVersion", "experimentId", "configVersion", "minimumIOSVersion", "mode", "featureFlags", "versions", "model", "hashes", "mediaRequirements", "agentAllowlist", "releaseGates", "protocol"],
   "properties": {
     "schemaVersion": { "const": 1 },
     "experimentId": { "type": "string", "pattern": "^[a-z0-9-]+$" },
     "configVersion": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
     "minimumIOSVersion": { "type": "string", "pattern": "^26(?:\\.[0-9]+)?$" },
     "mode": { "enum": ["OBSERVE", "PROPOSE", "AUTOPILOT"] },
-    "schedule": {
-      "type": "object", "additionalProperties": false,
-      "required": ["timeZone", "primaryLocalTime", "fallbackLocalTime", "screenTimeWindowStart", "screenTimeThresholdMinutes"],
-      "properties": {
-        "timeZone": { "const": "device" },
-        "primaryLocalTime": { "type": "string", "pattern": "^[0-2][0-9]:[0-5][0-9]$" },
-        "fallbackLocalTime": { "type": "string", "pattern": "^[0-2][0-9]:[0-5][0-9]$" },
-        "screenTimeWindowStart": { "type": "string", "pattern": "^[0-2][0-9]:[0-5][0-9]$" },
-        "screenTimeThresholdMinutes": { "type": "integer", "minimum": 1, "maximum": 120 }
-      }
-    },
-    "dailySession": {
-      "type": "object", "additionalProperties": false,
-      "required": ["softTargetMinutes", "minimumProductionOpportunitiesPerSubject", "atomicWordbreakModule", "atomicMathCorrection"],
-      "properties": {
-        "softTargetMinutes": { "type": "integer", "minimum": 1, "maximum": 60 },
-        "minimumProductionOpportunitiesPerSubject": { "type": "integer", "minimum": 1 },
-        "atomicWordbreakModule": { "const": true },
-        "atomicMathCorrection": { "const": true }
-      }
-    },
     "featureFlags": { "$ref": "#/$defs/featureFlags" },
     "versions": { "$ref": "#/$defs/stringMap" },
     "model": {

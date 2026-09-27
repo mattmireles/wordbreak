@@ -108,3 +108,11 @@ test("completed math practice restarts on the next local day but not twice today
   assert.equal(nextDay.viewModel.screen, "mathPractice");
   assert.equal(JSON.parse(nextDay.stateJson).practice.day, today + 1);
 });
+
+test("math events carry the per-action host clock", () => {
+  const start = 1_790_118_000_000;
+  const core = create({}, { nowMs: start });
+  const begun = core.dispatch({ type: "session.begin", nowMs: start + 1_000 });
+  assert.equal(begun.semanticEvents[0].atMs, start + 1_000);
+  assert.throws(() => core.dispatch({ type: "state.read", nowMs: "soon" }), /finite/);
+});

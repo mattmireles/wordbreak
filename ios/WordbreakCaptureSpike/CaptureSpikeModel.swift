@@ -14,7 +14,7 @@ final class CaptureSpikeModel: ObservableObject {
     @Published private(set) var verdict: String?
     @Published private(set) var snapshot = CaptureMetricsSnapshot.empty
 
-    private let capture = CaptureSpikeCoordinator()
+    private let capture = ReplayKitCaptureAdapter()
     private var clockTask: Task<Void, Never>?
     private var startedUptime: TimeInterval?
     private let targetDuration: TimeInterval

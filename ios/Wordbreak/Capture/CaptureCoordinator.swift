@@ -40,19 +40,19 @@ protocol SessionCaptureCoordinating: AnyObject {
 @MainActor
 final class CaptureCoordinator: SessionCaptureCoordinating {
     private let mediaWriter: SessionMediaWriter
-    private let adapter: CaptureSpikeCoordinator
+    private let adapter: ReplayKitCaptureAdapter
     private(set) var activeSegmentId: String?
 
     init() {
         let mediaWriter = SessionMediaWriter()
         self.mediaWriter = mediaWriter
-        adapter = CaptureSpikeCoordinator { buffer, track in
+        adapter = ReplayKitCaptureAdapter { buffer, track in
             mediaWriter.consume(buffer, track: track)
         }
     }
 
     func start(sessionId: String, reason: String = "start") async throws -> CaptureStart {
-        guard activeSegmentId == nil else { throw CaptureSpikeError.alreadyRunning }
+        guard activeSegmentId == nil else { throw CaptureAdapterError.alreadyRunning }
         let segmentId = UUID().uuidString.lowercased()
         _ = try mediaWriter.begin(sessionId: sessionId, segmentId: segmentId, reason: reason)
         do {
@@ -67,7 +67,7 @@ final class CaptureCoordinator: SessionCaptureCoordinating {
     }
 
     func stop(reason: String = "completion") async throws -> CapturedSegment {
-        guard activeSegmentId != nil else { throw CaptureSpikeError.notRunning }
+        guard activeSegmentId != nil else { throw CaptureAdapterError.notRunning }
         do { _ = try await adapter.stop() } catch { /* Seal every valid sample even if ReplayKit reports a stop error. */ }
         let segment = await mediaWriter.finish(stopReason: reason)
         activeSegmentId = nil
@@ -87,7 +87,7 @@ private final class SessionMediaWriter: @unchecked Sendable {
 
     func begin(sessionId: String, segmentId: String, reason: String) throws -> UInt64 {
         guard let container = FileManager.default.containerURL(
-            forSecurityApplicationGroupIdentifier: "group.com.mattmireles.wordbreak"
+            forSecurityApplicationGroupIdentifier: DailyCoordinationStore.appGroup
         ) else { throw WordbreakEngineError.stateStoreUnavailable }
         let root = container
             .appending(path: "sessions/\(sessionId)/raw/segments/\(segmentId)", directoryHint: .isDirectory)

@@ -1,3 +1,5 @@
+// Phase 0 device-proof screen: compiled into DEBUG builds only, never into the learner release.
+#if DEBUG
 import DeviceActivity
 import FamilyControls
 import SwiftUI
@@ -22,7 +24,7 @@ final class CapabilityDiagnosticModel: ObservableObject {
     @Published private(set) var callbackStatus = "not received"
     @Published private(set) var errorMessage: String?
 
-    private let sharedDefaults = UserDefaults(suiteName: "group.com.mattmireles.wordbreak")
+    private let sharedDefaults = UserDefaults(suiteName: DailyCoordinationStore.appGroup)
     private let selectionKey = ScreenTimeOpportunityScheduler.selectionKey
 
     var isAuthorized: Bool {
@@ -341,3 +343,4 @@ private struct DiagnosticRow: View {
         .background(WordbreakPalette.panel, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
     }
 }
+#endif

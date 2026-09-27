@@ -4,7 +4,7 @@ import UserNotifications
 
 final class WordbreakDeviceActivityMonitor: DeviceActivityMonitor {
     override func eventDidReachThreshold(_ event: DeviceActivityEvent.Name, activity: DeviceActivityName) {
-        if activity.rawValue == "wordbreak.daily.opportunity" {
+        if activity.rawValue == DailyNudgePolicy.opportunityActivity {
             deliverDailyOpportunityIfNeeded()
             return
         }
@@ -28,7 +28,7 @@ final class WordbreakDeviceActivityMonitor: DeviceActivityMonitor {
     private func deliverDailyOpportunityIfNeeded(now: Date = Date()) {
         let defaults = UserDefaults(suiteName: DailyCoordinationStore.appGroup)
         // Registration can outlive a kill switch or a parent turning suggestions off.
-        guard defaults?.bool(forKey: "screenTime.dailyOpportunityEnabled") == true,
+        guard defaults?.bool(forKey: DailyNudgePolicy.opportunityEnabledKey) == true,
               defaults?.object(forKey: DailyNudgePolicy.notificationsEnabledKey) as? Bool != false
         else { return }
         let calendar = Calendar.current

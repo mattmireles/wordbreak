@@ -167,7 +167,7 @@
 <body>
 <div id="app"></div>
 <script>
-const WORDBREAK_RUNTIME=Object.freeze({"contentHash":"912824abc0c919ea1de565e0ca8c9520102a4e1f5be2fe8de65225d52e72aa1f","contentSourceHash":"4dcfcc365cf776617810296e224f1533bf26a6624fb455c31fc0e804b3350eca","engineHash":"a1946447bed67973fdb25e37bbabb9b830ca63d98900d6de59b4ab30a2d0aa79"});
+const WORDBREAK_RUNTIME=Object.freeze({"contentHash":"912824abc0c919ea1de565e0ca8c9520102a4e1f5be2fe8de65225d52e72aa1f","contentSourceHash":"4dcfcc365cf776617810296e224f1533bf26a6624fb455c31fc0e804b3350eca","engineHash":"92123f57e2155f2c38831f7eb905b951a7b9559b0efeeae63eeafec103142c49"});
 "use strict";
 function createWordbreakContent(ASSESSMENT_VERSION) {
 const UNITS=[];
@@ -1131,7 +1131,10 @@ return {UNITS, ASSESSMENT_FORMS};
 
   function create(options) {
     if (!options || typeof options !== "object") throw new TypeError("WordbreakCore.create requires options");
-    const nowMs = Number(options.nowMs);
+    // The injected clock. A long-lived host (the native app keeps one engine per run) advances it
+    // by putting `nowMs` on each action, so latency, log times, and event times stay real while
+    // every transition remains a pure function of (state, action).
+    let nowMs = Number(options.nowMs);
     const timezoneOffsetMinutes = Number(options.timezoneOffsetMinutes);
     if (!Number.isFinite(nowMs)) throw new TypeError("nowMs must be finite");
     if (!Number.isFinite(timezoneOffsetMinutes)) throw new TypeError("timezoneOffsetMinutes must be finite");
@@ -1157,7 +1160,7 @@ return {UNITS, ASSESSMENT_FORMS};
     }
 
     function scheduledList(state, { dueOnly = false } = {}) {
-      const today = Math.floor(nowMs / DAY_MS);
+      const today = dayNumber(nowMs, timezoneOffsetMinutes);
       const output = [];
       for (const entry of Object.values(state.sched)) {
         if (dueOnly && entry.due > today) continue;
@@ -1318,7 +1321,9 @@ return {UNITS, ASSESSMENT_FORMS};
 
     function scheduleWord(state, screen, word, firstClean) {
       const key = `${screen.unit.id}|${word.a.toLowerCase()}`;
-      const today = Math.floor(nowMs / DAY_MS);
+      // Review days are local calendar days, like sessions. Stored `due`/`last` values written
+      // under the legacy UTC day are read as-is: west of UTC they are at most one day late.
+      const today = dayNumber(nowMs, timezoneOffsetMinutes);
       const entry = state.sched[key] || { box: 0, lapses: 0, seen: 0, unit: screen.unit.id, word: word.a.toLowerCase() };
       const sameDayReplay = entry.last === today;
       entry.seen++;
@@ -1378,6 +1383,10 @@ return {UNITS, ASSESSMENT_FORMS};
     function dispatch(action) {
       if (!action || typeof action !== "object" || typeof action.type !== "string") {
         throw new TypeError("dispatch requires an action with a type");
+      }
+      if (action.nowMs !== undefined) {
+        if (!Number.isFinite(action.nowMs)) throw new TypeError("action.nowMs must be finite");
+        nowMs = action.nowMs;
       }
       const state = clone(committedState);
       const screen = clone(committedScreen);
@@ -1837,12 +1846,13 @@ const {UNITS, ASSESSMENT_FORMS}=createWordbreakContent(ASSESSMENT_VERSION);
    words come back tomorrow. day nine stops depending on the kid re-opening a module. */
 P.sched=P.sched||{};                        /* keyed by "unitId|word" — see scheduleWord() */
 const DAY=86400000;
-function today(){ return Math.floor(Date.now()/DAY); }
-/* localDay() scopes the SESSION layer (plan 003) to the local calendar day. today() stays
-   UTC for the SRS (days-coarse intervals don't care), but UTC midnight lands mid-afternoon
-   US time — a session paused/completed then must not discard or re-arm during homework hours.
-   So session/history scoping uses local midnight; scheduleWord/dueList never see this. */
+/* Sessions, history, and the SRS all use the local calendar day. UTC midnight lands
+   mid-afternoon US time, inside the practice window, so a UTC SRS day made a box-1 word's
+   first review slip a day depending on whether it was practised before or after ~5 PM.
+   Stored due/last values from the old UTC day are read as local days (at most one day
+   late west of UTC); the shared core (wordbreak-core.js dayNumber) applies the same rule. */
 function localDay(){ return Math.floor((Date.now()-new Date().getTimezoneOffset()*60000)/DAY); }
+function today(){ return localDay(); }
 const BOX_DAYS=[1,3,9,21,45];                           /* Leitner intervals, anchored on the day-nine beat */
 const REVIEW_CAP=12;                                    /* legacy per-batch cap — retired on the session path (plan 003) */
 /* session compiler tunables (plan 003). the SEC_* estimates only SIZE the compile — they are

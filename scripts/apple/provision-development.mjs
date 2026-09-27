@@ -11,7 +11,11 @@ const envPath = resolve(repoRoot, ".env");
 if (existsSync(envPath)) loadEnvFile(envPath);
 
 const apply = process.argv.includes("--apply");
-const keyId = process.env.ASC_KEY_ID || process.env.APP_STORE_CONNECT_API_KEY_ID || "T5WQ5M5T48";
+const keyId = process.env.ASC_KEY_ID || process.env.APP_STORE_CONNECT_API_KEY_ID;
+const deviceUDID = process.env.WORDBREAK_DEVICE_UDID;
+if (!keyId || !deviceUDID) {
+  throw new Error("Set ASC_KEY_ID and WORDBREAK_DEVICE_UDID in the ignored .env (see .env.example).");
+}
 const issuerId = process.env.ASC_ISSUER_ID || process.env.ISSUER_ID || process.env.APP_STORE_CONNECT_API_ISSUER_ID;
 const keyPath = resolve(process.env.ASC_KEY_PATH || `${homedir()}/.appstoreconnect/private_keys/AuthKey_${keyId}.p8`);
 if (!issuerId) throw new Error("Set ASC_ISSUER_ID or ISSUER_ID");
@@ -35,7 +39,7 @@ async function request(method, path, body) {
 }
 
 async function ensureDevice() {
-  const udid = "00008030-001C65E43A85802E";
+  const udid = deviceUDID;
   const found = (await request("GET", `/v1/devices?filter[udid]=${udid}&limit=10`)).data;
   if (found.length) return { kind: "device", state: "exists", id: found[0].id, name: found[0].attributes.name };
   if (!apply) return { kind: "device", state: "would-create", name: "Luca's iPhone" };

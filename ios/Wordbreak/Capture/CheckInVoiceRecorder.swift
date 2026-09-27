@@ -33,7 +33,7 @@ final class CheckInVoiceRecorder: NSObject, ObservableObject, AVAudioRecorderDel
     private func start() {
         do {
             guard let root = FileManager.default.containerURL(
-                forSecurityApplicationGroupIdentifier: "group.com.mattmireles.wordbreak"
+                forSecurityApplicationGroupIdentifier: DailyCoordinationStore.appGroup
             ) else { throw WordbreakEngineError.stateStoreUnavailable }
             let directory = root.appending(path: "check-ins", directoryHint: .isDirectory)
             try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)

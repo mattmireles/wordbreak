@@ -37,7 +37,7 @@ final class WordbreakAppDelegate: NSObject, UIApplicationDelegate, UNUserNotific
         withCompletionHandler completionHandler: @escaping () -> Void
     ) {
         if response.notification.request.content.userInfo["route"] as? String == "daily" {
-            UserDefaults(suiteName: "group.com.mattmireles.wordbreak")?
+            UserDefaults(suiteName: DailyCoordinationStore.appGroup)?
                 .set(true, forKey: NotificationScheduler.openDailyKey)
             NotificationCenter.default.post(name: .wordbreakOpenDaily, object: nil)
         }

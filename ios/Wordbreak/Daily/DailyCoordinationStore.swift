@@ -64,6 +64,10 @@ enum DailyNudgePolicy {
     static let notificationPrefix = "wordbreak.daily."
     /// App Group mirror of the notifications kill switch for the monitor extension.
     static let notificationsEnabledKey = "nudges.notificationsEnabled"
+    /// App Group bit the monitor checks before speaking; written by ScreenTimeOpportunityScheduler.
+    static let opportunityEnabledKey = "screenTime.dailyOpportunityEnabled"
+    /// DeviceActivity name shared by the scheduler and the monitor extension.
+    static let opportunityActivity = "wordbreak.daily.opportunity"
 
     enum Slot: String, CaseIterable {
         case afternoon
@@ -114,6 +118,7 @@ enum DailyNudgePolicy {
 }
 
 final class DailyCoordinationStore {
+    /// The one App Group shared by the app and the monitor extension (see both .entitlements).
     static let appGroup = "group.com.mattmireles.wordbreak"
 
     private let url: URL

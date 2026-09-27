@@ -12,13 +12,15 @@ settings:
     IPHONEOS_DEPLOYMENT_TARGET: "26.0"
     TARGETED_DEVICE_FAMILY: "1"
     ENABLE_USER_SCRIPT_SANDBOXING: YES
+    # One version for the app and its embedded extension (Apple requires them to match).
+    MARKETING_VERSION: 0.1.0
+    CURRENT_PROJECT_VERSION: 1
 targets:
   Wordbreak:
     type: application
     platform: iOS
     sources:
       - path: Wordbreak
-      - path: WordbreakCaptureSpike
     postBuildScripts:
       - name: Bundle shared Wordbreak engine
         script: |
@@ -49,6 +51,8 @@ targets:
       path: Wordbreak/Info.plist
       properties:
         CFBundleDisplayName: Wordbreak
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         UILaunchScreen: {}
         UISupportedInterfaceOrientations:
           - UIInterfaceOrientationPortrait
@@ -131,6 +135,8 @@ targets:
       path: WordbreakScreenTimeMonitor/Info.plist
       properties:
         CFBundleDisplayName: Wordbreak Monitor
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         NSExtension:
           NSExtensionPointIdentifier: com.apple.deviceactivity.monitor-extension
           NSExtensionPrincipalClass: $(PRODUCT_MODULE_NAME).WordbreakDeviceActivityMonitor
