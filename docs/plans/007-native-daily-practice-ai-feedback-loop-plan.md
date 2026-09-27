@@ -167,14 +167,14 @@ The learner flow has four states:
 - [x] Implement the JavaScriptCore bridge and native parity harness.
 - [x] Implement Mathbreak screening, deterministic selection, make-ten, doubles/near-doubles, inverse families, commutativity, 2/5/10 anchors, doubling/halving, and distributive reconstruction.
 - [x] Implement the learner path attempt -> strategy bridge -> construct/explain -> retype -> delayed retrieval without speed pressure or cartoon rewards.
-- [ ] Finish DailySessionController's explicit minimum-work and soft-budget contract. Wordbreak and Mathbreak recurrence are implemented; the measured overshoot receipt remains open.
-- [ ] Add and measure a synthetic worst-case session containing an unread, non-fast-pass Wordbreak module plus Mathbreak corrections before promising a duration.
-- [ ] Finish atomic local persistence and explicit, previewed web-state import. Native relaunch already restores exact Wordbreak input/phase and deterministic Mathbreak state.
-- [ ] Finish accessibility labels, Dynamic Type, VoiceOver order, keypad behavior, reduced motion, and dark/light contrast.
-- [ ] Remove experiment-only controls from the learner path. Keep Plan 008 hooks dormant and independently feature-gated.
-- [ ] Decide whether Plan 004 aggregate reporting is active. If active, explicitly re-pair native as the sole authority; if inactive, show reporting as paused rather than fabricating zeros.
+- [x] Define DailySessionContract (6-minute Wordbreak block inside the 12-minute soft target) and commit the one daily completion only after both subjects finish, before any effect.
+- [x] Add a synthetic worst-case session (unread, non-fast-pass Wordbreak module plus corrected Mathbreak items) that pins the engine-estimated duration: 8 minutes of Wordbreak, about 17 minutes on an ordinary day and 25 on the placement day. The learner surface promises no duration; Luca-device timing is a Phase 4 acceptance task.
+- [x] Persist daily completion and the nudge ledger in one atomic, versioned App Group file shared with the monitor extension, and import web progress only through an explicit parent preview and the engine's own progress.import action.
+- [x] Scale learner text with Dynamic Type (scrolling instead of clipping), add VoiceOver labels, headers and selected traits, keep Check reachable above the number pad, honor Reduce Motion, and raise muted-text contrast. The app renders dark only; the system accessibility audit passes on home, lesson, and typing screens.
+- [x] Remove the parent gear and the experiment check-in from the learner path. Parent setup opens only from a hidden long press; the check-in stays dormant behind Plan 008's capture flag.
+- [x] Pause Plan 004 aggregate reporting for native: parent setup states that iPhone practice is not reported, rather than reporting zeros.
 
-**Verification:** Native unit/UI tests pass; both subjects complete offline; kill/relaunch restores the exact item once; the worst-case duration is measured; reporting authority is explicit; no visible timer appears; and Luca encounters no parent or experiment controls.
+**Verification:** Native unit/UI tests pass; an offline controller test completes both subjects once through the real engines; kill/relaunch restores the exact item; a run left open across midnight is released and credited to the finishing day; the worst-case duration is pinned by test; reporting is explicitly paused; no visible timer appears; and Luca encounters no parent or experiment controls.
 
 ---
 
@@ -208,6 +208,7 @@ The learner flow has four states:
 
 - [ ] Run the full web, core, Mathbreak, iOS, notification, Screen Time, accessibility, offline, interruption, and migration matrix from a clean checkout.
 - [ ] Run routine physical development smokes on the iPhone 12 Pro and final acceptance on Luca's iPhone SE.
+- [ ] Time the synthetic worst-case day and one real day on Luca's iPhone SE, and complete a manual VoiceOver pass through both subjects, before promising Luca any duration.
 - [ ] Verify the release archive embeds the tested engine/content hashes, expected entitlements, bundle identifiers, signing identity, and build number.
 - [ ] Prove the app starts, completes, and persists when all Plan 008 feature flags and all network access are disabled.
 - [ ] Run the repository audit skill over Plan 007 paths, fix findings, and rerun the applicable tests.
@@ -259,6 +260,8 @@ Phases 0-4 are complete; automated and physical-device gates pass; Luca and the 
 - **A:** No. It is only an opportunity trigger while practice is unfinished.
 - **Q:** Does the daily app require the AI feedback system?
 - **A:** No. Plan 008 is a removable observer and release system. The learner app must be complete with it disabled.
+- **Q:** Is private aggregate reporting active for native use?
+- **A:** Paused. The iPhone sends no reports and parent setup says so; re-pairing native as the sole authority is a later, explicit decision.
 - **Q:** Which device is used for development?
 - **A:** The iPhone 12 Pro is the routine development target; Luca's iPhone SE is the final acceptance target.
 
@@ -266,8 +269,6 @@ Phases 0-4 are complete; automated and physical-device gates pass; Luca and the 
 
 - **Q:** Which Mathbreak lane should lead after onboarding?
 - **Options:** The fixed screener selects addition/subtraction within 20 or multiplication/division through 12, with a parent-only override.
-- **Q:** Is private aggregate reporting active for native use?
-- **Options:** Re-pair native as the sole authority or explicitly pause coverage. Never allow competing device authorities or fake zeroes.
 
 ## References
 

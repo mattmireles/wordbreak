@@ -19,8 +19,10 @@ struct ScreenTimeOpportunityScheduler {
             throw CocoaError(.fileNoSuchFile, userInfo: [NSLocalizedDescriptionKey: "Choose the apps or categories first."])
         }
         let selection = try PropertyListDecoder().decode(FamilyActivitySelection.self, from: data)
+        // Usage is counted from one hour before the parent's afternoon reminder.
+        let windowStart = max(0, try DailyCoordinationStore.shared().read().afternoon.minutesAfterMidnight - 60)
         let schedule = DeviceActivitySchedule(
-            intervalStart: DateComponents(hour: 15),
+            intervalStart: DateComponents(hour: windowStart / 60, minute: windowStart % 60),
             intervalEnd: DateComponents(hour: 23, minute: 59),
             repeats: true
         )

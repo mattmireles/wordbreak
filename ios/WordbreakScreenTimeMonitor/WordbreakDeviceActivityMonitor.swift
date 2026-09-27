@@ -8,7 +8,7 @@ final class WordbreakDeviceActivityMonitor: DeviceActivityMonitor {
             deliverDailyOpportunityIfNeeded()
             return
         }
-        UserDefaults(suiteName: "group.com.mattmireles.wordbreak")?
+        UserDefaults(suiteName: DailyCoordinationStore.appGroup)?
             .set(Date().timeIntervalSince1970, forKey: "phase0.lastThresholdCallback")
         let content = UNMutableNotificationContent()
         content.title = "Wordbreak Screen Time check"
@@ -21,21 +21,22 @@ final class WordbreakDeviceActivityMonitor: DeviceActivityMonitor {
         ))
     }
 
+    /// Claims today's single opportunity in the shared ledger before speaking, then removes the
+    /// still-pending afternoon reminder. The evening fallback stays scheduled.
     private func deliverDailyOpportunityIfNeeded(now: Date = Date()) {
-        let defaults = UserDefaults(suiteName: "group.com.mattmireles.wordbreak")
         let calendar = Calendar.current
-        let day = DailyOpportunityPolicy.dayKey(now, calendar: calendar)
-        guard DailyOpportunityPolicy.shouldDeliver(
-            now: now,
-            completedDay: defaults?.string(forKey: "daily.completedDay"),
-            opportunityDay: defaults?.string(forKey: "nudge.opportunityDay"),
-            calendar: calendar
-        )
-        else { return }
+        let day = DailyNudgePolicy.dayKey(now, calendar: calendar)
+        guard let store = try? DailyCoordinationStore.shared() else { return }
+        var claimed = false
+        _ = try? store.update { state in
+            guard DailyNudgePolicy.shouldDeliverOpportunity(now: now, state: state, calendar: calendar) else { return }
+            state.days[day, default: .init()].opportunityDelivered = true
+            claimed = true
+        }
+        guard claimed else { return }
 
-        defaults?.set(day, forKey: "nudge.opportunityDay")
         UNUserNotificationCenter.current().removePendingNotificationRequests(
-            withIdentifiers: ["wordbreak.daily.\(day).afternoon"]
+            withIdentifiers: ["\(DailyNudgePolicy.notificationPrefix)\(day).afternoon"]
         )
         let content = UNMutableNotificationContent()
         content.title = "Good moment for a break?"
@@ -43,7 +44,7 @@ final class WordbreakDeviceActivityMonitor: DeviceActivityMonitor {
         content.sound = .default
         content.userInfo = ["route": "daily"]
         UNUserNotificationCenter.current().add(UNNotificationRequest(
-            identifier: "wordbreak.daily.\(day).opportunity",
+            identifier: "\(DailyNudgePolicy.notificationPrefix)\(day).opportunity",
             content: content,
             trigger: nil
         ))

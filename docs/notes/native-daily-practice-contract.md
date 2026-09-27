@@ -44,11 +44,36 @@ contains meaningful production in both Wordbreak and Mathbreak. There is no
 countdown, speed score, streak currency, leaderboard, mascot, or experiment
 console in the learner path.
 
-The first session budget is a soft 12 minutes. Each subject receives at least
-four production opportunities. A started Wordbreak module and an active
-Mathbreak correction remain atomic, so the session may finish beyond 12 minutes
-rather than cutting off instruction. The app must measure the physical-device
-worst case before making a duration promise to Luca.
+The first session budget is a soft 12 minutes, with a 6-minute Wordbreak block.
+Each subject receives at least four production opportunities. A started
+Wordbreak module and an active Mathbreak correction remain atomic, so the
+session may finish beyond 12 minutes rather than cutting off instruction.
+
+`src/daily-session-budget.test.js` pins the synthetic worst case from the real
+engines: every curriculum unit is 4 lesson panels plus 4 words, so an unread,
+non-fast-pass module is 8 engine-estimated minutes. Mathbreak has no duration
+constant; charging an assumed 15 s per placement answer and 90 s per corrected
+practice item gives about 17 minutes on an ordinary day and about 25 on the
+placement day (24 screener + 6 probe answers before the 6-item queue). These are
+planning estimates. The app promises Luca no duration until his phone has timed
+a real day.
+
+## Daily coordination and day credit
+
+Daily completion and the nudge ledger live in one versioned App Group file,
+`state/daily.v1.json`, written atomically under `NSFileCoordinator` by both the
+app and the DeviceActivity monitor. It is not complete-file-protected, because
+the monitor must read it while the phone is locked. Unreadable or future-version
+bytes are moved aside, never overwritten. Completion is committed only after
+both subjects finish and before navigation or notification effects.
+
+A run left open across local midnight is released when the app returns to the
+foreground. The next start rebuilds the engines on today's clock. The shared
+engine abandons an unfinished Wordbreak session from an earlier day (like the
+legacy web runner), and completion credits the day the work actually finishes.
+
+Native reporting is paused. Parent setup says iPhone practice is not in the
+weekly email; it is never reported as zero.
 
 ## Daily rhythm
 

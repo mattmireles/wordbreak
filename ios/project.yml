@@ -118,7 +118,7 @@ targets:
     platform: iOS
     sources:
       - path: WordbreakScreenTimeMonitor
-      - path: Wordbreak/ScreenTime/DailyOpportunityPolicy.swift
+      - path: Wordbreak/Daily/DailyCoordinationStore.swift
     entitlements:
       path: WordbreakScreenTimeMonitor/WordbreakScreenTimeMonitor.entitlements
       properties:
@@ -143,16 +143,12 @@ targets:
     platform: iOS
     sources:
       - path: WordbreakTests
+      # Folder reference: frozen parity fixtures are copied as one resource directory.
+      - path: ../test/fixtures/wordbreak-golden
+        type: folder
+        buildPhase: resources
     dependencies:
       - target: Wordbreak
-    postBuildScripts:
-      - name: Bundle frozen parity fixtures
-        script: |
-          /usr/bin/ditto "${SRCROOT}/../test/fixtures/wordbreak-golden" "${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/wordbreak-golden"
-        inputFiles:
-          - $(SRCROOT)/../test/fixtures/wordbreak-golden
-        outputFiles:
-          - $(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/wordbreak-golden
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.mattmireles.wordbreak.tests

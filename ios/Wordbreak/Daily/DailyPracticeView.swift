@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 struct DailyPracticeView: View {
     @Environment(\.scenePhase) private var scenePhase
@@ -11,7 +12,7 @@ struct DailyPracticeView: View {
                 WordbreakPalette.background.ignoresSafeArea()
                 switch controller.stage {
                 case .home:
-                    DailyHomeView(start: controller.startToday)
+                    DailyHomeView(start: controller.startToday, openParentSetup: { showingSetup = true })
                 case .wordbreak:
                     NativeWordbreakView(viewModel: controller.wordView, send: controller.sendWord)
                 case .mathbreak:
@@ -19,18 +20,7 @@ struct DailyPracticeView: View {
                 case .checkIn:
                     DailyCheckInView(submit: controller.submitCheckIn)
                 case .done:
-                    DailyDoneView()
-                }
-            }
-            .toolbar {
-                if controller.stage == .home {
-                    ToolbarItem(placement: .topBarTrailing) {
-                        Button { showingSetup = true } label: {
-                            Image(systemName: "gearshape")
-                                .foregroundStyle(WordbreakPalette.secondary)
-                        }
-                        .accessibilityLabel("Parent setup")
-                    }
+                    DailyDoneView(openParentSetup: { showingSetup = true })
                 }
             }
             .overlay(alignment: .top) {
@@ -46,7 +36,7 @@ struct DailyPracticeView: View {
                 }
             }
             .navigationDestination(isPresented: $showingSetup) {
-                CapabilityDiagnosticView()
+                ParentSetupView()
             }
         }
         .tint(WordbreakPalette.green)
@@ -65,10 +55,15 @@ struct DailyPracticeView: View {
             if NotificationScheduler.consumeOpenDailyRequest() { controller.startToday() }
         }
         .onReceive(NotificationCenter.default.publisher(for: .wordbreakOpenDaily)) { _ in
-            controller.startToday()
+            _ = NotificationScheduler.consumeOpenDailyRequest()
+            // Never start practice underneath an open parent setup (an import may be in flight).
+            if !showingSetup { controller.startToday() }
         }
         .onChange(of: scenePhase) { _, newPhase in
             controller.handleScenePhase(newPhase)
+        }
+        .onReceive(NotificationCenter.default.publisher(for: UIApplication.significantTimeChangeNotification)) { _ in
+            controller.refreshDay()
         }
     }
 }
@@ -86,6 +81,10 @@ private struct DailyCheckInView: View {
     ]
 
     var body: some View {
+        FillingScrollView { checkIn }
+    }
+
+    private var checkIn: some View {
         VStack(alignment: .leading, spacing: 22) {
             PracticeHeader(eyebrow: "One last thing", title: "How did that feel?", progress: nil)
             PracticeCard {
@@ -105,6 +104,7 @@ private struct DailyCheckInView: View {
                             .frame(maxWidth: .infinity, minHeight: 52)
                             .background(selection == id ? WordbreakPalette.green : WordbreakPalette.background, in: RoundedRectangle(cornerRadius: 14))
                         }
+                        .accessibilityAddTraits(selection == id ? .isSelected : [])
                     }
                 }
             }
@@ -138,26 +138,48 @@ private struct DailyCheckInView: View {
     }
 }
 
+/// Hidden parent entry: a long press on the eyebrow label, or the VoiceOver action.
+private struct ParentEntry: ViewModifier {
+    let open: () -> Void
+
+    func body(content: Content) -> some View {
+        content
+            .frame(minHeight: 44, alignment: .leading)
+            .contentShape(Rectangle())
+            .onLongPressGesture(minimumDuration: 1.5, perform: open)
+            .accessibilityAction(named: "Parent setup", open)
+            .accessibilityIdentifier("parent.entry")
+    }
+}
+
 private struct DailyHomeView: View {
     let start: () -> Void
+    let openParentSetup: () -> Void
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     var body: some View {
+        FillingScrollView { home }
+    }
+
+    private var home: some View {
         VStack(alignment: .leading, spacing: 0) {
             Spacer()
             Text("TODAY")
                 .font(.system(.caption, design: .monospaced, weight: .semibold))
                 .tracking(2.6)
                 .foregroundStyle(WordbreakPalette.green)
+                .modifier(ParentEntry(open: openParentSetup))
             Text("A little practice.\nThen you’re done.")
-                .font(.system(size: 40, weight: .bold, design: .rounded))
-                .tracking(-1.2)
+                .font(.system(.largeTitle, design: .rounded, weight: .bold))
+                .tracking(-1)
                 .foregroundStyle(.white)
-                .padding(.top, 8)
-            HStack(spacing: 10) {
-                SubjectPill(number: "1", title: "Words")
-                Image(systemName: "arrow.right").foregroundStyle(WordbreakPalette.muted)
-                SubjectPill(number: "2", title: "Math")
-            }
+                .minimumScaleFactor(0.6)
+                .accessibilityAddTraits(.isHeader)
+            // AnyLayout keeps the pills' identity when accessibility sizes stack them.
+            let steps = dynamicTypeSize.isAccessibilitySize
+                ? AnyLayout(VStackLayout(alignment: .leading, spacing: 10))
+                : AnyLayout(HStackLayout(spacing: 10))
+            steps { subjectSteps }
             .padding(.top, 28)
             Spacer()
             Button(action: start) {
@@ -166,11 +188,11 @@ private struct DailyHomeView: View {
                     Spacer()
                     Image(systemName: "arrow.right")
                 }
-                .padding(.horizontal, 20)
-                .frame(maxWidth: .infinity, minHeight: 58)
+                .padding(.vertical, 2)
             }
             .buttonStyle(WordbreakPrimaryButtonStyle())
             .accessibilityIdentifier("practice.start")
+            .accessibilityHint("Words first, then math.")
             Text("No timer. No streak to protect.")
                 .font(.system(.caption, design: .rounded))
                 .foregroundStyle(WordbreakPalette.muted)
@@ -180,18 +202,27 @@ private struct DailyHomeView: View {
         .padding(.horizontal, 24)
         .padding(.vertical, 30)
     }
+
+    @ViewBuilder private var subjectSteps: some View {
+        SubjectPill(number: "1", title: "Words")
+        Image(systemName: dynamicTypeSize.isAccessibilitySize ? "arrow.down" : "arrow.right")
+            .foregroundStyle(WordbreakPalette.muted)
+            .accessibilityHidden(true)
+        SubjectPill(number: "2", title: "Math")
+    }
 }
 
 private struct SubjectPill: View {
     let number: String
     let title: String
+    @ScaledMetric(relativeTo: .caption) private var badge = 22.0
 
     var body: some View {
         HStack(spacing: 8) {
             Text(number)
                 .font(.system(.caption, design: .rounded, weight: .bold))
                 .foregroundStyle(WordbreakPalette.background)
-                .frame(width: 22, height: 22)
+                .frame(minWidth: badge, minHeight: badge)
                 .background(WordbreakPalette.green, in: Circle())
             Text(title).font(.system(.subheadline, design: .rounded, weight: .semibold))
         }
@@ -199,11 +230,18 @@ private struct SubjectPill: View {
         .padding(.horizontal, 13)
         .padding(.vertical, 10)
         .background(WordbreakPalette.panel, in: Capsule())
+        .accessibilityElement(children: .combine)
     }
 }
 
 private struct DailyDoneView: View {
+    let openParentSetup: () -> Void
+
     var body: some View {
+        FillingScrollView { done }
+    }
+
+    private var done: some View {
         VStack(spacing: 18) {
             Spacer()
             Image(systemName: "checkmark")
@@ -211,9 +249,14 @@ private struct DailyDoneView: View {
                 .foregroundStyle(WordbreakPalette.background)
                 .frame(width: 72, height: 72)
                 .background(WordbreakPalette.green, in: Circle())
+                .accessibilityHidden(true)
             Text("That’s today done.")
-                .font(.system(size: 34, weight: .bold, design: .rounded))
+                .font(.system(.largeTitle, design: .rounded, weight: .bold))
+                .minimumScaleFactor(0.6)
                 .foregroundStyle(.white)
+                .multilineTextAlignment(.center)
+                .accessibilityAddTraits(.isHeader)
+                .modifier(ParentEntry(open: openParentSetup))
             Text("Come back tomorrow.")
                 .font(.system(.body, design: .rounded))
                 .foregroundStyle(WordbreakPalette.secondary)
@@ -221,7 +264,7 @@ private struct DailyDoneView: View {
         }
         .frame(maxWidth: .infinity)
         .padding(24)
-        .accessibilityElement(children: .combine)
+        .accessibilityIdentifier("daily.done")
     }
 }
 
@@ -242,11 +285,14 @@ struct PracticeHeader: View {
                     Text(progress)
                         .font(.system(.caption, design: .monospaced))
                         .foregroundStyle(WordbreakPalette.muted)
+                        .accessibilityLabel(progress.replacingOccurrences(of: " / ", with: " of "))
                 }
             }
             Text(title)
-                .font(.system(size: 30, weight: .bold, design: .rounded))
+                .font(.system(.title, design: .rounded, weight: .bold))
+                .minimumScaleFactor(0.6)
                 .foregroundStyle(.white)
+                .accessibilityAddTraits(.isHeader)
         }
     }
 }

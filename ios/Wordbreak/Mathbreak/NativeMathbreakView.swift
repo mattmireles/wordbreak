@@ -6,11 +6,17 @@ struct NativeMathbreakView: View {
     @State private var answer = ""
     @State private var shownAt = Date()
     @FocusState private var answerFocused: Bool
+    @ScaledMetric(relativeTo: .largeTitle) private var promptSize = 44.0
+    @ScaledMetric(relativeTo: .title) private var answerSize = 34.0
 
     private var phase: String { viewModel["phase"] as? String ?? "attempt" }
     private var item: [String: Any] { viewModel["item"] as? [String: Any] ?? [:] }
 
     var body: some View {
+        FillingScrollView { practice }
+    }
+
+    private var practice: some View {
         VStack(alignment: .leading, spacing: 22) {
             PracticeHeader(
                 eyebrow: "2 of 2 · Math",
@@ -20,9 +26,11 @@ struct NativeMathbreakView: View {
             PracticeCard {
                 VStack(alignment: .leading, spacing: 22) {
                     Text(viewModel["prompt"] as? String ?? "")
-                        .font(.system(size: 44, weight: .bold, design: .rounded))
+                        .font(.system(size: promptSize, weight: .bold, design: .rounded))
                         .foregroundStyle(.white)
                         .frame(maxWidth: .infinity, alignment: .center)
+                        .accessibilityLabel(spokenPrompt)
+                        .accessibilityAddTraits(.isHeader)
                     if phase == "bridge" { strategyChoices }
                     else { answerStep }
                 }
@@ -57,24 +65,23 @@ struct NativeMathbreakView: View {
         }
         TextField("Answer", text: $answer)
             .keyboardType(.numberPad)
-            .font(.system(size: 34, weight: .bold, design: .rounded))
+            .font(.system(size: answerSize, weight: .bold, design: .rounded))
             .multilineTextAlignment(.center)
             .foregroundStyle(.white)
-            .frame(height: 62)
+            .frame(minHeight: 62)
             .background(WordbreakPalette.background.opacity(0.7), in: RoundedRectangle(cornerRadius: 15))
             .focused($answerFocused)
-        Button(phase == "retype" ? "Check again" : "Check") {
-            let value = Int(answer) ?? Int.min
-            if phase == "retype" {
-                send(["type": "answer.retype", "answer": value])
-            } else {
-                send([
-                    "type": "answer.submit",
-                    "answer": value,
-                    "latencyMs": max(0, Int(Date().timeIntervalSince(shownAt) * 1_000)),
-                ])
+            .accessibilityLabel("Answer")
+            .accessibilityIdentifier("mathbreak.answer")
+            .toolbar {
+                // The number pad has no return key; keep Check reachable above the keyboard.
+                ToolbarItemGroup(placement: .keyboard) {
+                    Spacer()
+                    Button(phase == "retype" ? "Check again" : "Check", action: submitAnswer)
+                        .disabled(Int(answer) == nil)
+                }
             }
-        }
+        Button(phase == "retype" ? "Check again" : "Check", action: submitAnswer)
         .frame(maxWidth: .infinity, minHeight: 54)
         .buttonStyle(WordbreakPrimaryButtonStyle())
         .disabled(Int(answer) == nil)
@@ -102,6 +109,30 @@ struct NativeMathbreakView: View {
                         .background(WordbreakPalette.background.opacity(0.72), in: RoundedRectangle(cornerRadius: 14))
                 }
             }
+        }
+    }
+
+    /// The on-screen symbols read poorly aloud ("minus" vs. "hyphen"), so speak the operation.
+    private var spokenPrompt: String {
+        let prompt = viewModel["prompt"] as? String ?? ""
+        return prompt
+            .replacingOccurrences(of: " + ", with: " plus ")
+            .replacingOccurrences(of: " − ", with: " minus ")
+            .replacingOccurrences(of: " - ", with: " minus ")
+            .replacingOccurrences(of: " × ", with: " times ")
+            .replacingOccurrences(of: " ÷ ", with: " divided by ")
+    }
+
+    private func submitAnswer() {
+        guard let value = Int(answer) else { return }
+        if phase == "retype" {
+            send(["type": "answer.retype", "answer": value])
+        } else {
+            send([
+                "type": "answer.submit",
+                "answer": value,
+                "latencyMs": max(0, Int(Date().timeIntervalSince(shownAt) * 1_000)),
+            ])
         }
     }
 

@@ -151,3 +151,31 @@ test("a fully taught learner still receives four daily reconstruction opportunit
   assert.equal(output.viewModel.screen, "run");
   assert.equal(output.viewModel.mode, "review");
 });
+
+test("an unfinished session from an earlier local day is abandoned, not replayed", () => {
+  const first = create();
+  const started = first.dispatch({ type: "session.begin", budgetMin: 10 });
+  first.accept(started.stateJson);
+
+  const nextDay = create({ stateJson: started.stateJson, nowMs: Date.UTC(2026, 8, 26, 23, 0, 0), uuid: () => "00000000-0000-4000-8000-000000000002" });
+  const output = nextDay.dispatch({ type: "session.begin", budgetMin: 10 });
+  const state = JSON.parse(output.stateJson);
+  assert.equal(state.session.id, "00000000-0000-4000-8000-000000000002");
+  assert.equal(state.sessions[0].status, "abandoned");
+  assert.equal(state.sessions[0].reason, "stale_day");
+  assert.equal(output.semanticEvents[0].type, "session.abandoned");
+  assert.equal(output.viewModel.screen, "docs");
+});
+
+test("a same-day session resumes at its current block even without a saved session screen", () => {
+  const first = create();
+  const started = first.dispatch({ type: "session.begin", budgetMin: 10 });
+  first.accept(started.stateJson);
+
+  // Imported progress carries no view model, so the engine starts on its neutral screen.
+  const imported = create({ stateJson: started.stateJson });
+  const output = imported.dispatch({ type: "session.begin", budgetMin: 10 });
+  assert.equal(JSON.parse(output.stateJson).session.id, "00000000-0000-4000-8000-000000000001");
+  assert.equal(output.viewModel.screen, "docs");
+  assert.equal(output.viewModel.session, true);
+});

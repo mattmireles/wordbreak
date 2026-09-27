@@ -713,17 +713,38 @@
       }
 
       if (action.type === "session.begin") {
-        if (state.session && !state.session.done) return result(state, screen);
         const today = dayNumber(nowMs, timezoneOffsetMinutes);
+        if (state.session && !state.session.done) {
+          if (state.session.day === today) {
+            // Resume exactly when the committed screen is inside this session (reload, relaunch);
+            // otherwise (e.g. imported progress with a neutral screen) reopen its current block.
+            if (!(screen.session && (screen.screen === "docs" || screen.screen === "run"))) openSessionBlock(state, screen);
+            return result(state, screen);
+          }
+          // Like the legacy runner (sessionValid), an unfinished session from an earlier local day
+          // is abandoned rather than replayed, and today's work is compiled fresh.
+          state.session.status = "abandoned";
+          state.session.endedAt = nowMs;
+          state.session.reason = "stale_day";
+          const row = state.sessions.find((entry) => entry.id === state.session.id);
+          if (row && row.status === "in_progress") {
+            row.status = "abandoned";
+            row.endedAt = nowMs;
+            row.reason = "stale_day";
+            row.revision = (row.revision || 1) + 1;
+          }
+          semanticEvents.push({ type: "session.abandoned", sessionId: state.session.id, reason: "stale_day", atMs: nowMs });
+          state.session = null;
+        }
         if (!action.bonus && state.sessions.some((entry) => entry.day === today && entry.status === "completed" && !entry.bonus)) {
           screen.screen = "sessionDone";
-          return result(state, screen);
+          return result(state, screen, { semanticEvents });
         }
         const budgetMin = Number.isFinite(action.budgetMin) ? action.budgetMin : DEFAULT_SESSION_MIN;
         state.session = compileSession(state, budgetMin, Boolean(action.bonus));
         if (!state.session.blocks.length) {
           state.session = null;
-          return result(state, screen);
+          return result(state, screen, { semanticEvents });
         }
         state.sessions.push({
           id: state.session.id, day: state.session.day, startReportDay: state.session.startReportDay,

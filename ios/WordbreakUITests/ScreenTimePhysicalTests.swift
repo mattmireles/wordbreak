@@ -3,6 +3,9 @@ import XCTest
 final class ScreenTimePhysicalTests: XCTestCase {
     @MainActor
     func testSelectionAndCallbackPersistAcrossRestart() throws {
+        guard ProcessInfo.processInfo.environment["WORDBREAK_RUN_PHYSICAL_SCREEN_TIME"] == "1" else {
+            throw XCTSkip("Run explicitly on Luca's physical device with a parent present.")
+        }
         continueAfterFailure = false
         let app = XCUIApplication()
         app.launchArguments = [
@@ -17,6 +20,9 @@ final class ScreenTimePhysicalTests: XCTestCase {
 
     @MainActor
     func testSelectSocialActivityAndStartThresholdProof() throws {
+        guard ProcessInfo.processInfo.environment["WORDBREAK_RUN_PHYSICAL_SCREEN_TIME"] == "1" else {
+            throw XCTSkip("Run explicitly on Luca's physical device with a parent present.")
+        }
         continueAfterFailure = false
         let app = XCUIApplication()
         app.launchArguments = [

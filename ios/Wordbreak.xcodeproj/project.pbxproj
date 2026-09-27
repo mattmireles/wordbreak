@@ -13,11 +13,10 @@
 		1293DACD856EB47EF7A7D68C /* DailySessionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D4D684EEFEDAFAC62EA7FB5 /* DailySessionController.swift */; };
 		1631BBDF917A88411E08EF5D /* WordbreakEngineBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69CEE5C14791C85E7E323BB1 /* WordbreakEngineBridge.swift */; };
 		234AF57A4143AED9F85118FC /* CaptureLabPhysicalTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 341BC475B947F7D84E367BF3 /* CaptureLabPhysicalTests.swift */; };
-		354975933162E17A18455F2A /* DailyOpportunityPolicyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C101329BF0EF7CA86FCA53B5 /* DailyOpportunityPolicyTests.swift */; };
-		357E80688C701E44B7A3EEA3 /* DailyOpportunityPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CB8C3D52A8BE295A71974CC /* DailyOpportunityPolicy.swift */; };
 		3BD09EA93B5D857C2BC62E6E /* WordbreakEngineBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69CEE5C14791C85E7E323BB1 /* WordbreakEngineBridge.swift */; };
 		3DFA2C112B170B4B3B3621FE /* SessionPackager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9086B887A56FA02E2FA1F3C2 /* SessionPackager.swift */; };
 		41CC442B3B08EA373437623F /* NotificationScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3958DB182CDD1D9FA27DAD80 /* NotificationScheduler.swift */; };
+		4545939F557303042FFFE0CC /* DailyCoordinationStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC32F09327CDA1D36D61B434 /* DailyCoordinationStore.swift */; };
 		46C7E659ADE2B541F4D68235 /* DailySessionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D4D684EEFEDAFAC62EA7FB5 /* DailySessionController.swift */; };
 		49B5C6C1534D297A66646A10 /* ScreenTimeOpportunityScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10EE6F2C19A940E15806AFCA /* ScreenTimeOpportunityScheduler.swift */; };
 		49E9C5E2E6FCEB4CE8F13A4D /* ExperimentConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 682E3A4DFB4CC6C9C6C56078 /* ExperimentConfiguration.swift */; };
@@ -25,14 +24,18 @@
 		4B01812D29E3253495DE17D4 /* ExperimentConfigurationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CBAC03A1A0AC38D47D6EA55 /* ExperimentConfigurationTests.swift */; };
 		4C307FE0C20306C868148BB1 /* SessionPackagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1534389BD736FD1F0F52D282 /* SessionPackagerTests.swift */; };
 		4C9C1D62029A6EC1A05D2C8C /* MathbreakEngineBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8BD56CFEE74F59FD6E5D4B /* MathbreakEngineBridge.swift */; };
+		4CB0012836287EE12DDECE12 /* DailySessionControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0C39BA3887CBAEBD7CE7260 /* DailySessionControllerTests.swift */; };
 		4D612A37AFD43A3219971E25 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDEAF984EA86E352782A40DC /* RootView.swift */; };
+		4E933718A758251697DFCCCB /* DailyCoordinationStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC32F09327CDA1D36D61B434 /* DailyCoordinationStore.swift */; };
 		4F2CEA5A452DB89239A85550 /* CaptureSpikeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 093639AD8A12A7F285D8DAEC /* CaptureSpikeView.swift */; };
 		578985718F6F681CFCEFC673 /* NativeMathbreakView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0EB98DEFFBE2B2EB8D14FBC /* NativeMathbreakView.swift */; };
 		5BFA1C81AAEDDA74E491005D /* CaptureSpikeModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37E3A29BECC73168BABF18D5 /* CaptureSpikeModel.swift */; };
 		5CA37AC8FAC49EA2968C94C2 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDEAF984EA86E352782A40DC /* RootView.swift */; };
+		5DD7900BDE78E2C1885495C3 /* WebProgressImport.swift in Sources */ = {isa = PBXBuildFile; fileRef = B36E1D0308DB6289A66C1273 /* WebProgressImport.swift */; };
 		62327B87B3AE9FA5DACF254D /* NotificationSchedulerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D23BA61DA63B06629DDD3E92 /* NotificationSchedulerTests.swift */; };
 		6BD5C8ABDDB9A361BBE1E05B /* ScreenTimeOpportunityScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10EE6F2C19A940E15806AFCA /* ScreenTimeOpportunityScheduler.swift */; };
 		75E59EBD0A6F2B9042D9C420 /* NativeWordbreakView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C62D441499EFFB1BCEC94F /* NativeWordbreakView.swift */; };
+		766E6B30117516390E5D5969 /* wordbreak-golden in Resources */ = {isa = PBXBuildFile; fileRef = 7DD20014D5634A0918C23176 /* wordbreak-golden */; };
 		7BC818C3611270BF601CFEF0 /* NativeMathbreakView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0EB98DEFFBE2B2EB8D14FBC /* NativeMathbreakView.swift */; };
 		7F2368AB6FCD275522436B78 /* SessionPackagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1534389BD736FD1F0F52D282 /* SessionPackagerTests.swift */; };
 		82947233D742353133E36D9B /* DailyEventLedger.swift in Sources */ = {isa = PBXBuildFile; fileRef = A665C41856150105565A8BBA /* DailyEventLedger.swift */; };
@@ -46,31 +49,35 @@
 		927C89FDEE05053867C0CAB5 /* CaptureSpikeCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F7A855DA4E9E924BB7F7180 /* CaptureSpikeCoordinator.swift */; };
 		967427C4CC0FE5E41F4820AB /* MathbreakEngineBridgeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9DCCB97A9E539C611EBABB8 /* MathbreakEngineBridgeTests.swift */; };
 		985BC7E6501B63087C0CF8AE /* CapabilityDiagnosticView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDDA5114EA273208A5F680E0 /* CapabilityDiagnosticView.swift */; };
-		98897A1C183D8A7628694550 /* DailyOpportunityPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CB8C3D52A8BE295A71974CC /* DailyOpportunityPolicy.swift */; };
+		A8EC9094A93F53403AEE6B0B /* DailyCoordinationStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC32F09327CDA1D36D61B434 /* DailyCoordinationStore.swift */; };
 		AC4FD57E5C3A4620FF6E5A1C /* MathbreakEngineBridgeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9DCCB97A9E539C611EBABB8 /* MathbreakEngineBridgeTests.swift */; };
 		AF61B74C0A3E733DAF73190B /* CheckInVoiceRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1491BC86D2F0EA58C1E106F /* CheckInVoiceRecorder.swift */; };
 		B14F1EBD41C50D5DE9C9212B /* ScreenTimePhysicalTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A69812BF83AFB6C6C34A555 /* ScreenTimePhysicalTests.swift */; };
 		B37CACD501396599835F7C63 /* SessionPackager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9086B887A56FA02E2FA1F3C2 /* SessionPackager.swift */; };
 		B386AB8E597F409B0835030D /* ExperimentConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 682E3A4DFB4CC6C9C6C56078 /* ExperimentConfiguration.swift */; };
 		B45002109758B9F3B43F8EE8 /* CheckInVoiceRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1491BC86D2F0EA58C1E106F /* CheckInVoiceRecorder.swift */; };
+		B503E5ADEDAD32E86AB57E4E /* DailyCoordinationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCBD19767BD9E986ED64F7D0 /* DailyCoordinationTests.swift */; };
 		B9209FC097F9A45ECE7D0A2F /* CapabilityDiagnosticView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDDA5114EA273208A5F680E0 /* CapabilityDiagnosticView.swift */; };
 		BA22B954048B2A599A723E79 /* WordbreakDeviceActivityMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 108E7FC4AC2CF2EA666BC665 /* WordbreakDeviceActivityMonitor.swift */; };
 		BBF4C803FEC76DD2DE359704 /* CaptureSpikeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 093639AD8A12A7F285D8DAEC /* CaptureSpikeView.swift */; };
+		BE64ECCEF236D8AC24EC72DC /* DailySessionControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0C39BA3887CBAEBD7CE7260 /* DailySessionControllerTests.swift */; };
 		C17A518ECA31FE12F9C11149 /* MathbreakEngineBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8BD56CFEE74F59FD6E5D4B /* MathbreakEngineBridge.swift */; };
 		C1815437C5A3D2BC27646FEF /* DailyPracticeUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 547EF2143196E55F5E3104C7 /* DailyPracticeUITests.swift */; };
 		C5368E0502AF843844CA9D5A /* DailyEventLedgerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8546E14F35CEC0AFF086121E /* DailyEventLedgerTests.swift */; };
 		C6AAF99764F92A1D454BCF28 /* NotificationSchedulerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D23BA61DA63B06629DDD3E92 /* NotificationSchedulerTests.swift */; };
 		C71B31AB23A8098B9CB58B10 /* DailyEventLedger.swift in Sources */ = {isa = PBXBuildFile; fileRef = A665C41856150105565A8BBA /* DailyEventLedger.swift */; };
+		CD9C7EAC3749AB1ADD55024B /* DailyCoordinationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCBD19767BD9E986ED64F7D0 /* DailyCoordinationTests.swift */; };
 		CED8374D48D4D1CB301E4041 /* WordbreakScreenTimeMonitor.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = BCD474F9AE6F7DC4B06474D9 /* WordbreakScreenTimeMonitor.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		CFEA5EE9ABBA02CA813741B6 /* ParentSetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4254EBD5815B626CA1EFD8E4 /* ParentSetupView.swift */; };
 		D19C84BFE5384F6E2F2A8F04 /* ProductionCaptureSmokeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB87EBF91B2D9AF54D910BEA /* ProductionCaptureSmokeView.swift */; };
+		D26C60C39E12634EF89640AA /* WebProgressImport.swift in Sources */ = {isa = PBXBuildFile; fileRef = B36E1D0308DB6289A66C1273 /* WebProgressImport.swift */; };
 		D8DC053CB12B15C6AFCDF392 /* WordbreakEngineBridgeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA6BA250F67440E9E6125CF2 /* WordbreakEngineBridgeTests.swift */; };
 		DC382FC05C3E3D21E2F5C0A9 /* CaptureCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7161B3CA143FDFFD851589CA /* CaptureCoordinator.swift */; };
 		DCFC2D9D5A11AA5AC70A539D /* NotificationScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3958DB182CDD1D9FA27DAD80 /* NotificationScheduler.swift */; };
 		E20BF6390E502578D74334EA /* WordbreakEngineBridgeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA6BA250F67440E9E6125CF2 /* WordbreakEngineBridgeTests.swift */; };
-		EBA1248E10627C5E8E6CCF79 /* DailyOpportunityPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CB8C3D52A8BE295A71974CC /* DailyOpportunityPolicy.swift */; };
+		E77A1B048346CE6FD7EF67C7 /* ParentSetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4254EBD5815B626CA1EFD8E4 /* ParentSetupView.swift */; };
 		EE2DF26943AE39BB1B5F7965 /* ExperimentConfigurationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CBAC03A1A0AC38D47D6EA55 /* ExperimentConfigurationTests.swift */; };
 		F34B614BEB11F772F95F4BD0 /* DailyEventLedgerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8546E14F35CEC0AFF086121E /* DailyEventLedgerTests.swift */; };
-		F351F650E62BB4F74112904C /* DailyOpportunityPolicyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C101329BF0EF7CA86FCA53B5 /* DailyOpportunityPolicyTests.swift */; };
 		FBAA5F9B5FA034FE66ABABF6 /* CaptureBudgetEvaluationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B365581BAFDBDA833D6C2BDB /* CaptureBudgetEvaluationTests.swift */; };
 /* End PBXBuildFile section */
 
@@ -140,6 +147,7 @@
 		3958DB182CDD1D9FA27DAD80 /* NotificationScheduler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationScheduler.swift; sourceTree = "<group>"; };
 		3BD12245BFA28F5D4686802B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		3F7A855DA4E9E924BB7F7180 /* CaptureSpikeCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureSpikeCoordinator.swift; sourceTree = "<group>"; };
+		4254EBD5815B626CA1EFD8E4 /* ParentSetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParentSetupView.swift; sourceTree = "<group>"; };
 		547EF2143196E55F5E3104C7 /* DailyPracticeUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyPracticeUITests.swift; sourceTree = "<group>"; };
 		682E3A4DFB4CC6C9C6C56078 /* ExperimentConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExperimentConfiguration.swift; sourceTree = "<group>"; };
 		69CEE5C14791C85E7E323BB1 /* WordbreakEngineBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordbreakEngineBridge.swift; sourceTree = "<group>"; };
@@ -148,29 +156,32 @@
 		7161B3CA143FDFFD851589CA /* CaptureCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureCoordinator.swift; sourceTree = "<group>"; };
 		75622970125E0FE89C349ECB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		7C638F8C0B0004257952C9F2 /* WordbreakApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordbreakApp.swift; sourceTree = "<group>"; };
+		7DD20014D5634A0918C23176 /* wordbreak-golden */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "wordbreak-golden"; path = "../test/fixtures/wordbreak-golden"; sourceTree = SOURCE_ROOT; };
 		8546E14F35CEC0AFF086121E /* DailyEventLedgerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyEventLedgerTests.swift; sourceTree = "<group>"; };
 		9086B887A56FA02E2FA1F3C2 /* SessionPackager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionPackager.swift; sourceTree = "<group>"; };
 		9098E71BA10D9DE7768DF06E /* WordbreakUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = WordbreakUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		97DD1649E76EC6A3F5532AB5 /* Wordbreak.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Wordbreak.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		9CB8C3D52A8BE295A71974CC /* DailyOpportunityPolicy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyOpportunityPolicy.swift; sourceTree = "<group>"; };
 		9D4D684EEFEDAFAC62EA7FB5 /* DailySessionController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailySessionController.swift; sourceTree = "<group>"; };
 		A665C41856150105565A8BBA /* DailyEventLedger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyEventLedger.swift; sourceTree = "<group>"; };
 		B365581BAFDBDA833D6C2BDB /* CaptureBudgetEvaluationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureBudgetEvaluationTests.swift; sourceTree = "<group>"; };
+		B36E1D0308DB6289A66C1273 /* WebProgressImport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebProgressImport.swift; sourceTree = "<group>"; };
 		B7BAD4D28CF6FE37EDE60012 /* WordbreakTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = WordbreakTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B8637AF49C5ECECE6A312B90 /* Wordbreak.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Wordbreak.entitlements; sourceTree = "<group>"; };
 		B91590F37BBE53EF2806CB10 /* WordbreakCaptureLabUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = WordbreakCaptureLabUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		BCD474F9AE6F7DC4B06474D9 /* WordbreakScreenTimeMonitor.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = WordbreakScreenTimeMonitor.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		C0EB98DEFFBE2B2EB8D14FBC /* NativeMathbreakView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeMathbreakView.swift; sourceTree = "<group>"; };
-		C101329BF0EF7CA86FCA53B5 /* DailyOpportunityPolicyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyOpportunityPolicyTests.swift; sourceTree = "<group>"; };
 		C1491BC86D2F0EA58C1E106F /* CheckInVoiceRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckInVoiceRecorder.swift; sourceTree = "<group>"; };
 		D23BA61DA63B06629DDD3E92 /* NotificationSchedulerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationSchedulerTests.swift; sourceTree = "<group>"; };
 		D9DCCB97A9E539C611EBABB8 /* MathbreakEngineBridgeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MathbreakEngineBridgeTests.swift; sourceTree = "<group>"; };
 		DA6BA250F67440E9E6125CF2 /* WordbreakEngineBridgeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordbreakEngineBridgeTests.swift; sourceTree = "<group>"; };
+		DCBD19767BD9E986ED64F7D0 /* DailyCoordinationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyCoordinationTests.swift; sourceTree = "<group>"; };
 		DDDA5114EA273208A5F680E0 /* CapabilityDiagnosticView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CapabilityDiagnosticView.swift; sourceTree = "<group>"; };
+		E0C39BA3887CBAEBD7CE7260 /* DailySessionControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailySessionControllerTests.swift; sourceTree = "<group>"; };
 		E56EA659CCD361B611DC3E05 /* ProductionCapturePhysicalTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductionCapturePhysicalTests.swift; sourceTree = "<group>"; };
 		E8F3EA7A1B767981FE46FFDD /* WordbreakCaptureLabTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = WordbreakCaptureLabTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		EB87EBF91B2D9AF54D910BEA /* ProductionCaptureSmokeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductionCaptureSmokeView.swift; sourceTree = "<group>"; };
 		F7C62D441499EFFB1BCEC94F /* NativeWordbreakView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeWordbreakView.swift; sourceTree = "<group>"; };
+		FC32F09327CDA1D36D61B434 /* DailyCoordinationStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyCoordinationStore.swift; sourceTree = "<group>"; };
 		FDEAF984EA86E352782A40DC /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -244,6 +255,7 @@
 				5400F0D5836C9000F514BEA7 /* WordbreakScreenTimeMonitor */,
 				8D6BAB2C3EE8BBE1A2EDD1B1 /* WordbreakTests */,
 				CF4613715C16A7D86D7A1FBC /* WordbreakUITests */,
+				7DD20014D5634A0918C23176 /* wordbreak-golden */,
 				054EEBB0A38B854FC6D64D01 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -260,8 +272,9 @@
 			isa = PBXGroup;
 			children = (
 				B365581BAFDBDA833D6C2BDB /* CaptureBudgetEvaluationTests.swift */,
+				DCBD19767BD9E986ED64F7D0 /* DailyCoordinationTests.swift */,
 				8546E14F35CEC0AFF086121E /* DailyEventLedgerTests.swift */,
-				C101329BF0EF7CA86FCA53B5 /* DailyOpportunityPolicyTests.swift */,
+				E0C39BA3887CBAEBD7CE7260 /* DailySessionControllerTests.swift */,
 				2CBAC03A1A0AC38D47D6EA55 /* ExperimentConfigurationTests.swift */,
 				D9DCCB97A9E539C611EBABB8 /* MathbreakEngineBridgeTests.swift */,
 				D23BA61DA63B06629DDD3E92 /* NotificationSchedulerTests.swift */,
@@ -284,7 +297,6 @@
 		920E7C5AF742D6824B07D6D5 /* ScreenTime */ = {
 			isa = PBXGroup;
 			children = (
-				9CB8C3D52A8BE295A71974CC /* DailyOpportunityPolicy.swift */,
 				10EE6F2C19A940E15806AFCA /* ScreenTimeOpportunityScheduler.swift */,
 			);
 			path = ScreenTime;
@@ -329,9 +341,12 @@
 		B84646065C36A47B4966A26C /* Daily */ = {
 			isa = PBXGroup;
 			children = (
+				FC32F09327CDA1D36D61B434 /* DailyCoordinationStore.swift */,
 				A665C41856150105565A8BBA /* DailyEventLedger.swift */,
 				6ECADC34074282AAE000AB79 /* DailyPracticeView.swift */,
 				9D4D684EEFEDAFAC62EA7FB5 /* DailySessionController.swift */,
+				4254EBD5815B626CA1EFD8E4 /* ParentSetupView.swift */,
+				B36E1D0308DB6289A66C1273 /* WebProgressImport.swift */,
 			);
 			path = Daily;
 			sourceTree = "<group>";
@@ -354,7 +369,7 @@
 			buildConfigurationList = BF4BC867059817CCBAFC343B /* Build configuration list for PBXNativeTarget "WordbreakTests" */;
 			buildPhases = (
 				C16DDAF1D6412EE70C3CE4EF /* Sources */,
-				FFB3EA8263DEA7277BF59820 /* Bundle frozen parity fixtures */,
+				8F9F41E9A4CEACC14A3908DE /* Resources */,
 			);
 			buildRules = (
 			);
@@ -543,6 +558,17 @@
 		};
 /* End PBXProject section */
 
+/* Begin PBXResourcesBuildPhase section */
+		8F9F41E9A4CEACC14A3908DE /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				766E6B30117516390E5D5969 /* wordbreak-golden in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
 /* Begin PBXShellScriptBuildPhase section */
 		72887AD42BF9400A56D1661C /* Bundle shared Wordbreak engine */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -600,26 +626,6 @@
 			shellPath = /bin/sh;
 			shellScript = "/bin/cp \"${SRCROOT}/../src/game/wordbreak-core.js\" \"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/wordbreak-core.js\"\n/bin/cp \"${SRCROOT}/../src/game/wordbreak-content.js\" \"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/wordbreak-content.js\"\n/bin/cp \"${SRCROOT}/../src/game/mathbreak-core.js\" \"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/mathbreak-core.js\"\n/bin/cp \"${SRCROOT}/../src/game/mathbreak-content.json\" \"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/mathbreak-content.json\"\n/bin/cp \"${SRCROOT}/../experiment/config/experiment.v1.json\" \"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/experiment.v1.json\"\n";
 		};
-		FFB3EA8263DEA7277BF59820 /* Bundle frozen parity fixtures */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"$(SRCROOT)/../test/fixtures/wordbreak-golden",
-			);
-			name = "Bundle frozen parity fixtures";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/wordbreak-golden",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "/usr/bin/ditto \"${SRCROOT}/../test/fixtures/wordbreak-golden\" \"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/wordbreak-golden\"\n";
-		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -627,7 +633,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				98897A1C183D8A7628694550 /* DailyOpportunityPolicy.swift in Sources */,
+				4E933718A758251697DFCCCB /* DailyCoordinationStore.swift in Sources */,
 				BA22B954048B2A599A723E79 /* WordbreakDeviceActivityMonitor.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -642,8 +648,8 @@
 				5BFA1C81AAEDDA74E491005D /* CaptureSpikeModel.swift in Sources */,
 				4F2CEA5A452DB89239A85550 /* CaptureSpikeView.swift in Sources */,
 				AF61B74C0A3E733DAF73190B /* CheckInVoiceRecorder.swift in Sources */,
+				A8EC9094A93F53403AEE6B0B /* DailyCoordinationStore.swift in Sources */,
 				C71B31AB23A8098B9CB58B10 /* DailyEventLedger.swift in Sources */,
-				EBA1248E10627C5E8E6CCF79 /* DailyOpportunityPolicy.swift in Sources */,
 				8ECDFADF3568097ADE1BDAD3 /* DailyPracticeView.swift in Sources */,
 				46C7E659ADE2B541F4D68235 /* DailySessionController.swift in Sources */,
 				B386AB8E597F409B0835030D /* ExperimentConfiguration.swift in Sources */,
@@ -651,10 +657,12 @@
 				7BC818C3611270BF601CFEF0 /* NativeMathbreakView.swift in Sources */,
 				05900CA0C779FD3E7E52B9A3 /* NativeWordbreakView.swift in Sources */,
 				DCFC2D9D5A11AA5AC70A539D /* NotificationScheduler.swift in Sources */,
+				E77A1B048346CE6FD7EF67C7 /* ParentSetupView.swift in Sources */,
 				D19C84BFE5384F6E2F2A8F04 /* ProductionCaptureSmokeView.swift in Sources */,
 				4D612A37AFD43A3219971E25 /* RootView.swift in Sources */,
 				49B5C6C1534D297A66646A10 /* ScreenTimeOpportunityScheduler.swift in Sources */,
 				3DFA2C112B170B4B3B3621FE /* SessionPackager.swift in Sources */,
+				D26C60C39E12634EF89640AA /* WebProgressImport.swift in Sources */,
 				8330555CBDD48AC429005679 /* WordbreakApp.swift in Sources */,
 				1631BBDF917A88411E08EF5D /* WordbreakEngineBridge.swift in Sources */,
 			);
@@ -670,8 +678,8 @@
 				013BC69B40146D88B7C06E88 /* CaptureSpikeModel.swift in Sources */,
 				BBF4C803FEC76DD2DE359704 /* CaptureSpikeView.swift in Sources */,
 				B45002109758B9F3B43F8EE8 /* CheckInVoiceRecorder.swift in Sources */,
+				4545939F557303042FFFE0CC /* DailyCoordinationStore.swift in Sources */,
 				82947233D742353133E36D9B /* DailyEventLedger.swift in Sources */,
-				357E80688C701E44B7A3EEA3 /* DailyOpportunityPolicy.swift in Sources */,
 				8D1DE8A27284A5E8C3A0087B /* DailyPracticeView.swift in Sources */,
 				1293DACD856EB47EF7A7D68C /* DailySessionController.swift in Sources */,
 				49E9C5E2E6FCEB4CE8F13A4D /* ExperimentConfiguration.swift in Sources */,
@@ -679,10 +687,12 @@
 				578985718F6F681CFCEFC673 /* NativeMathbreakView.swift in Sources */,
 				75E59EBD0A6F2B9042D9C420 /* NativeWordbreakView.swift in Sources */,
 				41CC442B3B08EA373437623F /* NotificationScheduler.swift in Sources */,
+				CFEA5EE9ABBA02CA813741B6 /* ParentSetupView.swift in Sources */,
 				8ED777D5DCFC719214247261 /* ProductionCaptureSmokeView.swift in Sources */,
 				5CA37AC8FAC49EA2968C94C2 /* RootView.swift in Sources */,
 				6BD5C8ABDDB9A361BBE1E05B /* ScreenTimeOpportunityScheduler.swift in Sources */,
 				B37CACD501396599835F7C63 /* SessionPackager.swift in Sources */,
+				5DD7900BDE78E2C1885495C3 /* WebProgressImport.swift in Sources */,
 				92237BAEDF577A692EDFB1C4 /* WordbreakApp.swift in Sources */,
 				3BD09EA93B5D857C2BC62E6E /* WordbreakEngineBridge.swift in Sources */,
 			);
@@ -693,8 +703,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				8712D683BA082FE72BF225CB /* CaptureBudgetEvaluationTests.swift in Sources */,
+				B503E5ADEDAD32E86AB57E4E /* DailyCoordinationTests.swift in Sources */,
 				C5368E0502AF843844CA9D5A /* DailyEventLedgerTests.swift in Sources */,
-				F351F650E62BB4F74112904C /* DailyOpportunityPolicyTests.swift in Sources */,
+				BE64ECCEF236D8AC24EC72DC /* DailySessionControllerTests.swift in Sources */,
 				EE2DF26943AE39BB1B5F7965 /* ExperimentConfigurationTests.swift in Sources */,
 				967427C4CC0FE5E41F4820AB /* MathbreakEngineBridgeTests.swift in Sources */,
 				62327B87B3AE9FA5DACF254D /* NotificationSchedulerTests.swift in Sources */,
@@ -726,8 +737,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				FBAA5F9B5FA034FE66ABABF6 /* CaptureBudgetEvaluationTests.swift in Sources */,
+				CD9C7EAC3749AB1ADD55024B /* DailyCoordinationTests.swift in Sources */,
 				F34B614BEB11F772F95F4BD0 /* DailyEventLedgerTests.swift in Sources */,
-				354975933162E17A18455F2A /* DailyOpportunityPolicyTests.swift in Sources */,
+				4CB0012836287EE12DDECE12 /* DailySessionControllerTests.swift in Sources */,
 				4B01812D29E3253495DE17D4 /* ExperimentConfigurationTests.swift in Sources */,
 				AC4FD57E5C3A4620FF6E5A1C /* MathbreakEngineBridgeTests.swift in Sources */,
 				C6AAF99764F92A1D454BCF28 /* NotificationSchedulerTests.swift in Sources */,

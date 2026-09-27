@@ -5,6 +5,9 @@ struct NativeWordbreakView: View {
     let send: ([String: Any]) -> Void
     @State private var answer = ""
     @FocusState private var answerFocused: Bool
+    @ScaledMetric(relativeTo: .title) private var answerSize = 30.0
+    @ScaledMetric(relativeTo: .largeTitle) private var solvedSize = 38.0
+    @ScaledMetric(relativeTo: .title2) private var letterSize = 24.0
 
     private var screen: String { viewModel["screen"] as? String ?? "map" }
     private var phase: String { viewModel["phase"] as? String ?? "type" }
@@ -14,6 +17,10 @@ struct NativeWordbreakView: View {
     private var word: [String: Any] { words.indices.contains(wordIndex) ? words[wordIndex] : [:] }
 
     var body: some View {
+        FillingScrollView { practice }
+    }
+
+    private var practice: some View {
         VStack(alignment: .leading, spacing: 22) {
             PracticeHeader(
                 eyebrow: "1 of 2 · Words",
@@ -36,8 +43,7 @@ struct NativeWordbreakView: View {
     }
 
     private var lesson: some View {
-        ScrollView {
-            PracticeCard {
+        PracticeCard {
                 VStack(alignment: .leading, spacing: 18) {
                     ForEach(Array((unit["docs"] as? [[String: Any]] ?? []).enumerated()), id: \.offset) { _, page in
                         VStack(alignment: .leading, spacing: 7) {
@@ -53,7 +59,6 @@ struct NativeWordbreakView: View {
                         .frame(maxWidth: .infinity, minHeight: 54)
                         .buttonStyle(WordbreakPrimaryButtonStyle())
                 }
-            }
         }
     }
 
@@ -71,10 +76,8 @@ struct NativeWordbreakView: View {
                         .font(.system(.title3, design: .rounded, weight: .semibold))
                         .foregroundStyle(.white)
                     answerField
-                    primaryButton(phase == "patch" ? "Check" : "Choose a letter") {
-                        send(["type": phase == "patch" ? "word.commitPatch" : "word.commitTyped", "value": answer])
-                    }
-                    .disabled(answer.trimmingCharacters(in: .whitespaces).isEmpty)
+                    primaryButton(phase == "patch" ? "Check" : "Choose a letter", action: commitAnswer)
+                        .disabled(answer.trimmingCharacters(in: .whitespaces).isEmpty)
                 case "flag":
                     Text("Which letter or seam deserves a second look?")
                         .font(.system(.title3, design: .rounded, weight: .semibold))
@@ -94,7 +97,7 @@ struct NativeWordbreakView: View {
                     }
                 case "done":
                     Text(word["a"] as? String ?? "Done")
-                        .font(.system(size: 38, weight: .bold, design: .rounded))
+                        .font(.system(size: solvedSize, weight: .bold, design: .rounded))
                         .foregroundStyle(WordbreakPalette.green)
                     Text("Good. Keep moving.")
                         .font(.system(.body, design: .rounded))
@@ -108,16 +111,22 @@ struct NativeWordbreakView: View {
     }
 
     private var answerField: some View {
-        TextField("Your answer", text: $answer)
+        // Already 30 pt at default size; a single word must stay on one line to be read as a spelling.
+        TextField("Spell it", text: $answer)
             .textInputAutocapitalization(.never)
             .autocorrectionDisabled()
-            .font(.system(size: 30, weight: .semibold, design: .rounded))
+            .font(.system(size: answerSize, weight: .semibold, design: .rounded))
             .foregroundStyle(.white)
             .padding(.horizontal, 16)
-            .frame(height: 58)
+            .frame(minHeight: 58)
             .background(WordbreakPalette.background.opacity(0.7), in: RoundedRectangle(cornerRadius: 15))
             .focused($answerFocused)
             .submitLabel(.done)
+            .onSubmit(commitAnswer)
+            .minimumScaleFactor(0.5)
+            .dynamicTypeSize(...DynamicTypeSize.accessibility1)
+            .accessibilityLabel("Your spelling")
+            .accessibilityIdentifier("wordbreak.answer")
     }
 
     private var letterRow: some View {
@@ -128,15 +137,24 @@ struct NativeWordbreakView: View {
                 ForEach(Array(letters.enumerated()), id: \.offset) { index, letter in
                     Button { send(["type": "word.setFlag", "index": index]) } label: {
                         Text(String(letter))
-                            .font(.system(size: 24, weight: .bold, design: .monospaced))
+                            .font(.system(size: letterSize, weight: .bold, design: .monospaced))
                             .foregroundStyle(selected == index ? WordbreakPalette.background : .white)
-                            .frame(width: 43, height: 52)
+                            .frame(minWidth: 44, minHeight: 52)
+                            .padding(.horizontal, 2)
                             .background(selected == index ? WordbreakPalette.amber : WordbreakPalette.background, in: RoundedRectangle(cornerRadius: 12))
                     }
                     .accessibilityLabel("Letter \(String(letter)), position \(index + 1)")
+                    .accessibilityAddTraits(selected == index ? .isSelected : [])
                 }
             }
         }
+    }
+
+    private func commitAnswer() {
+        guard phase == "type" || phase == "patch",
+              !answer.trimmingCharacters(in: .whitespaces).isEmpty
+        else { return }
+        send(["type": phase == "patch" ? "word.commitPatch" : "word.commitTyped", "value": answer])
     }
 
     private func primaryButton(_ title: String, action: @escaping () -> Void) -> some View {

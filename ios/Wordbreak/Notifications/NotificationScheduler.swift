@@ -5,12 +5,17 @@ extension Notification.Name {
     static let wordbreakOpenDaily = Notification.Name("wordbreak.openDaily")
 }
 
+/// Schedules the afternoon and evening reminders from the shared daily coordination ledger.
+///
+/// Every refresh rebuilds the next 14 days from scratch, so completion, a delivered Screen Time
+/// nudge, a time-zone or DST change, and a parent's new reminder times all converge on the same
+/// rule in `DailyNudgePolicy.shouldSchedule`.
 struct NotificationScheduler {
-    static let pendingPrefix = "wordbreak.daily."
+    static let pendingPrefix = DailyNudgePolicy.notificationPrefix
     static let openDailyKey = "notification.openDaily"
+    static let horizonDays = 14
 
     private let center = UNUserNotificationCenter.current()
-    private let sharedDefaults = UserDefaults(suiteName: "group.com.mattmireles.wordbreak")
 
     func requestAndSchedule() async throws -> Bool {
         let granted = try await center.requestAuthorization(options: [.alert, .sound])
@@ -19,72 +24,67 @@ struct NotificationScheduler {
         return true
     }
 
-    func refresh(now: Date = Date(), calendar sourceCalendar: Calendar = .current) async throws {
+    func refresh(now: Date = Date(), calendar: Calendar = .current) async throws {
         let settings = await center.notificationSettings()
         guard settings.authorizationStatus == .authorized || settings.authorizationStatus == .provisional else { return }
+        let store = try DailyCoordinationStore.shared()
+        let state = try store.update {
+            $0.prune(keepingFrom: DailyNudgePolicy.dayKey(now.addingTimeInterval(-2 * 86_400), calendar: calendar))
+        }
         let requests = await center.pendingNotificationRequests()
         center.removePendingNotificationRequests(
             withIdentifiers: requests.map(\.identifier).filter { $0.hasPrefix(Self.pendingPrefix) }
         )
-
-        let calendar = sourceCalendar
-        let completedDay = sharedDefaults?.string(forKey: "daily.completedDay")
-        for (fireDate, suffix) in Self.reminderDates(now: now, calendar: calendar) {
-            let dayKey = Self.dayKey(fireDate, calendar: calendar)
-            if dayKey == completedDay { continue }
-            let components = calendar.dateComponents([.year, .month, .day, .hour, .minute], from: fireDate)
+        for reminder in Self.reminders(now: now, state: state, calendar: calendar) {
+            let components = calendar.dateComponents([.year, .month, .day, .hour, .minute], from: reminder.date)
             let content = UNMutableNotificationContent()
-            content.title = suffix == "afternoon" ? "A little practice?" : "Practice is still waiting"
+            content.title = reminder.slot == .afternoon ? "A little practice?" : "Practice is still waiting"
             content.body = "Words, then math. No timer."
             content.sound = .default
             content.userInfo = ["route": "daily"]
             let request = UNNotificationRequest(
-                identifier: "\(Self.pendingPrefix)\(dayKey).\(suffix)",
+                identifier: "\(Self.pendingPrefix)\(reminder.day).\(reminder.slot.rawValue)",
                 content: content,
                 trigger: UNCalendarNotificationTrigger(dateMatching: components, repeats: false)
             )
             try await center.add(request)
         }
-    }
-
-    func markTodayComplete(now: Date = Date(), calendar: Calendar = .current) async throws {
-        let dayKey = Self.dayKey(now, calendar: calendar)
-        sharedDefaults?.set(dayKey, forKey: "daily.completedDay")
-        let requests = await center.pendingNotificationRequests()
-        center.removePendingNotificationRequests(
-            withIdentifiers: requests.map(\.identifier).filter { $0.hasPrefix("\(Self.pendingPrefix)\(dayKey).") }
-        )
+        // The monitor extension may claim today's opportunity (or the app may complete) while this
+        // refresh awaits; re-check the ledger so a reminder it suppressed is not resurrected.
+        let latest = store.read()
+        let stale = Self.reminders(now: now, state: state, calendar: calendar)
+            .filter { !DailyNudgePolicy.shouldSchedule($0.slot, day: $0.day, state: latest) }
+            .map { "\(Self.pendingPrefix)\($0.day).\($0.slot.rawValue)" }
+        if !stale.isEmpty { center.removePendingNotificationRequests(withIdentifiers: stale) }
     }
 
     static func consumeOpenDailyRequest() -> Bool {
-        let defaults = UserDefaults(suiteName: "group.com.mattmireles.wordbreak")
+        let defaults = UserDefaults(suiteName: DailyCoordinationStore.appGroup)
         let requested = defaults?.bool(forKey: openDailyKey) == true
         if requested { defaults?.set(false, forKey: openDailyKey) }
         return requested
     }
 
-    static func dayKey(_ date: Date, calendar sourceCalendar: Calendar) -> String {
-        var calendar = sourceCalendar
-        calendar.timeZone = sourceCalendar.timeZone
-        let components = calendar.dateComponents([.year, .month, .day], from: date)
-        return String(format: "%04d-%02d-%02d", components.year ?? 0, components.month ?? 0, components.day ?? 0)
-    }
-
-    static func reminderDates(
+    /// Future reminders at the parent's wall-clock times in the current calendar's time zone.
+    static func reminders(
         now: Date,
-        days: Int = 14,
+        state: DailyCoordinationState,
+        days: Int = horizonDays,
         calendar: Calendar = .current
-    ) -> [(date: Date, suffix: String)] {
-        var output: [(Date, String)] = []
+    ) -> [(date: Date, day: String, slot: DailyNudgePolicy.Slot)] {
+        var output: [(Date, String, DailyNudgePolicy.Slot)] = []
         for dayOffset in 0 ..< days {
             guard let day = calendar.date(byAdding: .day, value: dayOffset, to: now) else { continue }
-            for (hour, minute, suffix) in [(16, 0, "afternoon"), (19, 30, "evening")] {
+            let dayKey = DailyNudgePolicy.dayKey(day, calendar: calendar)
+            for slot in DailyNudgePolicy.Slot.allCases {
+                let time = slot == .afternoon ? state.afternoon : state.evening
                 var components = calendar.dateComponents([.year, .month, .day], from: day)
-                components.hour = hour
-                components.minute = minute
-                if let date = calendar.date(from: components), date > now {
-                    output.append((date, suffix))
-                }
+                components.hour = time.hour
+                components.minute = time.minute
+                guard let date = calendar.date(from: components), date > now,
+                      DailyNudgePolicy.shouldSchedule(slot, day: dayKey, state: state)
+                else { continue }
+                output.append((date, dayKey, slot))
             }
         }
         return output

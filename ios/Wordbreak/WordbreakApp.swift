@@ -42,6 +42,17 @@ final class WordbreakAppDelegate: NSObject, UIApplicationDelegate, UNUserNotific
 struct WordbreakApp: App {
     @UIApplicationDelegateAdaptor(WordbreakAppDelegate.self) private var appDelegate
 
+    init() {
+        #if DEBUG
+            // UI tests start from a fresh learner so results never depend on the day's prior runs.
+            if ProcessInfo.processInfo.arguments.contains("--wordbreak-reset-state"),
+               let root = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: DailyCoordinationStore.appGroup)
+            {
+                try? FileManager.default.removeItem(at: root.appending(path: "state"))
+            }
+        #endif
+    }
+
     var body: some Scene {
         WindowGroup {
             #if CAPTURE_LAB

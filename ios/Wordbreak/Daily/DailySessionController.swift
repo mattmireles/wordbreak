@@ -1,6 +1,35 @@
 import Foundation
 import SwiftUI
 
+/// The daily minimum-work and soft-budget contract (docs/notes/native-daily-practice-contract.md).
+///
+/// Wordbreak receives a 6-minute block of the 12-minute soft target; its engine still plans at
+/// least four production opportunities and never splits a started module. Mathbreak runs one
+/// deterministic queue whose every item forces attempt -> strategy construction -> retype.
+/// src/daily-session-budget.test.js pins the synthetic worst case (17 minutes on an ordinary day,
+/// about 25 on the placement day), so the learner surface never promises a duration.
+enum DailySessionContract {
+    static let wordbreakBudgetMinutes = 6
+}
+
+/// Injectable dependencies so the whole offline day can be driven in unit tests.
+struct DailySessionEnvironment {
+    var now: () -> Date = Date.init
+    var calendar: Calendar = .current
+    var wordStore: () throws -> WordbreakStateStore = { try WordbreakFileStateStore.appGroup() }
+    var mathStore: () throws -> WordbreakStateStore = {
+        try WordbreakFileStateStore.appGroup(filename: "mathbreak.v1.json")
+    }
+    var coordination: () throws -> DailyCoordinationStore = { try DailyCoordinationStore.shared() }
+    var ledger: (String) throws -> DailyEventLedger = { try DailyEventLedger(sessionId: $0) }
+    /// Plan 008's post-session check-in is experiment evidence, so it rides the capture flag.
+    var checkInEnabled: Bool = ExperimentConfiguration.captureEnabled
+    /// Nonessential effect run only after completion is durably committed.
+    var afterCompletion: @MainActor () -> Void = {
+        Task { try? await NotificationScheduler().refresh() }
+    }
+}
+
 @MainActor
 final class DailySessionController: ObservableObject {
     enum Stage: Equatable {
@@ -21,39 +50,86 @@ final class DailySessionController: ObservableObject {
     private var mathEngine: MathbreakEngineBridge?
     private var ledger: DailyEventLedger?
     private var sessionId: String?
+    /// Local day credited on completion: the day this launch started or resumed practice.
+    private var sessionDay: String?
     private var capturedSegments: [CapturedSegment] = []
     private var captureTransitionTask: Task<Void, Never>?
     private let capture: SessionCaptureCoordinating
+    private let environment: DailySessionEnvironment
 
-    init(capture: SessionCaptureCoordinating? = nil) {
+    init(capture: SessionCaptureCoordinating? = nil, environment: DailySessionEnvironment = DailySessionEnvironment()) {
         self.capture = capture ?? CaptureCoordinator()
+        self.environment = environment
+        refreshDay()
     }
 
+    private var today: String {
+        DailyNudgePolicy.dayKey(environment.now(), calendar: environment.calendar)
+    }
+
+    private var completedToday: Bool {
+        (try? environment.coordination().read().completedDay) == today
+    }
+
+    /// Re-derives the resting screen after launch, foregrounding, or a clock change. An active
+    /// session is never interrupted; a finished day returns home once the local day rolls over.
+    func refreshDay() {
+        switch stage {
+        case .home, .done:
+            stage = completedToday ? .done : .home
+        case .wordbreak, .mathbreak, .checkIn:
+            // Engines hold the clock they were built with. A run left open across local midnight
+            // is released so the next start rebuilds on today's clock; the engine abandons a stale
+            // Wordbreak session, and credit goes to the day the work is actually finished.
+            if sessionDay != today { releaseRun(); stage = .home }
+        }
+    }
+
+    private func releaseRun() {
+        stopCaptureSegment(reason: "rollover", seal: false)
+        wordEngine = nil
+        mathEngine = nil
+        ledger = nil
+        sessionId = nil
+        sessionDay = nil
+    }
+
+    /// The single entry point for the home button, notifications, and the Screen Time nudge.
     func startToday() {
+        guard stage == .home || stage == .done else { return }
+        if completedToday {
+            stage = .done
+            return
+        }
         do {
             errorMessage = nil
-            let wordEngine = try WordbreakEngineBridge(store: WordbreakFileStateStore.appGroup())
-            let mathEngine = try MathbreakEngineBridge(
-                store: WordbreakFileStateStore.appGroup(filename: "mathbreak.v1.json")
-            )
+            let now = environment.now()
+            let wordEngine = try WordbreakEngineBridge(store: environment.wordStore(), now: now, timezone: environment.calendar.timeZone)
+            let mathEngine = try MathbreakEngineBridge(store: environment.mathStore(), now: now)
             self.wordEngine = wordEngine
             self.mathEngine = mathEngine
-            let output = try wordEngine.dispatch(["type": "session.begin", "budgetMin": 6])
+            sessionDay = today
+            let output = try wordEngine.dispatch([
+                "type": "session.begin",
+                "budgetMin": DailySessionContract.wordbreakBudgetMinutes,
+            ])
             let state = try JSONSerialization.jsonObject(with: Data(output.stateJSON.utf8)) as? [String: Any]
             let session = state?["session"] as? [String: Any]
             let sessionId = session?["id"] as? String ?? "daily-\(UUID().uuidString.lowercased())"
             self.sessionId = sessionId
-            ledger = try DailyEventLedger(sessionId: sessionId)
+            ledger = try? environment.ledger(sessionId)
             wordView = output.viewModel
-            try ledger?.record(
-                subject: .daily,
-                screen: "daily.preparing",
-                eventType: "sessionStarted",
-                payload: ["entry": "startDaily"]
-            )
-            try recordOutput(output, subject: .wordbreak)
-            stage = output.viewModel["screen"] as? String == "sessionDone" ? .mathbreak : .wordbreak
-            if stage == .mathbreak { startMath() }
+            observe {
+                try $0.record(
+                    subject: .daily,
+                    screen: "daily.preparing",
+                    eventType: "sessionStarted",
+                    payload: ["entry": "startDaily"]
+                )
+            }
+            recordOutput(output, subject: .wordbreak)
+            stage = .wordbreak
+            if output.viewModel["screen"] as? String == "sessionDone" { startMath() }
             beginCapture(sessionId: sessionId)
         } catch {
             errorMessage = error.localizedDescription
@@ -65,7 +141,7 @@ final class DailySessionController: ObservableObject {
             guard let wordEngine else { return }
             let output = try wordEngine.dispatch(action)
             wordView = output.viewModel
-            try recordAction(action, subject: .wordbreak, output: output)
+            recordAction(action, subject: .wordbreak, output: output)
             if output.viewModel["screen"] as? String == "sessionDone" {
                 startMath()
             }
@@ -79,8 +155,8 @@ final class DailySessionController: ObservableObject {
             guard let mathEngine else { return }
             let output = try mathEngine.dispatch(action)
             mathView = output.viewModel
-            try recordAction(action, subject: .mathbreak, output: output)
-            stage = output.viewModel["screen"] as? String == "mathDone" ? .checkIn : .mathbreak
+            recordAction(action, subject: .mathbreak, output: output)
+            if output.viewModel["screen"] as? String == "mathDone" { finishSubjects() }
         } catch {
             errorMessage = error.localizedDescription
         }
@@ -91,6 +167,7 @@ final class DailySessionController: ObservableObject {
     }
 
     func handleScenePhase(_ phase: ScenePhase) {
+        if phase == .active { refreshDay() }
         guard stage != .home, stage != .done else { return }
         switch phase {
         case .active:
@@ -119,22 +196,34 @@ final class DailySessionController: ObservableObject {
             guard let mathEngine else { return }
             let output = try mathEngine.dispatch(["type": "session.begin"])
             mathView = output.viewModel
-            try ledger?.record(
-                subject: .daily,
-                screen: "mathbreak.attempt",
-                eventType: "navigation",
-                payload: ["from": "wordbreak", "to": "mathbreak"]
-            )
-            try recordOutput(output, subject: .mathbreak)
-            stage = output.viewModel["screen"] as? String == "mathDone" ? .checkIn : .mathbreak
+            observe {
+                try $0.record(
+                    subject: .daily,
+                    screen: "mathbreak.attempt",
+                    eventType: "navigation",
+                    payload: ["from": "wordbreak", "to": "mathbreak"]
+                )
+            }
+            recordOutput(output, subject: .mathbreak)
+            stage = .mathbreak
+            if output.viewModel["screen"] as? String == "mathDone" { finishSubjects() }
         } catch {
-            errorMessage = error.localizedDescription
+            recoverAtHome(error)
+        }
+    }
+
+    /// Both subjects have committed their protected work.
+    private func finishSubjects() {
+        if environment.checkInEnabled {
+            stage = .checkIn
+        } else {
+            completeDay()
         }
     }
 
     func submitCheckIn(choice: String, voiceNote: URL?) {
-        do {
-            try ledger?.record(
+        observe {
+            try $0.record(
                 subject: .checkIn,
                 screen: "checkIn.prompt",
                 eventType: "checkInSubmitted",
@@ -143,16 +232,36 @@ final class DailySessionController: ObservableObject {
                     "voiceNote": voiceNote?.lastPathComponent as Any? ?? NSNull(),
                 ]
             )
-            try ledger?.record(
-                subject: .daily,
-                screen: "daily.complete",
-                eventType: "sessionCompleted"
-            )
+        }
+        completeDay()
+    }
+
+    /// Plan 008 observation is best-effort: an event-ledger failure never blocks learning.
+    private func observe(_ write: (DailyEventLedger) throws -> Void) {
+        guard let ledger else { return }
+        try? write(ledger)
+    }
+
+    /// A failed transition between subjects returns to the doorway. Both engines committed their
+    /// progress, so the next start resumes exactly where the learner stopped.
+    private func recoverAtHome(_ error: Error) {
+        errorMessage = error.localizedDescription
+        releaseRun()
+        stage = .home
+    }
+
+    /// Commits the one shared daily completion before any effect: navigation, notification
+    /// cancellation, and capture sealing all follow the durable write.
+    private func completeDay() {
+        do {
+            let day = sessionDay ?? today
+            try environment.coordination().update { $0.completedDay = day }
+            observe { try $0.record(subject: .daily, screen: "daily.complete", eventType: "sessionCompleted") }
             stage = .done
             finishCapture()
-            Task { try? await NotificationScheduler().markTodayComplete() }
+            environment.afterCompletion()
         } catch {
-            errorMessage = error.localizedDescription
+            recoverAtHome(error)
         }
     }
 
@@ -275,7 +384,7 @@ final class DailySessionController: ObservableObject {
         _ action: [String: Any],
         subject: DailyEventLedger.Subject,
         output: WordbreakEngineOutput
-    ) throws {
+    ) {
         let actionType = action["type"] as? String ?? "unknown"
         let eventType: String
         if actionType.contains("submit") || actionType.contains("commit") || actionType == "word.execute" {
@@ -285,36 +394,35 @@ final class DailySessionController: ObservableObject {
         } else {
             eventType = "touch"
         }
-        try ledger?.record(
-            subject: subject,
-            screen: screenName(output.viewModel, subject: subject),
-            eventType: eventType,
-            payload: ["action": action]
-        )
-        try recordOutput(output, subject: subject)
+        observe {
+            try $0.record(
+                subject: subject,
+                screen: screenName(output.viewModel, subject: subject),
+                eventType: eventType,
+                payload: ["action": action]
+            )
+        }
+        recordOutput(output, subject: subject)
     }
 
     private func recordOutput(
         _ output: WordbreakEngineOutput,
         subject: DailyEventLedger.Subject
-    ) throws {
+    ) {
         let screen = screenName(output.viewModel, subject: subject)
-        try ledger?.record(subject: subject, screen: screen, eventType: "screenPresented")
-        if output.viewModel["prompt"] != nil || output.viewModel["unit"] != nil {
-            try ledger?.record(
-                subject: subject,
-                screen: screen,
-                eventType: "promptPresented",
-                payload: ["prompt": output.viewModel["prompt"] ?? NSNull()]
-            )
-        }
-        for event in output.semanticEvents {
-            try ledger?.record(
-                subject: subject,
-                screen: screen,
-                eventType: "engineTransition",
-                payload: event
-            )
+        observe { ledger in
+            try ledger.record(subject: subject, screen: screen, eventType: "screenPresented")
+            if output.viewModel["prompt"] != nil || output.viewModel["unit"] != nil {
+                try ledger.record(
+                    subject: subject,
+                    screen: screen,
+                    eventType: "promptPresented",
+                    payload: ["prompt": output.viewModel["prompt"] ?? NSNull()]
+                )
+            }
+            for event in output.semanticEvents {
+                try ledger.record(subject: subject, screen: screen, eventType: "engineTransition", payload: event)
+            }
         }
     }
 
