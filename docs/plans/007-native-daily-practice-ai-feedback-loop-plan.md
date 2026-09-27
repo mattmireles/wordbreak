@@ -71,13 +71,13 @@ Build one dependable iPhone habit for Luca: open a calm mobile-first app, comple
 - **Credential path:** scripts/apple/provision-development.mjs loads the ignored repository .env and uses an App Store Connect API key file. No command needs to reveal an App Store password from Keychain.
 - **Feedback prerequisites:** Physical capture feasibility, event schemas, experiment configuration, and dormant capture code already exist, but Plan 008 owns their completion and use.
 
-## Fresh Baseline (2026-09-25)
+## Fresh Baseline (2026-09-27)
 
-- npm test passes 67 JavaScript tests plus generated-web, curriculum, assessment, Mathbreak, schema, local-D1, and 516-audio-asset validation.
-- iPhone 12 Pro simulator tests pass the native unit/parity suite and one-tap learner UI smoke.
+- npm test passes 70 JavaScript tests plus generated-web, curriculum, assessment, Mathbreak, schema, local-D1, and 516-audio-asset validation.
+- iPhone 12 Pro simulator tests pass 39 native unit/parity/controller tests and 5 learner UI tests, including the system accessibility audit; 3 physical-only tests are skipped.
 - Luca's iPhone SE has allowed .child Family Controls authorization, persisted a Social-category selection, delivered a real threshold callback through the App Group, displayed the notification proof banner, and survived a signed replacement install.
 - The native shared-engine verification passes with recorded Wordbreak engine, curriculum, normalized-content, Mathbreak engine, and Mathbreak-content hashes.
-- Open learner-product evidence is limited to the exact worst-case daily duration, complete accessibility pass, unified nudge-ledger edge cases, midnight rollover, authorization revocation, and parent-driven fresh reinstall.
+- Open learner-product evidence is physical only: midnight rollover, authorization revocation, parent-driven fresh reinstall, Luca-device timing and manual VoiceOver pass, and Luca's acceptance.
 
 ## Solution Overview
 
@@ -206,13 +206,13 @@ The learner flow has four states:
 
 **Tasks:**
 
-- [ ] Run the full web, core, Mathbreak, iOS, notification, Screen Time, accessibility, offline, interruption, and migration matrix from a clean checkout.
+- [x] Run the automated web, core, Mathbreak, iOS unit/UI, accessibility-audit, offline, interruption, rollover, and import matrix from a clean checkout (npm ci, npm test, xcodegen with no diff, iOS simulator suite). Physical notification and Screen Time cases stay with Phase 3's device-proof task.
 - [ ] Run routine physical development smokes on the iPhone 12 Pro and final acceptance on Luca's iPhone SE.
 - [ ] Time the synthetic worst-case day and one real day on Luca's iPhone SE, and complete a manual VoiceOver pass through both subjects, before promising Luca any duration.
-- [ ] Verify the release archive embeds the tested engine/content hashes, expected entitlements, bundle identifiers, signing identity, and build number.
-- [ ] Prove the app starts, completes, and persists when all Plan 008 feature flags and all network access are disabled.
-- [ ] Run the repository audit skill over Plan 007 paths, fix findings, and rerun the applicable tests.
-- [ ] Update product documentation and remove spike UI or dead scaffolding visible to the learner.
+- [x] Verify the archive embeds the tested engine/content hashes, Family Controls and App Group entitlements on both binaries, bundle identifiers, the Apple Development signing identity, build number, and the Git SHA passed as WORDBREAK_GIT_SHA. Distribution signing waits on Apple's Family Controls (Distribution) approval.
+- [x] Prove the app starts, completes, and persists with every Plan 008 flag off and no network: the app contains no networking API, and the controller test completes both subjects through the real engines with capture and check-in disabled.
+- [x] Run the repository audit skill over Plan 007 paths, fix its learner-path findings (including reminders silently ending after 14 days), and rerun the tests. Engine-clock latency, UTC review days, and Plan 008 config/scaffolding cleanup are follow-ups outside this plan.
+- [x] Update product documentation and remove spike UI or scaffolding visible to the learner. Diagnostic and capture-spike views remain compiled but are reachable only in DEBUG or the Capture Lab target.
 - [ ] Commit and push only scoped work after all gates pass.
 
 **Verification:** Luca completes the installed app without assistance; the daily recurrence works on the following local day; notifications converge on one session; the web and native engine/content hashes match; and disabling Plan 008 changes no learning behavior.
