@@ -8,8 +8,16 @@ final class WordbreakAppDelegate: NSObject, UIApplicationDelegate, UNUserNotific
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
     ) -> Bool {
         UNUserNotificationCenter.current().delegate = self
+        // The monitor extension cannot read the bundled kill switches, so mirror this one.
+        UserDefaults(suiteName: DailyCoordinationStore.appGroup)?
+            .set(ExperimentConfiguration.notificationsEnabled, forKey: DailyNudgePolicy.notificationsEnabledKey)
         Task { try? await NotificationScheduler().refresh() }
+        ScreenTimeOpportunityScheduler().reconcile()
         return true
+    }
+
+    func applicationDidBecomeActive(_ application: UIApplication) {
+        ScreenTimeOpportunityScheduler().reconcile()
     }
 
     func userNotificationCenter(

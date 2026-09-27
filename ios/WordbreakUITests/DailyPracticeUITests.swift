@@ -60,4 +60,18 @@ final class DailyPracticeUITests: XCTestCase {
         XCTAssertTrue(start.waitForExistence(timeout: 10))
         XCTAssertTrue(start.isHittable)
     }
+
+    @MainActor
+    func testHiddenParentEntryOpensParentOnlySetup() throws {
+        let app = XCUIApplication()
+        app.launchArguments += ["--wordbreak-reset-state"]
+        app.launch()
+        let entry = app.descendants(matching: .any)["parent.entry"]
+        XCTAssertTrue(entry.waitForExistence(timeout: 10))
+        entry.press(forDuration: 2)
+        XCTAssertTrue(app.staticTexts["Reminders"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.staticTexts["Weekly report"].exists)
+        XCTAssertTrue(app.staticTexts["Paused on this iPhone"].exists)
+        XCTAssertTrue(app.buttons["parent.reminders.save"].exists)
+    }
 }

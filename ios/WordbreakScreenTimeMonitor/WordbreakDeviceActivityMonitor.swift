@@ -24,6 +24,11 @@ final class WordbreakDeviceActivityMonitor: DeviceActivityMonitor {
     /// Claims today's single opportunity in the shared ledger before speaking, then removes the
     /// still-pending afternoon reminder. The evening fallback stays scheduled.
     private func deliverDailyOpportunityIfNeeded(now: Date = Date()) {
+        let defaults = UserDefaults(suiteName: DailyCoordinationStore.appGroup)
+        // Registration can outlive a kill switch or a parent turning suggestions off.
+        guard defaults?.bool(forKey: "screenTime.dailyOpportunityEnabled") == true,
+              defaults?.object(forKey: DailyNudgePolicy.notificationsEnabledKey) as? Bool != false
+        else { return }
         let calendar = Calendar.current
         let day = DailyNudgePolicy.dayKey(now, calendar: calendar)
         guard let store = try? DailyCoordinationStore.shared() else { return }

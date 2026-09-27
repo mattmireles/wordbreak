@@ -1,3 +1,4 @@
+import FamilyControls
 import SwiftUI
 
 /// Parent-only setup. Reached from a hidden long press on the home screen's "TODAY" label (or
@@ -5,6 +6,9 @@ import SwiftUI
 /// convenience boundary, not a security one: Screen Time authorization and revocation still
 /// require Apple's parent approval.
 struct ParentSetupView: View {
+    @StateObject private var model = ParentSetupModel()
+    @State private var showingPicker = false
+    @State private var choosingFile = false
     @State private var prepared: WebProgressImport.Prepared?
     @State private var current = WebProgressImport.Summary(stateJSON: nil)
     @State private var confirmingImport = false
@@ -25,12 +29,18 @@ struct ParentSetupView: View {
                         .foregroundStyle(.white)
                         .accessibilityAddTraits(.isHeader)
 
+                    remindersSection
+                    if model.screenTimeAvailable { screenTimeSection }
+
                     ParentSection(title: "Weekly report", status: "Paused on this iPhone") {
                         Text("The iPhone app doesn’t send progress reports, so iPhone practice isn’t in the weekly email. It is not counted as zero.")
                     }
 
                     ParentSection(title: "Bring web progress", status: importStatus ?? "Optional") {
-                        Text("On the computer, open Wordbreak, open the browser console, run copy(localStorage.wb2), and send the text to this iPhone. Then paste it here to preview.")
+                        Text("On the computer, open the observer panel in Wordbreak, choose “export progress”, and AirDrop wordbreak-progress.json to this iPhone. Choose it here to preview before anything changes.")
+                        Button("Choose export file") { choosingFile = true }
+                            .buttonStyle(.bordered)
+                            .accessibilityIdentifier("parent.import.file")
                         PasteButton(payloadType: String.self) { strings in
                             guard let text = strings.first else { return }
                             Task { @MainActor in preview(text) }
@@ -46,14 +56,21 @@ struct ParentSetupView: View {
                         }
                     }
 
+                    if let error = model.errorMessage {
+                        Text(error)
+                            .font(.callout)
+                            .foregroundStyle(WordbreakPalette.amber)
+                    }
                     if let errorMessage {
                         Text(errorMessage)
                             .font(.callout)
                             .foregroundStyle(WordbreakPalette.amber)
                     }
 
-                    NavigationLink("Device checks") { CapabilityDiagnosticView() }
-                        .foregroundStyle(WordbreakPalette.secondary)
+                    #if DEBUG
+                        NavigationLink("Device checks") { CapabilityDiagnosticView() }
+                            .foregroundStyle(WordbreakPalette.secondary)
+                    #endif
                 }
                 .padding(22)
             }
@@ -63,6 +80,21 @@ struct ParentSetupView: View {
         .toolbarBackground(WordbreakPalette.background, for: .navigationBar)
         .toolbarBackground(.visible, for: .navigationBar)
         .onAppear(perform: loadCurrent)
+        .task { await model.load() }
+        .familyActivityPicker(isPresented: $showingPicker, selection: $model.selection)
+        .fileImporter(isPresented: $choosingFile, allowedContentTypes: [.json]) { result in
+            do {
+                let url = try result.get()
+                let scoped = url.startAccessingSecurityScopedResource()
+                defer { if scoped { url.stopAccessingSecurityScopedResource() } }
+                preview(try String(contentsOf: url, encoding: .utf8))
+            } catch {
+                errorMessage = error.localizedDescription
+            }
+        }
+        .onChange(of: showingPicker) { _, open in
+            if !open { model.saveSelection() }
+        }
         .confirmationDialog(
             "Replace this iPhone’s Wordbreak progress with the web progress?",
             isPresented: $confirmingImport,
@@ -73,6 +105,62 @@ struct ParentSetupView: View {
         } message: {
             Text("Math progress is kept. After this, practice on the iPhone; web progress won’t sync back.")
         }
+    }
+
+    private var reminderStatusText: String {
+        switch model.reminderStatus {
+        case .allowed: "On"
+        case .denied: "Off in Settings"
+        case .notAsked: "Not set up"
+        case .switchedOff: "Switched off for this build"
+        }
+    }
+
+    private var remindersSection: some View {
+        ParentSection(title: "Reminders", status: reminderStatusText) {
+            Text("One gentle reminder in the afternoon and one in the evening, only on days practice isn’t done.")
+            switch model.reminderStatus {
+            case .notAsked:
+                Button("Allow reminders") { Task { await model.allowReminders() } }
+                    .buttonStyle(.borderedProminent)
+                    .accessibilityIdentifier("parent.reminders.allow")
+            case .denied:
+                Button("Open Settings", action: model.openSettings)
+                    .buttonStyle(.bordered)
+            case .allowed, .switchedOff:
+                EmptyView()
+            }
+            DatePicker("Afternoon", selection: $model.afternoon, displayedComponents: .hourAndMinute)
+                .accessibilityIdentifier("parent.reminders.afternoon")
+            DatePicker("Evening", selection: $model.evening, displayedComponents: .hourAndMinute)
+                .accessibilityIdentifier("parent.reminders.evening")
+            Button("Save times") { Task { await model.saveTimes() } }
+                .buttonStyle(.bordered)
+                .accessibilityIdentifier("parent.reminders.save")
+        }
+        .foregroundStyle(.white)
+    }
+
+    private var screenTimeSection: some View {
+        ParentSection(
+            title: "Screen Time suggestion",
+            status: model.suggestionsOn ? "On" : (model.screenTimeAllowed ? "Off" : "Needs a parent")
+        ) {
+            Text("In the hour before the afternoon reminder, after 15 minutes in what you choose, Wordbreak may suggest practice once. It never blocks an app.")
+            if !model.screenTimeAllowed {
+                Button("Allow Screen Time") { Task { await model.allowScreenTime() } }
+                    .buttonStyle(.borderedProminent)
+                    .accessibilityIdentifier("parent.screenTime.allow")
+            } else {
+                Button(model.hasSelection ? "Change what counts" : "Choose what counts") { showingPicker = true }
+                    .buttonStyle(.bordered)
+                    .accessibilityIdentifier("parent.screenTime.choose")
+                Toggle("Suggest practice", isOn: Binding(get: { model.suggestionsOn }, set: model.setSuggestions))
+                    .disabled(!model.hasSelection)
+                    .accessibilityIdentifier("parent.screenTime.toggle")
+            }
+        }
+        .foregroundStyle(.white)
     }
 
     private func loadCurrent() {

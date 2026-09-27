@@ -82,6 +82,12 @@ weekly email; it is never reported as zero.
 - Optional opportunity nudge: once per local day after 3:00 PM when selected
   Screen Time activity crosses 15 minutes and practice is unfinished.
 - All three entry points deep-link to the same unfinished session.
+- The parent may move both reminder times in parent setup; the evening time
+  must follow the afternoon one, and the Screen Time window is always the hour
+  before the afternoon reminder.
+- Parent setup is hidden behind a long press on the home screen, not locked.
+- Screen Time monitoring stops when the kill switch is off or authorization is
+  explicitly denied. A cold-start `.notDetermined` read never disables it.
 - Screen Time is an opportunity signal, never a claim that Luca is bored.
 
 ## Experiment modes

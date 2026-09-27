@@ -25,6 +25,14 @@ struct NotificationScheduler {
     }
 
     func refresh(now: Date = Date(), calendar: Calendar = .current) async throws {
+        guard ExperimentConfiguration.notificationsEnabled else {
+            // Kill switch: remove every pending reminder rather than leaving stale ones behind.
+            let requests = await center.pendingNotificationRequests()
+            center.removePendingNotificationRequests(
+                withIdentifiers: requests.map(\.identifier).filter { $0.hasPrefix(Self.pendingPrefix) }
+            )
+            return
+        }
         let settings = await center.notificationSettings()
         guard settings.authorizationStatus == .authorized || settings.authorizationStatus == .provisional else { return }
         let store = try DailyCoordinationStore.shared()

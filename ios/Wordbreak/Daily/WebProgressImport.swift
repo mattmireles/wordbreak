@@ -1,6 +1,7 @@
 import Foundation
 
-/// Explicit, previewed import of browser Wordbreak progress (`localStorage.wb2`).
+/// Explicit, previewed import of browser Wordbreak progress: the observer panel's
+/// `wordbreak-progress.json` export, or the raw `localStorage.wb2` value.
 ///
 /// The pasted bytes are never written directly. They go through the shared reducer's own
 /// `progress.import` action in a throwaway engine (validation, field-pack quarantine, state
@@ -36,7 +37,7 @@ enum WebProgressImport {
         case notProgress
 
         var errorDescription: String? {
-            "That doesn’t look like Wordbreak progress. Copy the value of localStorage.wb2 from the web app."
+            "That doesn’t look like Wordbreak progress. Use the web app’s “export progress” file."
         }
     }
 
@@ -49,8 +50,12 @@ enum WebProgressImport {
 
     static func prepare(_ text: String, bundle: Bundle = .main) throws -> Prepared {
         let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard let object = try? JSONSerialization.jsonObject(with: Data(trimmed.utf8)) as? [String: Any],
-              ["docs", "cleared", "sched", "sessions"].contains(where: { object[$0] != nil })
+        guard let parsed = try? JSONSerialization.jsonObject(with: Data(trimmed.utf8)) as? [String: Any] else {
+            throw ImportError.notProgress
+        }
+        // Unwrap the observer export envelope ({format: "wordbreak-progress", version: 1, wb2}).
+        let object = parsed["format"] as? String == "wordbreak-progress" ? parsed["wb2"] as? [String: Any] ?? [:] : parsed
+        guard ["docs", "cleared", "sched", "sessions"].contains(where: { object[$0] != nil })
         else { throw ImportError.notProgress }
         let engine = try WordbreakEngineBridge(store: MemoryStore(Data("{}".utf8)), bundle: bundle)
         let output = try engine.dispatch(["type": "progress.import", "state": object])

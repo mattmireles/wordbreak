@@ -40,6 +40,8 @@ struct DailyCoordinationState: Codable, Equatable {
 enum DailyNudgePolicy {
     /// Identifier prefix shared by scheduled reminders and the Screen Time nudge.
     static let notificationPrefix = "wordbreak.daily."
+    /// App Group mirror of the notifications kill switch for the monitor extension.
+    static let notificationsEnabledKey = "nudges.notificationsEnabled"
 
     enum Slot: String, CaseIterable {
         case afternoon
@@ -54,6 +56,14 @@ enum DailyNudgePolicy {
             components.month ?? 0,
             components.day ?? 0
         )
+    }
+
+    /// The evening fallback must come after the afternoon reminder (and its opportunity hour).
+    static func validReminderTimes(
+        afternoon: DailyCoordinationState.LocalTime,
+        evening: DailyCoordinationState.LocalTime
+    ) -> Bool {
+        afternoon.minutesAfterMidnight >= 60 && evening.minutesAfterMidnight > afternoon.minutesAfterMidnight
     }
 
     /// A scheduled reminder is suppressed on a completed day, and the afternoon reminder is
@@ -101,7 +111,7 @@ final class DailyCoordinationStore {
         var result = DailyCoordinationState()
         var coordinationError: NSError?
         NSFileCoordinator().coordinate(readingItemAt: url, options: [], error: &coordinationError) { readURL in
-            result = Self.load(readURL)
+            result = Self.load(readURL, quarantineUnreadable: false)
         }
         return result
     }
@@ -114,7 +124,7 @@ final class DailyCoordinationStore {
         var coordinationError: NSError?
         NSFileCoordinator().coordinate(writingItemAt: url, options: [], error: &coordinationError) { writeURL in
             do {
-                var state = Self.load(writeURL)
+                var state = Self.load(writeURL, quarantineUnreadable: true)
                 change(&state)
                 try FileManager.default.createDirectory(
                     at: writeURL.deletingLastPathComponent(),
@@ -133,14 +143,16 @@ final class DailyCoordinationStore {
         return committed
     }
 
-    private static func load(_ url: URL) -> DailyCoordinationState {
+    private static func load(_ url: URL, quarantineUnreadable: Bool) -> DailyCoordinationState {
         guard let data = try? Data(contentsOf: url) else { return DailyCoordinationState() }
         if let state = try? JSONDecoder().decode(DailyCoordinationState.self, from: data),
            state.version == DailyCoordinationState.currentVersion
         {
             return state
         }
-        // Unreadable or future-version bytes are set aside, never silently overwritten.
+        // Unreadable or future-version bytes are set aside (only under write coordination),
+        // never silently overwritten.
+        guard quarantineUnreadable else { return DailyCoordinationState() }
         let quarantine = url.deletingPathExtension().appendingPathExtension("unreadable-\(Int(Date().timeIntervalSince1970)).json")
         try? FileManager.default.moveItem(at: url, to: quarantine)
         return DailyCoordinationState()

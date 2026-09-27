@@ -23,7 +23,7 @@ final class CapabilityDiagnosticModel: ObservableObject {
     @Published private(set) var errorMessage: String?
 
     private let sharedDefaults = UserDefaults(suiteName: "group.com.mattmireles.wordbreak")
-    private let selectionKey = "phase0.familyActivitySelection"
+    private let selectionKey = ScreenTimeOpportunityScheduler.selectionKey
 
     var isAuthorized: Bool {
         switch authorization {

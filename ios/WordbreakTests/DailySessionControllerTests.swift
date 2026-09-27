@@ -168,6 +168,8 @@ final class DailySessionControllerTests: XCTestCase {
         try Data("{\"keep\":true}".utf8).write(to: mathURL)
 
         let web = #"{"docs":{"1.1":true},"cleared":{"1.1":true},"sched":{},"sessions":[],"futureField":{"kept":1}}"#
+        let envelope = #"{"format":"wordbreak-progress","version":1,"exportedAt":1,"wb2":"# + web + "}"
+        XCTAssertEqual(try WebProgressImport.prepare(envelope).state, try WebProgressImport.prepare(web).state, "The observer export envelope unwraps to the same progress")
         let prepared = try WebProgressImport.prepare(web)
         XCTAssertEqual(prepared.summary.modulesRead, 1)
         XCTAssertEqual(prepared.summary.modulesCleared, 1)

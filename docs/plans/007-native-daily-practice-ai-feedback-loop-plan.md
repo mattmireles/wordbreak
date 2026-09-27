@@ -190,11 +190,11 @@ The learner flow has four states:
 - [x] Deep-link every nudge to the same unfinished session and cancel the fallback after completion.
 - [x] Add FamilyControls selection and the bounded DeviceActivity monitor extension.
 - [x] Gate the selected-usage threshold to the 3:00-4:00 PM opportunity window, suppress completed/already-nudged days, remove the still-pending 4:00 PM reminder, and keep the 7:30 PM fallback.
-- [ ] Create the parent-only setup screen for notification authorization, selected times, and Screen Time selection.
-- [ ] Unify notification and Screen Time deduplication in one daily nudge ledger.
+- [x] Create the parent setup screen for notification authorization (with Settings remediation when denied), editable afternoon/evening times, Screen Time authorization, activity selection, and the suggestion toggle. It is hidden behind a long press, not locked; Apple's parent approval still guards Screen Time authorization.
+- [x] Unify notification and Screen Time deduplication in one daily nudge ledger shared by the app and the monitor extension, and honor the notifications and Screen Time kill switches in both.
 - [ ] Prove late completion, time-zone/DST changes, disabled permissions, restart, midnight rollover, authorization revocation, and reinstall on the applicable physical device.
 
-**Verification:** Calendar and DeviceActivity tests pass; physical receipts show correct deep linking/cancellation; at most one Screen Time nudge fires per day; and permission denial leaves ordinary launch and practice fully functional.
+**Verification:** Calendar, ledger, reminder-time, and DeviceActivity policy tests pass; physical receipts show correct deep linking/cancellation; at most one Screen Time nudge fires per day; and permission denial leaves ordinary launch and practice fully functional.
 
 ---
 

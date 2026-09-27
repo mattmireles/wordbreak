@@ -93,4 +93,11 @@ final class DailyCoordinationTests: XCTestCase {
         XCTAssertTrue(names.contains { $0.hasPrefix("daily.v1.unreadable-") })
         XCTAssertEqual(store.read().completedDay, "2026-09-25")
     }
+
+    func testEveningReminderMustFollowAnAfternoonThatLeavesAnOpportunityHour() {
+        XCTAssertTrue(DailyNudgePolicy.validReminderTimes(afternoon: .init(hour: 16, minute: 0), evening: .init(hour: 19, minute: 30)))
+        XCTAssertFalse(DailyNudgePolicy.validReminderTimes(afternoon: .init(hour: 19, minute: 30), evening: .init(hour: 19, minute: 30)))
+        XCTAssertFalse(DailyNudgePolicy.validReminderTimes(afternoon: .init(hour: 20, minute: 0), evening: .init(hour: 19, minute: 30)))
+        XCTAssertFalse(DailyNudgePolicy.validReminderTimes(afternoon: .init(hour: 0, minute: 30), evening: .init(hour: 19, minute: 30)))
+    }
 }
