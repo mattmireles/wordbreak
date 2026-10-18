@@ -62,7 +62,6 @@ Fill every field that applies. Empty fields are wasted money.
 | `avoidSources` | Sources to distrust (outdated versions, SEO blogs, known-wrong answers). For papers, the ones the repo already holds. |
 | `targetRepo` | This repo's name. |
 | `targetGuidePath` / `targetPaperDirectory` | Where the result will live, following the repo's existing convention. |
-| `maxPapers` | Papers only. Default 10, maximum 30. |
 | `outputInstructions` | Guides: "Advanced developer field guide. Executive summary first; best and worst practices; hidden gotchas; failure modes and debugging; code examples; do-this / avoid-this tables; numbered references; mark speculation separately from evidence. Text only: no charts, images, or diagrams." Papers: "For each paper: canonical id, title, authors, year, primary-source link, abstract, and why it matters to the stated decision. Merge preprint and published versions. Exclude keyword-only matches." |
 
 Always pass `agentMode: "max"` and `maxTotalChargeUsdMicros: 25000000`
