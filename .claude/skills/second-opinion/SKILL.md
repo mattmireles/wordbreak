@@ -2,7 +2,7 @@
 name: second-opinion
 description: >-
   Gets two independent, read-only opinions on a concrete technical decision,
-  diagnosis, plan, or tradeoff from GPT-6 Astra at high reasoning and Claude
+  diagnosis, plan, or tradeoff from GPT Astra 6.2 at high reasoning and Claude
   Opus 5.5 at medium effort, then reconciles agreement and disagreement without
   treating model consensus as proof. Use when the user asks for a second
   opinion, says dial-a-friend, wants outside advice, or explicitly asks what
@@ -16,7 +16,7 @@ description: >-
 
 Ask two strong models for **independent advice on one concrete matter**:
 
-- GPT-6 Astra with `high` reasoning
+- GPT Astra 6.2 with `high` reasoning
 - Claude Opus 5.5 with `medium` effort
 
 This is the dial-a-friend workflow. It answers “Given these facts, what would
